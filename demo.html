@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Component demo · Microapp template</title>
+  <link rel="icon" href="app/res/icon.svg" type="image/svg+xml" />
+  <script src="app/theme-init.js"></script>
+  <link rel="stylesheet" href="app/styles.css" />
+</head>
+
+<body>
+  <header>
+    <div class="site-brand">
+      <img class="site-logo" src="app/res/icon.svg" alt="" width="40" height="40" />
+      <h1>Component demo</h1>
+    </div>
+    <p class="tagline">
+      Buttons, tooltips, dialogs, banners, inputs, menus, tabs, expand, and theme from the
+      <a href="index.html">microapp template</a>.
+    </p>
+  </header>
+
+  <main>
+    <section class="demo-section" aria-labelledby="demo-buttons">
+      <h2 id="demo-buttons" class="section-heading">Buttons</h2>
+      <p class="demo-hint">Example of a hint.</p>
+      <div class="demo-row">
+        <button type="button" class="btn">Default</button>
+        <button type="button" class="btn btn-primary">Primary</button>
+        <button type="button" class="btn" disabled>Disabled</button>
+        <button type="button" id="icon-toggle-btn" class="btn btn-icon" aria-pressed="true" aria-label="Toggle feature"
+          data-tooltip="Icon button with toggle state" data-icon="lines" data-icon-class="btn-icon-svg"></button>
+        <button type="button" class="btn-link">Link button</button>
+      </div>
+    </section>
+
+    <section class="demo-section" aria-labelledby="demo-inputs">
+      <h2 id="demo-inputs" class="section-heading">Inputs</h2>
+      <div class="demo-fields">
+        <label class="field" for="demo-input-single">
+          <span class="field-label">Single line</span>
+          <input type="text" id="demo-input-single" class="input" placeholder="Enter text…" />
+        </label>
+        <label class="field" for="demo-input-multiline">
+          <span class="field-label">Multi-line</span>
+          <textarea id="demo-input-multiline" class="textarea" rows="4" placeholder="Enter longer text…"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="demo-section" aria-labelledby="demo-combo-title">
+      <h2 id="demo-combo-title" class="section-heading">Combo button</h2>
+      <div class="combo-btn" id="demo-combo">
+        <button type="button" class="btn combo-btn-main" id="demo-combo-main">
+          Pick random
+        </button>
+        <button type="button" class="btn combo-btn-toggle" id="demo-combo-toggle" aria-haspopup="menu"
+          aria-expanded="false" aria-controls="demo-combo-menu" aria-label="Choose option">
+          <span class="combo-btn-chevron" aria-hidden="true"></span>
+        </button>
+        <ul id="demo-combo-menu" class="combo-menu hidden" role="menu">
+          <li role="none">
+            <button type="button" class="combo-menu-item" role="menuitem" data-value="example-1">
+              Example 1
+            </button>
+          </li>
+          <li role="none">
+            <button type="button" class="combo-menu-item" role="menuitem" data-value="example-2">
+              Example 2
+            </button>
+          </li>
+          <li role="none">
+            <button type="button" class="combo-menu-item" role="menuitem" data-value="example-3">
+              Example 3
+            </button>
+          </li>
+        </ul>
+      </div>
+      <p id="demo-combo-result" class="demo-hint" aria-live="polite"></p>
+    </section>
+
+    <section class="demo-section" aria-labelledby="demo-dropdown-title">
+      <h2 id="demo-dropdown-title" class="section-heading">Dropdown</h2>
+      <div class="dropdown" id="demo-dropdown">
+        <button type="button" class="btn dropdown-trigger" id="demo-dropdown-trigger" aria-haspopup="menu"
+          aria-expanded="false" aria-controls="demo-dropdown-menu">
+          Choose item
+          <span class="combo-btn-chevron" aria-hidden="true"></span>
+        </button>
+        <ul id="demo-dropdown-menu" class="dropdown-menu hidden" role="menu">
+          <li role="none">
+            <button type="button" class="dropdown-menu-item" role="menuitem" data-value="example-1">
+              Example 1
+            </button>
+          </li>
+          <li role="none">
+            <button type="button" class="dropdown-menu-item" role="menuitem" data-value="example-2">
+              Example 2
+            </button>
+          </li>
+          <li role="none">
+            <button type="button" class="dropdown-menu-item" role="menuitem" data-value="example-3">
+              Example 3
+            </button>
+          </li>
+        </ul>
+      </div>
+      <p id="demo-dropdown-result" class="demo-hint" aria-live="polite"></p>
+    </section>
+
+    <section class="demo-section" aria-labelledby="demo-tooltips">
+      <h2 id="demo-tooltips" class="section-heading">Tooltips</h2>
+      <div class="demo-row">
+        <button type="button" class="btn" data-tooltip="Save your changes">
+          Hover me
+        </button>
+        <button type="button" class="btn btn-icon" aria-label="Help" data-tooltip="Inline help for this control"
+          data-tooltip-position="right">
+          <span class="help-icon" aria-hidden="true">?</span>
+        </button>
+        <span class="demo-inline">
+          Tooltip positions:
+          <button type="button" class="btn btn-link" data-tooltip="Above the trigger" data-tooltip-position="top">
+            top
+          </button>
+          <button type="button" class="btn btn-link" data-tooltip="Below the trigger" data-tooltip-position="bottom">
+            bottom
+          </button>
+          <button type="button" class="btn btn-link" data-tooltip="Left of the trigger" data-tooltip-position="left">
+            left
+          </button>
+          <button type="button" class="btn btn-link" data-tooltip="Right of the trigger" data-tooltip-position="right">
+            right
+          </button>
+        </span>
+      </div>
+    </section>
+
+    <section class="demo-section" aria-labelledby="demo-dialogs">
+      <h2 id="demo-dialogs" class="section-heading">Dialogs</h2>
+      <div class="demo-row">
+        <button type="button" class="btn" id="open-info-dialog">
+          Open info dialog
+        </button>
+        <button type="button" class="btn btn-primary" id="open-confirm-dialog">
+          Open confirm dialog
+        </button>
+      </div>
+    </section>
+
+    <section class="demo-section" aria-labelledby="demo-banners">
+      <h2 id="demo-banners" class="section-heading">Banners</h2>
+      <div class="demo-row">
+        <button type="button" class="btn" id="toggle-note-banner">
+          Toggle note
+        </button>
+        <button type="button" class="btn" id="toggle-info-banner">
+          Toggle info
+        </button>
+        <button type="button" class="btn" id="toggle-success-banner">
+          Toggle success
+        </button>
+        <button type="button" class="btn" id="toggle-important-banner">
+          Toggle important
+        </button>
+        <button type="button" class="btn" id="toggle-warning-banner">
+          Toggle warning
+        </button>
+        <button type="button" class="btn" id="toggle-error-banner">
+          Toggle error
+        </button>
+        <button type="button" class="btn btn-primary" id="toggle-all-banners">
+          Toggle all banners
+        </button>
+      </div>
+      <div id="demo-note-banner" class="banner banner-note hidden" role="note" hidden>
+        <span class="banner-icon" data-icon="note" data-icon-class="banner-icon-svg"></span>
+        <span class="banner-body">This is a note banner for supplementary detail that is easy to skim past.</span>
+      </div>
+      <div id="demo-info-banner" class="banner banner-info hidden" role="status" hidden>
+        <span class="banner-icon" data-icon="info" data-icon-class="banner-icon-svg"></span>
+        <span class="banner-body">This is an info banner for neutral guidance or context.</span>
+      </div>
+      <div id="demo-success-banner" class="banner banner-success hidden" role="status" hidden>
+        <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg"></span>
+        <span class="banner-body">This is a success banner for completed actions or positive outcomes.</span>
+      </div>
+      <div id="demo-important-banner" class="banner banner-important hidden" role="status" hidden>
+        <span class="banner-icon" data-icon="important" data-icon-class="banner-icon-svg"></span>
+        <span class="banner-body">This is an important banner for high-priority messages.</span>
+      </div>
+      <div id="demo-warning-banner" class="banner banner-warning hidden" role="status" hidden>
+        <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg"></span>
+        <span class="banner-body">This is a warning banner for non-blocking notices.</span>
+      </div>
+      <div id="demo-error-banner" class="banner banner-error hidden" role="alert" hidden>
+        <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg"></span>
+        <span class="banner-body">This is an error banner for something that needs attention.</span>
+      </div>
+    </section>
+
+    <section class="demo-section" aria-labelledby="demo-tabs-title">
+      <h2 id="demo-tabs-title" class="section-heading">Tabbed section</h2>
+      <div class="tabs" id="demo-tabs">
+        <div class="tabs-list" role="tablist" aria-label="Example sections">
+          <button type="button" class="tabs-tab" role="tab" id="demo-tab-overview" aria-selected="true"
+            aria-controls="demo-tab-panel-overview">
+            Overview
+          </button>
+          <button type="button" class="tabs-tab" role="tab" id="demo-tab-details" aria-selected="false"
+            aria-controls="demo-tab-panel-details" tabindex="-1">
+            Details
+          </button>
+          <button type="button" class="tabs-tab" role="tab" id="demo-tab-notes" aria-selected="false"
+            aria-controls="demo-tab-panel-notes" tabindex="-1">
+            Notes
+          </button>
+        </div>
+        <div id="demo-tab-panel-overview" class="tabs-panel" role="tabpanel" aria-labelledby="demo-tab-overview">
+          <div class="tabs-body">
+            <p>Overview content for the active tab. Use tabs to split related content without leaving the page.</p>
+          </div>
+        </div>
+        <div id="demo-tab-panel-details" class="tabs-panel hidden" role="tabpanel" aria-labelledby="demo-tab-details"
+          hidden>
+          <div class="tabs-body">
+            <p>Details go here - settings, parameters, or a deeper breakdown.</p>
+          </div>
+        </div>
+        <div id="demo-tab-panel-notes" class="tabs-panel hidden" role="tabpanel" aria-labelledby="demo-tab-notes"
+          hidden>
+          <div class="tabs-body">
+            <p>Notes and supplementary text. Arrow keys move between tabs when the tab list is focused.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section" aria-labelledby="demo-expand-title">
+      <h2 id="demo-expand-title" class="section-heading">Expand</h2>
+      <div class="expand" id="demo-expand">
+        <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="demo-expand-panel">
+          <span class="expand-notch" aria-hidden="true"></span>
+          <span class="expand-label">Reveal more content</span>
+        </button>
+        <div id="demo-expand-panel" class="expand-panel hidden" hidden>
+          <div class="expand-body">
+            <p>
+              Extra settings or detail live here. The notch stays on the trigger row;
+              the panel opens separately below.
+            </p>
+            <p>
+              Wire up with <code>initExpand()</code> from
+              <code>app/expand.js</code>, or call <code>initExpands()</code> for
+              every <code>.expand</code> block on the page.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section" aria-labelledby="demo-theme">
+      <h2 id="demo-theme" class="section-heading">Theme</h2>
+      <p>
+        Use the light / dark / system toggle in the footer. Preference is saved in
+        <code>localStorage</code> and applied before first paint to avoid flash.
+      </p>
+      <p class="demo-hint">
+        Scroll down to reveal the jump-up button (bottom right). Its border fills as
+        you move through the page; click to return to the top.
+      </p>
+    </section>
+  </main>
+
+  <div id="info-dialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="info-dialog-title" hidden>
+    <div class="modal-backdrop" data-dialog-close></div>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2 id="info-dialog-title">About this dialog</h2>
+        <button type="button" class="modal-close" aria-label="Close" data-dialog-close>
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Dialogs use focus trap, Escape to close, and backdrop click. Markup lives
+          in HTML; behaviour comes from <code>app/dialog.js</code>.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <div class="modal-footer-actions">
+          <button type="button" class="btn btn-primary" data-dialog-close>
+            Got it
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirm-dialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title"
+    hidden>
+    <div class="modal-backdrop" data-dialog-close></div>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2 id="confirm-dialog-title">Confirm action</h2>
+        <button type="button" class="modal-close" aria-label="Close" data-dialog-close>
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure? This demo does not change anything — it only closes the dialog.</p>
+      </div>
+      <div class="modal-footer">
+        <div class="modal-footer-actions">
+          <button type="button" class="btn" data-dialog-close>Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirm-dialog-ok">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app/demo.js"></script>
+</body>
+
+</html>
