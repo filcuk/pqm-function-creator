@@ -85,7 +85,7 @@ Respect `prefers-reduced-motion: reduce` — transitions live in components; glo
 
 ## Keep GitHub Pages deployable
 
-- Entry HTML files live at the repo root (`index.html`, optional pages like `demo.html`)
+- Entry HTML files live at the repo root (`index.html`, optional additional pages)
 - Shared assets live under `app/`
 - Avoid features that require a backend or server-only APIs
 - ES modules need a local server for development (`npx serve .`) — document if adding fetch-based features
@@ -109,7 +109,6 @@ Match the established look (based on [pqm-stepper](https://github.com/filcuk/pqm
 
 ## When extending this template
 
-1. Read `README.md` for available components
-2. Check `demo.html` for usage examples
-3. Keep changes focused — one concern per file when possible
-4. Update `README.md` if you add a new reusable component or workflow step
+1. Read `README.md` for project context
+2. Keep changes focused — one concern per file when possible
+3. Update `README.md` if you add a new reusable component or workflow step
