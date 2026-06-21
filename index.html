@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PQM Function Creator</title>
+    <title>Power Query M Function Creator</title>
     <link rel="icon" href="app/res/icon.svg" type="image/svg+xml" />
     <script src="app/theme-init.js"></script>
     <link rel="stylesheet" href="app/styles.css" />
@@ -12,17 +12,220 @@
     <header>
       <div class="site-brand">
         <img class="site-logo" src="app/res/icon.svg" alt="" width="40" height="40" />
-        <h1>PQM Function Creator</h1>
+        <h1>Power Query M Function Creator</h1>
       </div>
-      <p class="tagline">Create and manage PQM functions.</p>
+      <p class="tagline">Wrap a <code>let … in</code> block in a typed, documented M function.</p>
     </header>
 
-    <main>
-      <section class="content-section">
-        <p>App content goes here.</p>
+    <main id="function-creator">
+      <div id="validation-banner" class="banner banner-warning hidden" role="alert" hidden>
+        <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+        <span class="banner-body"></span>
+      </div>
+
+      <section class="creator-section" aria-labelledby="import-heading">
+        <div class="expand" id="import-section">
+          <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="import-panel">
+            <span class="expand-notch" aria-hidden="true"></span>
+            <span class="expand-label" id="import-heading">Import function</span>
+          </button>
+          <div id="import-panel" class="expand-panel hidden" hidden>
+            <p class="field-hint">
+              Insert an existing function.
+            </p>
+            <label class="field" for="import-input">
+              <span class="field-label">Function M code</span>
+              <textarea
+                id="import-input"
+                class="textarea code-input"
+                rows="10"
+                spellcheck="false"
+                placeholder="let&#10;    MyFuncImpl = (…) as … =>&#10;    let … in …,&#10;    MyFuncImplType = type function (…) as … meta [ … ],&#10;    MyFunc = Value.ReplaceType(MyFuncImpl, MyFuncImplType)&#10;in&#10;    MyFunc"
+              ></textarea>
+            </label>
+            <div class="toolbar toolbar-with-status">
+              <button type="button" id="import-function" class="btn btn-primary">Import</button>
+              <button type="button" id="clear-import" class="btn">Clear</button>
+              <div class="toolbar-status">
+                <div id="import-error-banner" class="banner banner-inline banner-error hidden" role="alert" hidden>
+                  <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+                  <span class="banner-body"></span>
+                </div>
+                <div id="import-success-banner" class="banner banner-inline banner-success hidden" role="status" hidden>
+                  <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+                  <span class="banner-body">Function imported.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="creator-section" aria-labelledby="expression-heading">
+        <h2 id="expression-heading" class="section-heading">Expression</h2>
+        <p class="field-hint">Insert the full <code>let … in</code> block that becomes the function body.</p>
+        <div id="expression-warning-banner" class="banner banner-note hidden" role="note" hidden>
+          <span class="banner-icon" data-icon="note" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+          <span class="banner-body"></span>
+        </div>
+        <label class="field field-span-all" for="expression-input">
+          <span class="field-label">let … in block</span>
+          <textarea
+            id="expression-input"
+            class="textarea code-input"
+            rows="12"
+            spellcheck="false"
+            placeholder="let&#10;    Source = …&#10;in&#10;    Source"
+          ></textarea>
+        </label>
+      </section>
+
+      <section class="creator-section" aria-labelledby="function-heading">
+        <h2 id="function-heading" class="section-heading">Function</h2>
+        <div class="field-grid function-field-grid">
+          <label class="field function-field-name" for="function-name">
+            <span class="field-label">Function name</span>
+            <input type="text" id="function-name" class="input" value="MyFunc" autocomplete="off" />
+          </label>
+          <div class="field function-field-style">
+            <span class="field-label">Output style</span>
+            <div id="output-style-toggle" class="output-style-toggle" role="group" aria-label="Output style">
+              <button type="button" class="btn is-active" data-output-style="let" data-tooltip="Nested let … in expression" data-tooltip-position="bottom" aria-pressed="true">let … in</button>
+              <button type="button" class="btn" data-output-style="shared" data-tooltip="Top-level shared query" data-tooltip-position="bottom" aria-pressed="false">shared</button>
+            </div>
+          </div>
+          <label class="field function-field-return" for="return-type">
+            <span class="field-label">Return type</span>
+            <select id="return-type" class="input">
+              <option value="any">any</option>
+              <option value="text">text</option>
+              <option value="number">number</option>
+              <option value="logical">logical</option>
+              <option value="date">date</option>
+              <option value="datetime">datetime</option>
+              <option value="datetimezone">datetimezone</option>
+              <option value="time">time</option>
+              <option value="duration">duration</option>
+              <option value="binary">binary</option>
+              <option value="list">list</option>
+              <option value="record">record</option>
+              <option value="table" selected>table</option>
+              <option value="function">function</option>
+              <option value="type">type</option>
+              <option value="null">null</option>
+              <option value="none">none</option>
+              <option value="custom">custom…</option>
+            </select>
+          </label>
+          <label class="field function-field-custom hidden" id="return-type-custom-field" for="return-type-custom" hidden>
+            <span class="field-label">Custom return type</span>
+            <input type="text" id="return-type-custom" class="input" placeholder="e.g. nullable text" autocomplete="off" />
+          </label>
+        </div>
+      </section>
+
+      <section class="creator-section" aria-labelledby="documentation-heading">
+        <h2 id="documentation-heading" class="section-heading">Documentation</h2>
+        <div class="field-grid documentation-field-grid">
+          <label class="field documentation-field-name" for="doc-name">
+            <span
+              class="field-label"
+              data-tooltip="Documentation.Name — title shown in the function invocation dialog."
+              data-tooltip-position="top"
+              >Name</span
+            >
+            <input type="text" id="doc-name" class="input" autocomplete="off" />
+          </label>
+          <label class="field documentation-field-description" for="doc-long-description">
+            <span
+              class="field-label"
+              data-tooltip="Documentation.LongDescription — full description in function info."
+              data-tooltip-position="top"
+              >Long description</span
+            >
+            <textarea id="doc-long-description" class="textarea" rows="3"></textarea>
+          </label>
+        </div>
+
+        <div class="function-examples">
+          <div class="toolbar examples-toolbar">
+            <h3 class="section-heading">Examples</h3>
+            <div class="parameters-toolbar-actions">
+              <button type="button" id="toggle-all-examples" class="btn" disabled>Expand all</button>
+              <button type="button" id="add-example" class="btn btn-with-icon">
+                <span data-icon="add" aria-hidden="true"></span>
+                Add example
+              </button>
+            </div>
+          </div>
+          <div id="examples-list" class="param-list"></div>
+        </div>
+      </section>
+
+      <section class="creator-section" aria-labelledby="parameters-heading">
+        <div class="toolbar parameters-toolbar">
+          <h2 id="parameters-heading" class="section-heading">Parameters</h2>
+          <div class="parameters-toolbar-actions">
+            <button type="button" id="toggle-all-parameters" class="btn" disabled>Expand all</button>
+            <button type="button" id="add-parameter" class="btn btn-with-icon">
+              <span data-icon="add" aria-hidden="true"></span>
+              Add parameter
+            </button>
+          </div>
+        </div>
+        <div id="parameters-list" class="param-list"></div>
+      </section>
+
+      <section class="creator-section" aria-labelledby="output-heading">
+        <h2 id="output-heading" class="section-heading">M Function</h2>
+        <div
+          id="output-preview"
+          class="code-editor code-editor-readonly code-output-block"
+          aria-label="Generated M code"
+          style="--code-rows: 16"
+        >
+          <pre class="code-editor-highlight language-powerquery"><code></code></pre>
+        </div>
+        <div class="toolbar output-actions toolbar-with-status">
+          <div class="toolbar-status">
+            <div id="copy-success-banner" class="banner banner-inline banner-success hidden" role="status" hidden>
+              <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+              <span class="banner-body">Copied to clipboard.</span>
+            </div>
+          </div>
+          <button type="button" id="copy-output" class="btn btn-primary btn-with-icon">
+            <span data-icon="copy" aria-hidden="true"></span>
+            Copy
+          </button>
+        </div>
       </section>
     </main>
 
+    <div id="import-confirm-dialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="import-confirm-dialog-title" hidden>
+      <div class="modal-backdrop" data-dialog-close></div>
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h2 id="import-confirm-dialog-title">Replace current form?</h2>
+          <button type="button" class="modal-close" aria-label="Close" data-dialog-close>
+            ×
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Importing will replace the function name, expression, parameters, documentation, and examples currently in the form. This cannot be undone except by importing again or reloading a saved draft.</p>
+        </div>
+        <div class="modal-footer">
+          <div class="modal-footer-actions">
+            <button type="button" class="btn" data-dialog-close>Cancel</button>
+            <button type="button" class="btn btn-primary" id="import-confirm-dialog-ok">
+              Import
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="app/vendor/prism/prism.min.js"></script>
+    <script src="app/vendor/prism/prism-powerquery.min.js"></script>
     <script type="module" src="app/main.js"></script>
   </body>
 </html>

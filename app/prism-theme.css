@@ -1,0 +1,252 @@
+/* Prism token colours aligned with app design tokens */
+
+:root {
+  --prism-comment: var(--muted);
+  --prism-string: #0a3069;
+  --prism-keyword: #cf222e;
+  --prism-function: #8250df;
+  --prism-number: #0550ae;
+  --prism-operator: #656d76;
+  --prism-punctuation: var(--muted);
+  --prism-class: #953800;
+  --prism-builtin: #0550ae;
+  --prism-property: #116329;
+  --code-selection-bg: color-mix(in srgb, var(--accent) 40%, var(--code-bg));
+  --code-selection-fg: var(--text);
+}
+
+:root[data-theme="dark"] {
+  --prism-string: #a5d6ff;
+  --prism-keyword: #ff7b72;
+  --prism-function: #d2a8ff;
+  --prism-number: #79c0ff;
+  --prism-operator: #8b949e;
+  --prism-class: #ffa657;
+  --prism-builtin: #79c0ff;
+  --prism-property: #7ee787;
+  --code-selection-bg: color-mix(in srgb, var(--accent) 50%, var(--code-bg));
+  --code-selection-fg: var(--text);
+}
+
+.code-editor-highlight,
+.code-editor-highlight code {
+  color: var(--text);
+  text-shadow: none;
+}
+
+/* Default Prism theme adds background on .token.operator (matches lone "=" in M) */
+.code-editor-highlight .token {
+  background: transparent;
+  text-shadow: none;
+}
+
+.code-editor-highlight .token.comment,
+.code-editor-highlight .token.prolog,
+.code-editor-highlight .token.doctype,
+.code-editor-highlight .token.cdata {
+  color: var(--prism-comment);
+}
+
+.code-editor-highlight .token.string,
+.code-editor-highlight .token.attr-value,
+.code-editor-highlight .token.char,
+.code-editor-highlight .token.inserted {
+  color: var(--prism-string);
+}
+
+.code-editor-highlight .token.keyword,
+.code-editor-highlight .token.atrule,
+.code-editor-highlight .token.tag {
+  color: var(--prism-keyword);
+}
+
+.code-editor-highlight .token.function,
+.code-editor-highlight .token.method {
+  color: var(--prism-function);
+}
+
+.code-editor-highlight .token.number,
+.code-editor-highlight .token.boolean,
+.code-editor-highlight .token.constant {
+  color: var(--prism-number);
+}
+
+.code-editor-highlight .token.operator,
+.code-editor-highlight .token.entity,
+.code-editor-highlight .token.url {
+  color: var(--prism-operator);
+  background: transparent;
+}
+
+.code-editor-highlight .token.punctuation {
+  color: var(--prism-punctuation);
+}
+
+.code-editor-highlight .token.class-name,
+.code-editor-highlight .token.type {
+  color: var(--prism-class);
+}
+
+.code-editor-highlight .token.builtin,
+.code-editor-highlight .token.symbol {
+  color: var(--prism-builtin);
+}
+
+.code-editor-highlight .token.property,
+.code-editor-highlight .token.variable {
+  color: var(--prism-property);
+}
+
+/* Override default Prism theme backgrounds — use app tokens */
+code[class*="language-"],
+pre[class*="language-"] {
+  background: transparent;
+  text-shadow: none;
+}
+
+.code-editor {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--code-bg);
+  overflow: hidden;
+  min-height: calc(var(--code-rows, 8) * 1.5 * 0.875rem + 1.25rem);
+}
+
+.code-editor-gutter {
+  flex-shrink: 0;
+  overflow: hidden;
+  padding: 0.625rem 0.5rem 0.625rem 0.75rem;
+  border-right: 1px solid var(--border);
+  background: color-mix(in srgb, var(--code-bg) 88%, var(--border));
+  user-select: none;
+  text-align: right;
+  min-width: 2.75rem;
+}
+
+.code-editor-ln {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--muted);
+  padding-right: 0.25rem;
+}
+
+.code-editor-body {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: inherit;
+}
+
+/* Editable inputs — single plain textarea, no highlight overlay */
+.code-editor-editable .code-editor-body {
+  display: flex;
+}
+
+.code-editor-editable .code-editor-input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  tab-size: 4;
+  white-space: pre;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  width: 100%;
+  min-height: inherit;
+  resize: vertical;
+  overflow: auto;
+  box-shadow: none;
+}
+
+.code-editor-editable .code-editor-input:focus {
+  outline: none;
+}
+
+.code-editor-editable .code-editor-input::selection {
+  background: var(--code-selection-bg);
+  color: var(--code-selection-fg);
+}
+
+.code-editor-editable .code-editor-input::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+
+/* Readonly highlighted output */
+.code-editor-readonly .code-editor-body {
+  max-height: 40rem;
+  overflow: auto;
+}
+
+.code-editor-readonly .code-editor-highlight {
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  tab-size: 4;
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+  overflow: visible;
+  max-height: none;
+  pointer-events: auto;
+  user-select: text;
+  cursor: text;
+}
+
+.code-editor-highlight code {
+  display: block;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  tab-size: inherit;
+}
+
+.code-editor:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  border-color: var(--accent);
+}
+
+.code-editor-readonly .code-editor-highlight::-moz-selection,
+.code-editor-readonly .code-editor-highlight ::-moz-selection,
+.code-editor-readonly .code-editor-highlight code::-moz-selection,
+.code-editor-readonly .code-editor-highlight code ::-moz-selection,
+.code-editor-readonly .code-editor-highlight .token::-moz-selection,
+.code-editor-readonly .code-editor-highlight::selection,
+.code-editor-readonly .code-editor-highlight ::selection,
+.code-editor-readonly .code-editor-highlight code::selection,
+.code-editor-readonly .code-editor-highlight code ::selection,
+.code-editor-readonly .code-editor-highlight .token::selection {
+  background: var(--code-selection-bg);
+  color: var(--code-selection-fg) !important;
+  -webkit-text-fill-color: var(--code-selection-fg);
+  text-shadow: none;
+}
+
+.code-editor-readonly {
+  min-height: 14rem;
+  max-height: 40rem;
+}
+
+.code-editor-readonly .code-editor-gutter {
+  overflow: hidden;
+  max-height: 40rem;
+}
+
+.code-output-block {
+  min-height: 14rem;
+}

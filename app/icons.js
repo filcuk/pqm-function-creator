@@ -20,7 +20,7 @@
  * To reuse an existing icon under another id, set `ref` to the target key:
  *   lines: { ref: "note" },
  *
- * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, chevron-up
+ * Available: light-mode, dark-mode, auto-mode, lines, info, success, note, warning, error, important, chevron-up, add, remove, copy
  */
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -97,6 +97,24 @@ export const ICONS = {
     markup: `<path fill="currentColor" d="M8.12 14.71L12 10.83l3.88 3.88a.996.996 0 1 0 1.41-1.41L12.7 8.71a.996.996 0 0 0-1.41 0L6.7 13.3a.996.996 0 0 0 0 1.41c.39.38 1.03.39 1.42 0"/>`,
     attribution: ICON_ATTRIBUTIONS.materialIcons,
     name: "round-keyboard-arrow-up",
+  },
+  add: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m4 11h-3v3c0 .55-.45 1-1 1s-1-.45-1-1v-3H8c-.55 0-1-.45-1-1s.45-1 1-1h3V8c0-.55.45-1 1-1s1 .45 1 1v3h3c.55 0 1 .45 1 1s-.45 1-1 1"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-add-circle",
+  },
+  remove: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m4 11H8c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-remove-circle",
+  },
+  copy: {
+    viewBox: "0 0 24 24",
+    markup: `<path fill="currentColor" d="M15 20H5V7c0-.55-.45-1-1-1s-1 .45-1 1v13c0 1.1.9 2 2 2h10c.55 0 1-.45 1-1s-.45-1-1-1m5-4V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h9c1.1 0 2-.9 2-2m-2 0H9V4h9z"/>`,
+    attribution: ICON_ATTRIBUTIONS.materialIcons,
+    name: "round-content-copy",
   },
 };
 

@@ -1,0 +1,14 @@
+---
+description: Never invent icon SVG paths — use app/icons.js placeholders only
+alwaysApply: true
+---
+
+# Icons
+
+- **Never** fabricate, guess, or copy SVG path data into `ICONS` in `app/icons.js`.
+- If a new icon is needed:
+  1. Add a placeholder entry with `viewBox` and empty `markup`.
+  2. Tell the user to paste the path from [Icônes — Material Icons Round](https://icones.js.org/collection/ic?s=info&variant=Round).
+  3. Use visible text labels on buttons until the SVG is supplied.
+- Reuse existing icon ids (`info`, `chevron-up`, `warning`, etc.) when they are sufficient.
+- Do not duplicate SVG paths in HTML — use `data-icon` and `initIcons()`.

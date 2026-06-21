@@ -1,0 +1,495 @@
+/* Function creator layout */
+
+.creator-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.creator-section > .section-heading {
+  margin-bottom: 0.25rem;
+}
+
+/* Code fields span the full section width (override .field max-width) */
+#function-creator .field:has(.code-input),
+#function-creator .field:has(.code-editor) {
+  max-width: none;
+  width: 100%;
+}
+
+/* .expand defaults to max-width: 32rem in components.css */
+#function-creator .expand {
+  max-width: none;
+  width: 100%;
+}
+
+#function-creator .expand-panel {
+  width: 100%;
+}
+
+#import-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+
+.code-input {
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  tab-size: 4;
+}
+
+#function-creator .param-card .field {
+  max-width: none;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.75rem 1rem;
+}
+
+.field-grid .field-span-all {
+  grid-column: 1 / -1;
+}
+
+.function-field-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.function-field-grid .field {
+  max-width: none;
+}
+
+.function-field-name {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.function-field-style {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.function-field-return {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.function-field-custom {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.documentation-field-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.documentation-field-grid .field {
+  max-width: none;
+}
+
+.documentation-field-name {
+  grid-column: 1;
+}
+
+.documentation-field-description {
+  grid-column: 1 / 3;
+}
+
+.function-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.example-field-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
+}
+
+.param-card-body.example-field-grid {
+  display: grid;
+}
+
+.example-field-grid .field {
+  max-width: none;
+}
+
+.example-field-description {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.example-field-code {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.example-field-result {
+  grid-column: 1 / -1;
+  grid-row: 3;
+}
+
+.field-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.field-label-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.5rem;
+}
+
+.field-label-line .field-hint {
+  font-weight: 400;
+}
+
+.field-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.field-check input {
+  margin: 0;
+}
+
+.param-toggle.is-active {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+:root[data-theme="dark"] .param-toggle.is-active {
+  color: #0d1117;
+}
+
+.param-field-optional,
+.param-field-nullable,
+.meta-field-multiline,
+.meta-field-code {
+  display: flex;
+  align-items: center;
+}
+
+.output-style-toggle {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.output-style-toggle .btn {
+  border: none;
+  border-radius: 0;
+  border-right: 1px solid var(--border);
+}
+
+.output-style-toggle .btn:last-child {
+  border-right: none;
+}
+
+.output-style-toggle .btn.is-active {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.output-actions {
+  width: 100%;
+}
+
+.output-actions #copy-output {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.toolbar-with-status {
+  align-items: center;
+  width: 100%;
+  /* Match .btn block size: vertical padding + line box + borders */
+  min-height: calc(1.5rem + 1rem + 2px);
+}
+
+.toolbar-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 0 0 auto;
+}
+
+.toolbar-status:has(.banner-inline:not(.hidden)) {
+  flex: 1 1 0;
+}
+
+.banner-inline {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+.banner-inline .banner-icon {
+  margin-top: 0;
+}
+
+.banner-inline .banner-icon-svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.banner-inline .banner-body {
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.parameters-toolbar {
+  justify-content: space-between;
+}
+
+.examples-toolbar {
+  justify-content: space-between;
+}
+
+.parameters-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.param-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.param-card {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  width: 100%;
+}
+
+.param-card-top {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+}
+
+.param-card.is-open > .param-card-top {
+  padding-bottom: 0;
+}
+
+.param-card-top .expand-trigger {
+  flex: 1;
+  padding: 0.35rem 0;
+  min-width: 0;
+}
+
+.param-card-top .remove-parameter,
+.param-card-top .remove-example,
+.param-card-top .remove-record-field {
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.param-card-title {
+  font-weight: 600;
+}
+
+.param-card .expand-panel {
+  padding-top: 0.25rem;
+}
+
+.param-card-body {
+  padding: 0 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.param-field-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.param-field-grid .field,
+.param-field-grid .param-field-toggles {
+  max-width: none;
+}
+
+.param-field-name {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.param-field-kind {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.param-field-type {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.param-field-caption {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.param-field-description {
+  grid-column: 2 / 4;
+  grid-row: 2;
+}
+
+.param-field-toggles {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.param-scalar-toggles {
+  display: contents;
+}
+
+.param-meta-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.param-meta-grid .field {
+  max-width: none;
+}
+
+.record-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.record-fields > .toolbar,
+.record-fields-toolbar {
+  justify-content: space-between;
+}
+
+.record-fields-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.record-field-card {
+  width: 100%;
+}
+
+.record-field-body {
+  padding: 0 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.record-field-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.record-field-grid .field,
+.record-field-grid .record-field-toggles {
+  max-width: none;
+}
+
+.record-field-name {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.record-field-type {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.record-field-caption {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.record-field-description {
+  grid-column: 2 / 4;
+  grid-row: 2;
+}
+
+.record-field-toggles {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.record-meta-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.record-meta-grid .field {
+  max-width: none;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem;
+}
+
+.meta-grid .field-span-all {
+  grid-column: 1 / -1;
+}
+
+.btn-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-with-icon [data-icon] {
+  width: 1rem;
+  height: 1rem;
+  display: inline-flex;
+}
+
+#validation-banner,
+#expression-warning-banner {
+  margin-bottom: 0;
+}

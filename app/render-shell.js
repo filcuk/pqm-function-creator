@@ -1,5 +1,5 @@
 const DEFAULTS = {
-  repoUrl: "https://github.com/filcuk/microapp-template",
+  repoUrl: "https://github.com/filcuk/pqm-function-creator",
   brandUrl: "https://github.com/filcuk",
   brandName: "Filcuk",
 };
