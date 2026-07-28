@@ -30,6 +30,7 @@ function isTierHeading(heading) {
  * @typedef {Object} PageNavOptions
  * @property {string} [headingSelector="main h2[id]"] CSS selector for section headings (must have `id`)
  * @property {ParentNode} [headingRoot=document] Root to scan for headings
+ * @property {boolean} [showHeadingList=true] Hover/focus heading menu; `false` keeps up/down jumps only
  */
 
 /**
@@ -54,6 +55,7 @@ export function initPageNav(
   {
     headingSelector = "main h2[id]",
     headingRoot = document,
+    showHeadingList = true,
   } = {}
 ) {
   if (!navEl) return null;
@@ -65,6 +67,8 @@ export function initPageNav(
   const panelEl = navEl.querySelector(".page-nav-panel");
   const upBtn = navEl.querySelector('[data-page-nav="up"]');
   const downBtn = navEl.querySelector('[data-page-nav="down"]');
+
+  navEl.classList.toggle("page-nav--jumps-only", !showHeadingList);
 
   let ticking = false;
   /** @type {HTMLElement[]} */
@@ -103,6 +107,13 @@ export function initPageNav(
     if (!listEl) return [];
 
     listEl.replaceChildren();
+    headings = [];
+
+    if (!showHeadingList) {
+      if (panelEl) panelEl.hidden = true;
+      return headings;
+    }
+
     headings = collectHeadings(headingRoot, headingSelector);
     /** @type {HTMLUListElement | null} */
     let sublist = null;

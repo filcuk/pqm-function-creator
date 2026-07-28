@@ -437,6 +437,28 @@ main {
   pointer-events: auto;
 }
 
+/* Jumps only — no full-height hover strip / heading menu */
+.page-nav--jumps-only {
+  width: auto;
+  top: auto;
+  left: auto;
+}
+
+.page-nav--jumps-only .page-nav-trigger {
+  position: static;
+  inset: auto;
+  padding: 1.5rem;
+  pointer-events: none;
+}
+
+.page-nav--jumps-only .page-nav-stack {
+  pointer-events: auto;
+}
+
+.page-nav--jumps-only .page-nav-panel {
+  display: none;
+}
+
 .page-nav-stack {
   position: relative;
   display: flex;

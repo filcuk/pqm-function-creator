@@ -133,7 +133,7 @@ Configured in `app/config.js` (`alsoSeeUrl`, `alsoSeeTopics`, `alsoSee`, `appUrl
 - Toggle buttons: `aria-pressed` on `.param-toggle`
 - Tooltips: `aria-describedby` via `initTooltips()`
 - Collapsible cards: expand component with `aria-expanded` on triggers
-- Skip link → `#main`; page-nav for `main h2[id]`
+- Skip link → `#main`; page-nav up/down jumps (`showHeadingList: false` in `main.js`)
 
 ## Manual smoke-test checklist
 
@@ -147,7 +147,7 @@ Run with `npx serve .` and verify:
 6. **Import** — invalid paste shows error banner; valid paste opens confirm dialog; cancel leaves form; confirm replaces state and shows success banner.
 7. **Draft** — edit fields, reload page, draft restores; corrupt localStorage does not break the app.
 8. **Theme** — light/dark/auto via footer toggle without flash on reload.
-9. **Shell** — page-nav jumps to Expression/Function/… sections; footer shows app version; **also see** loads Power BI peers (this app absent).
+9. **Shell** — page-nav up/down jumps (heading hover menu off); footer shows app version; **also see** loads Power BI peers (this app absent).
 10. **About** — tagline **What?** opens dialog; **Got it** / Escape / backdrop close; **Huh?** reveals simpler help, then redirects on third click.
 
 ## When extending this app
