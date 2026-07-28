@@ -71,6 +71,11 @@ img.brand-icon--dark {
   color: var(--accent);
 }
 
+.tagline-link {
+  margin-left: 0.35rem;
+  font-size: inherit;
+}
+
 /* Optional sticky chrome — opt in via data-sticky-* on :root */
 
 :root[data-sticky-header] body > header {

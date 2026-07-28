@@ -33,7 +33,10 @@
         />
         <h1>Power Query M Function Creator</h1>
       </div>
-      <p class="tagline">Wrap a <code>let … in</code> block in a typed, documented M function.</p>
+      <p class="tagline">
+        <em>Let</em>'s get formal! Turn a <code>let … in</code> block into a typed, documented function easily.
+        <button type="button" id="about-open-btn" class="btn-link tagline-link">What?</button>
+      </p>
     </header>
 
     <main id="main">
@@ -54,7 +57,7 @@
         </button>
         <div id="import-panel" class="expand-panel hidden" hidden>
           <p class="field-hint">
-            Insert an existing function.
+            Import an existing function to modify.
           </p>
           <label class="field" for="import-input">
             <span class="field-label">Function M code</span>
@@ -152,7 +155,7 @@
           <label class="field documentation-field-name" for="doc-name">
             <span
               class="field-label"
-              data-tooltip="Documentation.Name — title shown in the function invocation dialog."
+              data-tooltip="Documentation.Name - title shown in the function invocation dialog."
               data-tooltip-position="top"
               >Name</span
             >
@@ -161,7 +164,7 @@
           <label class="field documentation-field-description" for="doc-long-description">
             <span
               class="field-label"
-              data-tooltip="Documentation.LongDescription — full description in function info."
+              data-tooltip="Documentation.LongDescription - full description shown in function info."
               data-tooltip-position="top"
               >Long description</span
             >
@@ -241,6 +244,46 @@
             <button type="button" class="btn" data-dialog-close>Cancel</button>
             <button type="button" class="btn btn-primary" id="import-confirm-dialog-ok">
               Import
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="about-dialog"
+      class="modal hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="about-dialog-title"
+      hidden
+    >
+      <div class="modal-backdrop" data-dialog-close></div>
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h2 id="about-dialog-title">What does this do?</h2>
+          <button type="button" class="modal-close" aria-label="Close" data-dialog-close>
+            ×
+          </button>
+        </div>
+        <div class="modal-body" id="about-dialog-body">
+          <p>
+            A <code>let … in</code> query is fine for a one-off transformation. A documented M
+            function is better when you need to <b>reuse the same logic</b> with different <b>inputs</b>: callers
+            get named parameters, type checks, and descriptions in Power Query invoke dialog.
+          </p>
+          <p>
+            Building that wrapper by hand is <em>hard</em>.
+            This tool does the scaffolding for you: fill in the form (or import an existing function),
+            then copy the generated M into Excel or Power BI.
+          </p>
+          <div id="about-extra-content" class="about-extra-content hidden" hidden></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="about-confused-btn" class="btn">Huh?</button>
+          <div class="modal-footer-actions">
+            <button type="button" id="about-close-btn" class="btn btn-primary" data-dialog-close>
+              Got it
             </button>
           </div>
         </div>

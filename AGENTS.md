@@ -22,6 +22,7 @@ Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functio
 | M generate/parse/format | `app/m/generate.js`, `parse.js`, `format.js`, `scan.js`, `types.js`, `escape.js` |
 | Code highlighting | `app/code-editor.js` + Prism vendor |
 | App-specific layout | `app/function-creator.css` (imported from `app/styles.css`) |
+| About / What? dialog | `app/about-dialog.js` — `#about-dialog` + tagline `#about-open-btn` in `index.html` |
 | Confirm dialog | `app/components/dialog.js` — `#import-confirm-dialog` in `index.html` |
 
 Unused template demo modules (tabular-input, rich-text, Toast UI, combo/tabs demos, etc.) are **not** vendored. Keep `menu.js` for the footer also-see dropdown.
@@ -147,6 +148,7 @@ Run with `npx serve .` and verify:
 7. **Draft** — edit fields, reload page, draft restores; corrupt localStorage does not break the app.
 8. **Theme** — light/dark/auto via footer toggle without flash on reload.
 9. **Shell** — page-nav jumps to Expression/Function/… sections; footer shows app version; **also see** loads Power BI peers (this app absent).
+10. **About** — tagline **What?** opens dialog; **Got it** / Escape / backdrop close; **Huh?** reveals simpler help, then redirects on third click.
 
 ## When extending this app
 

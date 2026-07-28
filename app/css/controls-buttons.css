@@ -96,6 +96,8 @@
 }
 
 .btn-link {
+  display: inline;
+  min-height: 0;
   font: inherit;
   font-size: inherit;
   padding: 0;
