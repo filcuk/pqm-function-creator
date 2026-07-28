@@ -213,6 +213,11 @@
 .output-style-toggle .btn.is-active {
   background: var(--accent);
   color: #ffffff;
+  border-color: var(--accent);
+}
+
+:root[data-theme="dark"] .output-style-toggle .btn.is-active {
+  color: #0d1117;
 }
 
 .output-actions {
@@ -305,10 +310,6 @@
   align-items: stretch;
   gap: 0.5rem;
   padding: 0.5rem 0.5rem 0.5rem 1rem;
-}
-
-.param-card.is-open > .param-card-top {
-  padding-bottom: 0;
 }
 
 .param-card-top .expand-trigger {

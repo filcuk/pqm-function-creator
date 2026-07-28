@@ -1,6 +1,7 @@
 import { setHidden } from "./utils/dom.js";
 import { initDialog } from "./components/dialog.js";
 import { initExpand } from "./components/expand.js";
+import { showBanner, hideBanner } from "./components/banner.js";
 import { mountIcon } from "./utils/icons.js";
 import { initTooltips } from "./components/tooltip.js";
 import {
@@ -28,6 +29,8 @@ import {
 } from "./m/types.js";
 
 const REGEN_DELAY_MS = 200;
+const COPY_SUCCESS_EXPIRE_MS = 2500;
+const IMPORT_SUCCESS_EXPIRE_MS = 4000;
 
 /** @type {ReturnType<typeof createDefaultState> & { parameters: ReturnType<typeof createDefaultParameter>[] }} */
 let state = createDefaultState();
@@ -469,16 +472,15 @@ function applyImportedState(importedState) {
   applyStateToDom();
   saveDraft(state);
 
-  setHidden(importSuccessBanner, false);
-  setTimeout(() => setHidden(importSuccessBanner, true), 4000);
+  showBanner(importSuccessBanner, { expire: IMPORT_SUCCESS_EXPIRE_MS });
 }
 
 function requestImportFromPaste() {
   const source = importInput?.value || "";
   const result = tryParseFunction(source);
 
-  setHidden(importErrorBanner, true);
-  setHidden(importSuccessBanner, true);
+  hideBanner(importErrorBanner);
+  hideBanner(importSuccessBanner);
 
   if (!result.ok) {
     setBannerMessage(importErrorBanner, result.error);
@@ -685,8 +687,7 @@ function bindStaticEvents() {
 
     try {
       await navigator.clipboard.writeText(text);
-      setHidden(copySuccessBanner, false);
-      setTimeout(() => setHidden(copySuccessBanner, true), 2500);
+      showBanner(copySuccessBanner, { expire: COPY_SUCCESS_EXPIRE_MS });
     } catch {
       if (outputPreview) {
         const range = document.createRange();
@@ -696,8 +697,7 @@ function bindStaticEvents() {
         selection?.addRange(range);
         document.execCommand("copy");
         selection?.removeAllRanges();
-        setHidden(copySuccessBanner, false);
-        setTimeout(() => setHidden(copySuccessBanner, true), 2500);
+        showBanner(copySuccessBanner, { expire: COPY_SUCCESS_EXPIRE_MS });
       }
     }
   });
@@ -709,8 +709,8 @@ function bindStaticEvents() {
       importInput.value = "";
       refreshCodeEditor(importInput);
     }
-    setHidden(importErrorBanner, true);
-    setHidden(importSuccessBanner, true);
+    hideBanner(importErrorBanner);
+    hideBanner(importSuccessBanner);
   });
 
   importConfirmDialog = initDialog({

@@ -47,43 +47,41 @@
         <span class="banner-body"></span>
       </div>
 
-      <section class="creator-section" aria-labelledby="import-heading">
-        <div class="expand" id="import-section">
-          <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="import-panel">
-            <span class="expand-notch" aria-hidden="true"></span>
-            <span class="expand-label" id="import-heading">Import function</span>
-          </button>
-          <div id="import-panel" class="expand-panel hidden" hidden>
-            <p class="field-hint">
-              Insert an existing function.
-            </p>
-            <label class="field" for="import-input">
-              <span class="field-label">Function M code</span>
-              <textarea
-                id="import-input"
-                class="textarea code-input"
-                rows="10"
-                spellcheck="false"
-                placeholder="let&#10;    MyFuncImpl = (…) as … =>&#10;    let … in …,&#10;    MyFuncImplType = type function (…) as … meta [ … ],&#10;    MyFunc = Value.ReplaceType(MyFuncImpl, MyFuncImplType)&#10;in&#10;    MyFunc"
-              ></textarea>
-            </label>
-            <div class="toolbar toolbar-with-status">
-              <button type="button" id="import-function" class="btn btn-primary">Import</button>
-              <button type="button" id="clear-import" class="btn">Clear</button>
-              <div class="toolbar-status">
-                <div id="import-error-banner" class="banner banner-inline banner-error hidden" role="alert" hidden>
-                  <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
-                  <span class="banner-body"></span>
-                </div>
-                <div id="import-success-banner" class="banner banner-inline banner-success hidden" role="status" hidden>
-                  <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
-                  <span class="banner-body">Function imported.</span>
-                </div>
+      <div class="expand" id="import-section">
+        <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="import-panel">
+          <span class="expand-notch" aria-hidden="true"></span>
+          <span class="expand-label" id="import-heading">Import function</span>
+        </button>
+        <div id="import-panel" class="expand-panel hidden" hidden>
+          <p class="field-hint">
+            Insert an existing function.
+          </p>
+          <label class="field" for="import-input">
+            <span class="field-label">Function M code</span>
+            <textarea
+              id="import-input"
+              class="textarea code-input"
+              rows="10"
+              spellcheck="false"
+              placeholder="let&#10;    MyFuncImpl = (…) as … =>&#10;    let … in …,&#10;    MyFuncImplType = type function (…) as … meta [ … ],&#10;    MyFunc = Value.ReplaceType(MyFuncImpl, MyFuncImplType)&#10;in&#10;    MyFunc"
+            ></textarea>
+          </label>
+          <div class="toolbar toolbar-with-status">
+            <button type="button" id="import-function" class="btn btn-primary">Import</button>
+            <button type="button" id="clear-import" class="btn">Clear</button>
+            <div class="toolbar-status">
+              <div id="import-error-banner" class="banner banner-inline banner-error hidden" role="alert" hidden>
+                <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+                <span class="banner-body"></span>
+              </div>
+              <div id="import-success-banner" class="banner banner-inline banner-success hidden" role="status" hidden>
+                <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+                <span class="banner-body">Function imported.</span>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       <section class="creator-section" aria-labelledby="expression-heading">
         <h2 id="expression-heading" class="section-heading">Expression</h2>
