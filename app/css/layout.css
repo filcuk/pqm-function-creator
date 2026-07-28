@@ -628,6 +628,11 @@ body > footer {
   user-select: none;
 }
 
+/* Let also-see sep + control share .footer-meta-copy gap like other footer items. */
+#footer-also-see-host {
+  display: contents;
+}
+
 .footer-brand {
   display: inline-flex;
   align-items: center;

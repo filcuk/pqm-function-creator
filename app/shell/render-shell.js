@@ -1,12 +1,9 @@
 import { APP_CONFIG } from "../config.js";
-import { SIG_ICON_SRC } from "../utils/brand-icon.js";
 import { APP_VERSION, TEMPLATE_VERSION } from "../version.js";
 
 const DEFAULTS = {
   repoUrl: APP_CONFIG.repoUrl,
   appUrl: APP_CONFIG.appUrl,
-  brandUrl: APP_CONFIG.brandUrl,
-  brandName: APP_CONFIG.brandName,
   alsoSee: APP_CONFIG.alsoSee,
   alsoSeeUrl: APP_CONFIG.alsoSeeUrl,
   alsoSeeTopics: APP_CONFIG.alsoSeeTopics,
@@ -285,8 +282,6 @@ export function renderPageShell(options = {}) {
 
   const {
     repoUrl,
-    brandUrl,
-    brandName,
     alsoSee,
     alsoSeeTopics,
     appUrl,
@@ -312,13 +307,7 @@ export function renderPageShell(options = {}) {
           <span class="footer-meta-sep" aria-hidden="true">·</span>
           <span>star on
           <a href="${repoUrl}" target="_blank" rel="noopener noreferrer">GitHub</a></span><span id="footer-also-see-host">${alsoSeeMarkup}</span>
-          <span class="footer-meta-sep" aria-hidden="true">·</span>
-          <span>microapp by</span>
         </div>
-        <a class="footer-brand" href="${brandUrl}" target="_blank" rel="noopener noreferrer" data-tooltip="that's me!" data-tooltip-position="top">
-          <img class="brand-icon--light" src="${SIG_ICON_SRC.light}" alt="${escapeAttr(brandName)}" width="26" height="26" />
-          <img class="brand-icon--dark" src="${SIG_ICON_SRC.dark}" alt="${escapeAttr(brandName)}" width="26" height="26" />
-        </a>
       </div>
       <div id="theme-toggle" class="theme-toggle" role="group" aria-label="Theme">
         <button type="button" class="theme-toggle-btn" data-theme-mode="light" data-icon="light-mode" data-icon-class="theme-icon" aria-label="Light theme" aria-pressed="false" title="Light"></button>
