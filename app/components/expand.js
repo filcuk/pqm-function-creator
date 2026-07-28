@@ -1,4 +1,4 @@
-import { setHidden } from "./dom.js";
+import { setHidden } from "../utils/dom.js";
 
 export function initExpand(expandEl, { defaultOpen = false, onToggle } = {}) {
   if (!expandEl) return null;

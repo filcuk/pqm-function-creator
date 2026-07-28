@@ -1,4 +1,4 @@
-import { initExpand } from "./expand.js";
+import { initExpand } from "./components/expand.js";
 
 /**
  * Expand/collapse tracking for a list of `.expand` cards sharing one id attribute.

@@ -1,5 +1,7 @@
 (function () {
-  var preference = localStorage.getItem("microapp-theme");
+  var storageKey =
+    (window.__MICROAPP__ && window.__MICROAPP__.themeStorageKey) || "microapp-theme";
+  var preference = localStorage.getItem(storageKey);
   if (preference !== "light" && preference !== "dark" && preference !== "auto") {
     preference = "auto";
   }
@@ -11,4 +13,10 @@
 
   document.documentElement.dataset.theme = dark ? "dark" : "light";
   document.documentElement.dataset.themePreference = preference;
+
+  var iconLink = document.querySelector("link[data-brand-icon]");
+  if (iconLink) {
+    // Same asset both themes until dedicated light/dark logos exist.
+    iconLink.href = "app/res/icon.svg";
+  }
 })();

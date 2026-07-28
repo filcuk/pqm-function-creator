@@ -149,11 +149,25 @@ function handleFocusOut(e) {
 
 function repositionActiveTooltip() {
   if (!activeTarget) return;
+  if (!activeTarget.isConnected) {
+    hideTooltip();
+    return;
+  }
   positionTooltip(
     activeTarget,
     activeTarget.dataset.tooltip,
     getPosition(activeTarget)
   );
+}
+
+/** Show tooltip for `target` (reads `data-tooltip`). */
+export function openTooltip(target) {
+  showTooltip(target);
+}
+
+/** Hide the active tooltip, if any. */
+export function closeTooltip() {
+  hideTooltip();
 }
 
 export function initTooltips(root = document) {

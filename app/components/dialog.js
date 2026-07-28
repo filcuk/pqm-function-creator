@@ -1,8 +1,11 @@
-import { resolveElements, setHidden } from "./dom.js";
-import { onDocumentEscape } from "./document-listeners.js";
-
-const FOCUSABLE =
-  'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+import {
+  getFocusableElements,
+  resolveElements,
+  setHidden,
+  setPageInert,
+  trapTabKey,
+} from "../utils/dom.js";
+import { onDocumentEscape } from "../utils/document-listeners.js";
 
 export function initDialog({ dialogEl, openTriggers = [], onOpen, onClose }) {
   if (!dialogEl) return null;
@@ -13,28 +16,9 @@ export function initDialog({ dialogEl, openTriggers = [], onOpen, onClose }) {
   const closeElements = dialogEl.querySelectorAll("[data-dialog-close]");
   const triggers = resolveElements(openTriggers);
 
-  function getFocusableElements() {
-    return [...dialogEl.querySelectorAll(FOCUSABLE)].filter(
-      (el) => el.offsetParent !== null && !el.closest(".hidden")
-    );
-  }
-
-  function trapFocus(e) {
-    if (!isOpen || e.key !== "Tab") return;
-
-    const focusable = getFocusableElements();
-    if (!focusable.length) return;
-
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault();
-      last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
-    }
+  function onTrapFocus(e) {
+    if (!isOpen) return;
+    trapTabKey(e, dialogEl);
   }
 
   function openDialog() {
@@ -43,10 +27,14 @@ export function initDialog({ dialogEl, openTriggers = [], onOpen, onClose }) {
     previouslyFocused = document.activeElement;
     setHidden(dialogEl, false);
     document.body.classList.add("modal-open");
+    setPageInert(true);
     isOpen = true;
 
+    const focusable = getFocusableElements(dialogEl);
     const closeBtn = dialogEl.querySelector(".modal-close");
-    (closeBtn || dialogEl).focus();
+    const initialFocus =
+      focusable.find((el) => el === closeBtn) || focusable[0] || dialogEl;
+    initialFocus.focus();
 
     onOpen?.();
   }
@@ -56,24 +44,28 @@ export function initDialog({ dialogEl, openTriggers = [], onOpen, onClose }) {
 
     setHidden(dialogEl, true);
     document.body.classList.remove("modal-open");
+    setPageInert(false);
     isOpen = false;
 
-    if (previouslyFocused?.focus) {
+    if (previouslyFocused instanceof HTMLElement && previouslyFocused.isConnected) {
       previouslyFocused.focus();
     }
 
     onClose?.();
   }
 
+  const onTriggerClick = () => openDialog();
+  const onCloseClick = () => closeDialog();
+
   triggers.forEach((trigger) => {
-    trigger.addEventListener("click", openDialog);
+    trigger.addEventListener("click", onTriggerClick);
   });
 
   closeElements.forEach((el) => {
-    el.addEventListener("click", closeDialog);
+    el.addEventListener("click", onCloseClick);
   });
 
-  dialogEl.addEventListener("keydown", trapFocus);
+  dialogEl.addEventListener("keydown", onTrapFocus);
 
   const removeEscape = onDocumentEscape(() => {
     if (!isOpen) return false;
@@ -87,6 +79,14 @@ export function initDialog({ dialogEl, openTriggers = [], onOpen, onClose }) {
     isDialogOpen: () => isOpen,
     destroy() {
       removeEscape();
+      dialogEl.removeEventListener("keydown", onTrapFocus);
+      triggers.forEach((trigger) => {
+        trigger.removeEventListener("click", onTriggerClick);
+      });
+      closeElements.forEach((el) => {
+        el.removeEventListener("click", onCloseClick);
+      });
+      if (isOpen) closeDialog();
     },
   };
 }

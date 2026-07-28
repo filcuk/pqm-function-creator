@@ -1,5 +1,11 @@
 /* Function creator layout */
 
+#function-creator {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 .creator-section {
   display: flex;
   flex-direction: column;
@@ -21,7 +27,7 @@
   width: 100%;
 }
 
-/* .expand defaults to max-width: 32rem in components.css */
+/* .expand defaults to max-width: 32rem in controls-disclosure.css */
 #function-creator .expand {
   max-width: none;
   width: 100%;
@@ -207,6 +213,11 @@
 .output-style-toggle .btn.is-active {
   background: var(--accent);
   color: #ffffff;
+  border-color: var(--accent);
+}
+
+:root[data-theme="dark"] .output-style-toggle .btn.is-active {
+  color: #0d1117;
 }
 
 .output-actions {
@@ -299,10 +310,6 @@
   align-items: stretch;
   gap: 0.5rem;
   padding: 0.5rem 0.5rem 0.5rem 1rem;
-}
-
-.param-card.is-open > .param-card-top {
-  padding-bottom: 0;
 }
 
 .param-card-top .expand-trigger {
