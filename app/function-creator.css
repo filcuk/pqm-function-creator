@@ -1,5 +1,11 @@
 /* Function creator layout */
 
+#function-creator {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 .creator-section {
   display: flex;
   flex-direction: column;

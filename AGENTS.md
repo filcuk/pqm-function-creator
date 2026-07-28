@@ -146,7 +146,7 @@ Run with `npx serve .` and verify:
 6. **Import** — invalid paste shows error banner; valid paste opens confirm dialog; cancel leaves form; confirm replaces state and shows success banner.
 7. **Draft** — edit fields, reload page, draft restores; corrupt localStorage does not break the app.
 8. **Theme** — light/dark/auto via footer toggle without flash on reload.
-9. **Shell** — page-nav jumps to Expression/Function/… sections; footer shows app version; **also see** loads Power BI peers (this app absent); sticky header on scroll.
+9. **Shell** — page-nav jumps to Expression/Function/… sections; footer shows app version; **also see** loads Power BI peers (this app absent).
 
 ## When extending this app
 
