@@ -1,5 +1,5 @@
-import { initShell } from "./shell.js";
+import { initShell } from "./shell/shell.js";
 import { initFunctionCreator } from "./function-creator.js";
 
-initShell({ repoUrl: "https://github.com/filcuk/pqm-function-creator" });
+initShell();
 initFunctionCreator();

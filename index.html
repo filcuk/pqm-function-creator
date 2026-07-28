@@ -1,23 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-sticky-header>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Power Query M Function Creator</title>
-    <link rel="icon" href="app/res/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="app/res/icon.svg" type="image/svg+xml" data-brand-icon />
+    <script>
+      window.__MICROAPP__ = { themeStorageKey: "microapp-theme" };
+    </script>
     <script src="app/theme-init.js"></script>
     <link rel="stylesheet" href="app/styles.css" />
   </head>
   <body>
     <header>
       <div class="site-brand">
-        <img class="site-logo" src="app/res/icon.svg" alt="" width="40" height="40" />
+        <img
+          class="site-logo brand-icon--light"
+          src="app/res/icon.svg"
+          alt=""
+          width="40"
+          height="40"
+          data-brand-icon
+        />
+        <img
+          class="site-logo brand-icon--dark"
+          src="app/res/icon.svg"
+          alt=""
+          width="40"
+          height="40"
+          aria-hidden="true"
+          data-brand-icon
+        />
         <h1>Power Query M Function Creator</h1>
       </div>
       <p class="tagline">Wrap a <code>let … in</code> block in a typed, documented M function.</p>
     </header>
 
-    <main id="function-creator">
+    <main id="main">
+      <div id="function-creator">
+      <div id="app-error-banner" class="banner banner-error hidden" data-app-error role="alert" hidden>
+        <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+        <span class="banner-body">Something went wrong. Check the console for details.</span>
+      </div>
       <div id="validation-banner" class="banner banner-warning hidden" role="alert" hidden>
         <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
         <span class="banner-body"></span>
@@ -199,6 +223,7 @@
           </button>
         </div>
       </section>
+      </div>
     </main>
 
     <div id="import-confirm-dialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="import-confirm-dialog-title" hidden>

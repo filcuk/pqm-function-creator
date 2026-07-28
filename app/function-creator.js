@@ -1,8 +1,8 @@
-import { setHidden } from "./dom.js";
-import { initDialog } from "./dialog.js";
-import { initExpand } from "./expand.js";
-import { mountIcon } from "./icons.js";
-import { initTooltips } from "./tooltip.js";
+import { setHidden } from "./utils/dom.js";
+import { initDialog } from "./components/dialog.js";
+import { initExpand } from "./components/expand.js";
+import { mountIcon } from "./utils/icons.js";
+import { initTooltips } from "./components/tooltip.js";
 import {
   getCodeBlockText,
   initCodeBlock,
