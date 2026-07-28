@@ -16,6 +16,7 @@
 
   var iconLink = document.querySelector("link[data-brand-icon]");
   if (iconLink) {
-    iconLink.href = dark ? "app/res/app-dark.svg" : "app/res/app-light.svg";
+    // Same asset both themes until dedicated light/dark logos exist.
+    iconLink.href = "app/res/icon.svg";
   }
 })();
