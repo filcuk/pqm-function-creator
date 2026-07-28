@@ -1,11 +1,11 @@
 ---
-description: Never invent icon SVG paths — use app/icons.js placeholders only
+description: Never invent icon SVG paths — use app/utils/icons.js placeholders only
 alwaysApply: true
 ---
 
 # Icons
 
-- **Never** fabricate, guess, or copy SVG path data into `ICONS` in `app/icons.js`.
+- **Never** fabricate, guess, or copy SVG path data into `ICONS` in `app/utils/icons.js`.
 - If a new icon is needed:
   1. Add a placeholder entry with `viewBox` and empty `markup`.
   2. Tell the user to paste the path from [Icônes — Material Icons Round](https://icones.js.org/collection/ic?s=info&variant=Round).

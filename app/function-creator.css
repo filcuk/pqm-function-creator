@@ -21,7 +21,7 @@
   width: 100%;
 }
 
-/* .expand defaults to max-width: 32rem in components.css */
+/* .expand defaults to max-width: 32rem in controls-disclosure.css */
 #function-creator .expand {
   max-width: none;
   width: 100%;
