@@ -225,7 +225,7 @@ export function createRenderer({ nextId }) {
           </div>
           <div class="param-record-fields record-fields${isRecord ? "" : " hidden"}" ${isRecord ? "" : "hidden"}>
             <div class="toolbar record-fields-toolbar">
-              <span class="section-heading">Record fields</span>
+              <span class="section-title">Record fields</span>
               <div class="record-fields-toolbar-actions">
                 <button type="button" class="btn toggle-all-record-fields" disabled>Expand all</button>
                 <button type="button" class="btn btn-with-icon add-record-field">

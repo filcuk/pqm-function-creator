@@ -87,7 +87,7 @@
       </div>
 
       <section class="creator-section" aria-labelledby="expression-heading">
-        <h2 id="expression-heading" class="section-heading">Expression</h2>
+        <h2 id="expression-heading" class="section-title">Expression</h2>
         <p class="field-hint">Insert the full <code>let … in</code> block that becomes the function body.</p>
         <div id="expression-warning-banner" class="banner banner-note hidden" role="note" hidden>
           <span class="banner-icon" data-icon="note" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
@@ -106,7 +106,7 @@
       </section>
 
       <section class="creator-section" aria-labelledby="function-heading">
-        <h2 id="function-heading" class="section-heading">Function</h2>
+        <h2 id="function-heading" class="section-title">Function</h2>
         <div class="field-grid function-field-grid">
           <label class="field function-field-name" for="function-name">
             <span class="field-label">Function name</span>
@@ -150,7 +150,7 @@
       </section>
 
       <section class="creator-section" aria-labelledby="documentation-heading">
-        <h2 id="documentation-heading" class="section-heading">Documentation</h2>
+        <h2 id="documentation-heading" class="section-title">Documentation</h2>
         <div class="field-grid documentation-field-grid">
           <label class="field documentation-field-name" for="doc-name">
             <span
@@ -174,7 +174,7 @@
 
         <div class="function-examples">
           <div class="toolbar examples-toolbar">
-            <h3 class="section-heading">Examples</h3>
+            <h3 class="section-title">Examples</h3>
             <div class="parameters-toolbar-actions">
               <button type="button" id="toggle-all-examples" class="btn" disabled>Expand all</button>
               <button type="button" id="add-example" class="btn btn-with-icon">
@@ -189,7 +189,7 @@
 
       <section class="creator-section" aria-labelledby="parameters-heading">
         <div class="toolbar parameters-toolbar">
-          <h2 id="parameters-heading" class="section-heading">Parameters</h2>
+          <h2 id="parameters-heading" class="section-title">Parameters</h2>
           <div class="parameters-toolbar-actions">
             <button type="button" id="toggle-all-parameters" class="btn" disabled>Expand all</button>
             <button type="button" id="add-parameter" class="btn btn-with-icon">
@@ -202,7 +202,7 @@
       </section>
 
       <section class="creator-section" aria-labelledby="output-heading">
-        <h2 id="output-heading" class="section-heading">M Function</h2>
+        <h2 id="output-heading" class="section-title">M Function</h2>
         <div
           id="output-preview"
           class="code-editor code-editor-readonly code-output-block"
@@ -277,10 +277,33 @@
             This tool does the scaffolding for you: fill in the form (or import an existing function),
             then copy the generated M into Excel or Power BI.
           </p>
-          <div id="about-extra-content" class="about-extra-content hidden" hidden></div>
+          <div class="about-extra-content" data-about-extra>
+            <div class="about-extra-block hidden" data-about-stage data-about-next-label="Uhh..." hidden>
+              <p>
+                <em>Okay</em>, so Power Query is the data-cleaning bit of Excel and Power BI. You write a
+                <code>let … in</code> block that does something useful. To share it as a proper function, you need
+                parameter names, types, docs the UI can show, and usually <code>Value.ReplaceType</code>. This page
+                builds that wrapper for you. Fill the form on the left (ish). Copy the M on the bottom. Paste it into
+                Power Query. That's the whole trick.
+              </p>
+            </div>
+            <div class="about-extra-block hidden" data-about-stage data-about-next-label="I don't get it" hidden>
+              <p>You make work. Work good. Work need many times. Hard write by hand. We wrap. You fill boxes. Pretty come out. Copy. Paste. Happy.</p>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="button" id="about-confused-btn" class="btn">Huh?</button>
+          <button type="button" class="btn" data-about-confused>Huh?</button>
+          <a
+            class="btn hidden"
+            data-about-final
+            href="https://pbskids.org/games/play/symmetry-painter/11734"
+            target="_blank"
+            rel="noopener noreferrer"
+            hidden
+          >
+            I don't get it
+          </a>
           <div class="modal-footer-actions">
             <button type="button" id="about-close-btn" class="btn btn-primary" data-dialog-close>
               Got it

@@ -1,7 +1,10 @@
 import { initShell } from "./shell/shell.js";
-import { initAboutDialog } from "./about-dialog.js";
+import { initAboutDialog } from "./components/about-dialog.js";
 import { initFunctionCreator } from "./function-creator.js";
 
 initShell({ pageNav: { showHeadingList: false } });
-initAboutDialog();
+initAboutDialog({
+  dialogEl: document.getElementById("about-dialog"),
+  openTriggers: [document.getElementById("about-open-btn")],
+});
 initFunctionCreator();
