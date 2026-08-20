@@ -39,7 +39,8 @@
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  z-index: 10;
+  /* Above sticky section/tier/header chrome (20–41); below expandable (90) / modals. */
+  z-index: 60;
   width: max-content;
   min-width: 100%;
   max-width: min(100vw - 3rem, 20rem);
@@ -61,8 +62,9 @@
 .dropdown-menu-item {
   display: block;
   width: 100%;
-  padding: 0.5rem 1rem;
-  border: none;
+  padding: calc(0.5rem - 1px) calc(1rem - 1px);
+  border: 1px solid transparent;
+  border-radius: 6px;
   background: transparent;
   color: var(--text);
   font: inherit;
@@ -71,6 +73,8 @@
   white-space: nowrap;
   cursor: pointer;
   box-sizing: border-box;
+  transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out,
+    color var(--control-hover-ms) ease-out;
 }
 
 .dropdown-menu-item:has(.dropdown-menu-item-subtitle) {
@@ -119,18 +123,31 @@
   height: 1.5rem;
 }
 
+svg.dropdown-menu-item-icon {
+  display: block;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
 .combo-menu-item:hover,
 .combo-menu-item:focus-visible,
 .dropdown-menu-item:hover,
 .dropdown-menu-item:focus-visible {
-  background: var(--code-bg);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  /* Beat `a:hover` / footer link accent so highlighted text stays --text. */
+  color: var(--text);
   outline: none;
+  transition-duration: 0s;
 }
 
 .dropdown-menu-item.is-selected,
-.dropdown-menu-item[aria-checked="true"] {
-  background: var(--code-bg);
-  color: var(--accent);
+.dropdown-menu-item[aria-checked="true"],
+.combo-menu-item.is-selected {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border-color: var(--accent);
+  border-radius: 0;
+  color: var(--text);
 }
 
 .dropdown-menu-item.is-selected .dropdown-menu-item-subtitle,
@@ -141,8 +158,100 @@
 .dropdown-menu-item.is-selected:hover,
 .dropdown-menu-item.is-selected:focus-visible,
 .dropdown-menu-item[aria-checked="true"]:hover,
-.dropdown-menu-item[aria-checked="true"]:focus-visible {
-  background: var(--code-bg);
+.dropdown-menu-item[aria-checked="true"]:focus-visible,
+.combo-menu-item.is-selected:hover,
+.combo-menu-item.is-selected:focus-visible {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border-color: var(--accent);
+  color: var(--text);
+  transition-duration: 0s;
+}
+
+/* Contiguous selected runs share one outer border (no edge between neighbours).
+   Drop shared border width (not just colour) so side borders meet with no 1px gap. */
+li:has(
+    > :is(
+      .dropdown-menu-item.is-selected,
+      .dropdown-menu-item[aria-checked="true"],
+      .combo-menu-item.is-selected
+    )
+  ):has(
+    + li
+      > :is(
+        .dropdown-menu-item.is-selected,
+        .dropdown-menu-item[aria-checked="true"],
+        .combo-menu-item.is-selected
+      )
+  )
+  > :is(
+    .dropdown-menu-item.is-selected,
+    .dropdown-menu-item[aria-checked="true"],
+    .combo-menu-item.is-selected
+  ) {
+  border-bottom-width: 0;
+  padding-bottom: 0.5rem;
+}
+
+li:has(
+    > :is(
+      .dropdown-menu-item.is-selected,
+      .dropdown-menu-item[aria-checked="true"],
+      .combo-menu-item.is-selected
+    )
+  )
+  + li
+  > :is(
+    .dropdown-menu-item.is-selected,
+    .dropdown-menu-item[aria-checked="true"],
+    .combo-menu-item.is-selected
+  ) {
+  border-top-width: 0;
+  padding-top: 0.5rem;
+}
+
+/* Round only the outer corners of each contiguous selection run. */
+li:first-child
+  > :is(
+    .dropdown-menu-item.is-selected,
+    .dropdown-menu-item[aria-checked="true"],
+    .combo-menu-item.is-selected
+  ),
+li:not(
+    :has(
+      > :is(
+        .dropdown-menu-item.is-selected,
+        .dropdown-menu-item[aria-checked="true"],
+        .combo-menu-item.is-selected
+      )
+    )
+  )
+  + li
+  > :is(
+    .dropdown-menu-item.is-selected,
+    .dropdown-menu-item[aria-checked="true"],
+    .combo-menu-item.is-selected
+  ) {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+li:not(
+    :has(
+      + li
+        > :is(
+          .dropdown-menu-item.is-selected,
+          .dropdown-menu-item[aria-checked="true"],
+          .combo-menu-item.is-selected
+        )
+    )
+  )
+  > :is(
+    .dropdown-menu-item.is-selected,
+    .dropdown-menu-item[aria-checked="true"],
+    .combo-menu-item.is-selected
+  ) {
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
 }
 
 .dropdown-menu-group {
@@ -178,6 +287,13 @@ li:not(:first-child) > .dropdown-menu-group {
   position: relative;
   display: inline-block;
   align-self: flex-start;
+}
+
+/* Elevate the host while open so menus paint above neighbouring stacking
+   contexts (e.g. code-block overflow + line-number gutter chrome). */
+.dropdown.is-popup-open,
+.combo-btn.is-popup-open {
+  z-index: 61;
 }
 
 .dropdown-trigger {

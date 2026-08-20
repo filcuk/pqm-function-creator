@@ -1,4 +1,5 @@
 import { prefersReducedMotion } from "../utils/dom.js";
+import { getHeadingScrollY } from "./sticky.js";
 
 /** @type {WeakMap<HTMLElement, PageNavInstance>} */
 const instances = new WeakMap();
@@ -27,10 +28,21 @@ function isTierHeading(heading) {
 }
 
 /**
+ * True when the fixed nav strip horizontally overlaps `main`.
+ * @param {HTMLElement} navEl
+ * @param {Element | null} mainEl
+ */
+function navOverlapsMain(navEl, mainEl) {
+  if (!mainEl) return true;
+  const navRect = navEl.getBoundingClientRect();
+  const mainRect = mainEl.getBoundingClientRect();
+  return navRect.left < mainRect.right && navRect.right > mainRect.left;
+}
+
+/**
  * @typedef {Object} PageNavOptions
- * @property {string} [headingSelector="main h2[id]"] CSS selector for section headings (must have `id`)
+ * @property {string} [headingSelector="main :is(h2, h3)[id]"] CSS selector for headings (must have `id`)
  * @property {ParentNode} [headingRoot=document] Root to scan for headings
- * @property {boolean} [showHeadingList=true] Hover/focus heading menu; `false` keeps up/down jumps only
  */
 
 /**
@@ -53,9 +65,8 @@ function isTierHeading(heading) {
 export function initPageNav(
   navEl,
   {
-    headingSelector = "main h2[id]",
+    headingSelector = "main :is(h2, h3)[id]",
     headingRoot = document,
-    showHeadingList = true,
   } = {}
 ) {
   if (!navEl) return null;
@@ -67,12 +78,17 @@ export function initPageNav(
   const panelEl = navEl.querySelector(".page-nav-panel");
   const upBtn = navEl.querySelector('[data-page-nav="up"]');
   const downBtn = navEl.querySelector('[data-page-nav="down"]');
-
-  navEl.classList.toggle("page-nav--jumps-only", !showHeadingList);
+  const mainEl = document.querySelector("main");
 
   let ticking = false;
   /** @type {HTMLElement[]} */
   let headings = [];
+
+  /** Toggle full right-edge hover when the strip clears `main`; otherwise jumps-only. */
+  function syncEdgeHoverMode() {
+    const edgeHover = !navOverlapsMain(navEl, mainEl);
+    navEl.classList.toggle("page-nav--edge-hover", edgeHover);
+  }
 
   /** @param {Event} event */
   function onLinkClick(event) {
@@ -86,10 +102,9 @@ export function initPageNav(
     if (!heading) return;
 
     event.preventDefault();
-    heading.scrollIntoView({
-      behavior: prefersReducedMotion() ? "auto" : "smooth",
-      block: "start",
-    });
+    // Manual Y (not scrollIntoView): sticky headings + collapsing tier leads
+    // otherwise undershoot when navigating upward, requiring repeated clicks.
+    scrollToY(getHeadingScrollY(heading));
     history.replaceState(null, "", `#${heading.id}`);
   }
 
@@ -107,13 +122,6 @@ export function initPageNav(
     if (!listEl) return [];
 
     listEl.replaceChildren();
-    headings = [];
-
-    if (!showHeadingList) {
-      if (panelEl) panelEl.hidden = true;
-      return headings;
-    }
-
     headings = collectHeadings(headingRoot, headingSelector);
     /** @type {HTMLUListElement | null} */
     let sublist = null;
@@ -171,6 +179,7 @@ export function initPageNav(
       maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 0;
 
     navEl.style.setProperty("--scroll-progress", String(progress));
+    syncEdgeHoverMode();
     ticking = false;
   }
 
@@ -197,6 +206,7 @@ export function initPageNav(
     window.removeEventListener("resize", onScrollOrResize);
     upBtn?.removeEventListener("click", onJumpUp);
     downBtn?.removeEventListener("click", onJumpDown);
+    navEl.classList.remove("page-nav--edge-hover");
 
     listEl
       ?.querySelectorAll(".page-nav-link")

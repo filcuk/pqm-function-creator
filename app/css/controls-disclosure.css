@@ -13,8 +13,9 @@
   align-items: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: none;
+  padding: calc(0.75rem - 1px) calc(1rem - 1px);
+  border: 1px solid transparent;
+  border-radius: 5px;
   background: transparent;
   color: var(--text);
   font: inherit;
@@ -22,10 +23,17 @@
   font-size: 0.875rem;
   cursor: pointer;
   text-align: left;
+  transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out;
 }
 
-.expand-trigger:hover .expand-label {
-  color: var(--accent);
+.expand.is-open .expand-trigger {
+  border-radius: 5px 5px 0 0;
+}
+
+.expand-trigger:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  transition-duration: 0s;
 }
 
 .expand-trigger:focus-visible {
@@ -33,42 +41,28 @@
   outline-offset: -2px;
 }
 
-.expand-notch {
-  position: relative;
+.expand-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.375rem;
-  height: 1.375rem;
   flex-shrink: 0;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--code-bg);
   color: var(--muted);
+  transition: transform 0.15s ease, color 0.15s ease;
 }
 
-.expand-notch::after {
-  content: "";
-  display: block;
-  width: 0;
-  height: 0;
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
-  border-left: 5px solid currentColor;
-  transition: transform 0.15s ease;
+.expand-icon-svg {
+  width: 1rem;
+  height: 1rem;
 }
 
-.expand.is-open .expand-notch {
-  color: var(--text);
-}
-
-.expand.is-open .expand-notch::after {
+.expand.is-open .expand-icon {
   transform: rotate(90deg);
+  color: var(--text);
 }
 
 .expand-label {
   flex: 1;
-  line-height: 1.375rem;
+  line-height: 1.25;
 }
 
 .expand-panel {
@@ -120,8 +114,8 @@
   align-items: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: none;
+  padding: calc(0.75rem - 1px) calc(1rem - 1px);
+  border: 1px solid transparent;
   background: transparent;
   color: var(--text);
   font: inherit;
@@ -129,10 +123,23 @@
   font-size: 0.875rem;
   cursor: pointer;
   text-align: left;
+  transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out;
 }
 
-.accordion-trigger:hover .accordion-label {
-  color: var(--accent);
+.accordion-item:first-child .accordion-trigger {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.accordion-item:last-child:not(.is-open) .accordion-trigger {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.accordion-trigger:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  transition-duration: 0s;
 }
 
 .accordion-trigger:focus-visible {
@@ -140,42 +147,28 @@
   outline-offset: -2px;
 }
 
-.accordion-notch {
-  position: relative;
+.accordion-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.375rem;
-  height: 1.375rem;
   flex-shrink: 0;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--code-bg);
   color: var(--muted);
+  transition: transform 0.15s ease, color 0.15s ease;
 }
 
-.accordion-notch::after {
-  content: "";
-  display: block;
-  width: 0;
-  height: 0;
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
-  border-left: 5px solid currentColor;
-  transition: transform 0.15s ease;
+.accordion-icon-svg {
+  width: 1rem;
+  height: 1rem;
 }
 
-.accordion-item.is-open .accordion-notch {
-  color: var(--text);
-}
-
-.accordion-item.is-open .accordion-notch::after {
+.accordion-item.is-open .accordion-icon {
   transform: rotate(90deg);
+  color: var(--text);
 }
 
 .accordion-label {
   flex: 1;
-  line-height: 1.375rem;
+  line-height: 1.25;
 }
 
 .accordion-panel {
@@ -235,10 +228,14 @@
   margin-bottom: -1px;
   text-align: center;
   white-space: nowrap;
+  transition: background var(--control-hover-ms) ease-out, color var(--control-hover-ms) ease-out,
+    border-color var(--control-hover-ms) ease-out;
 }
 
 .tabs-tab:hover {
   color: var(--text);
+  background: color-mix(in srgb, var(--accent) 6%, var(--code-bg));
+  transition-duration: 0s;
 }
 
 .tabs-tab:focus-visible {
@@ -251,6 +248,11 @@
   color: var(--text);
   background: var(--surface);
   border-bottom-color: var(--accent);
+}
+
+.tabs-tab[aria-selected="true"]:hover {
+  background: var(--surface);
+  transition-duration: 0s;
 }
 
 .tabs-panel {
@@ -367,11 +369,7 @@
 .progress-indicator-item.is-complete .progress-indicator-marker {
   border-color: var(--accent);
   background: var(--accent);
-  color: #ffffff;
-}
-
-:root[data-theme="dark"] .progress-indicator-item.is-complete .progress-indicator-marker {
-  color: #0d1117;
+  color: var(--accent-fg);
 }
 
 .progress-indicator-label {

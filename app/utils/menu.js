@@ -1,5 +1,10 @@
 import { setHidden } from "./dom.js";
-import { onDocumentClickOutside, onDocumentEscape } from "./document-listeners.js";
+import {
+  onDocumentClickOutside,
+  onDocumentEscape,
+  registerOpenPopup,
+  unregisterOpenPopup,
+} from "./document-listeners.js";
 
 /** Primary label for a menu item (ignores `.dropdown-menu-item-subtitle`). */
 export function menuItemLabel(item) {
@@ -12,6 +17,8 @@ export function menuItemLabel(item) {
 
 /**
  * Shared open/close behaviour for anchored popup menus (combo chevron, dropdown).
+ *
+ * Only one popup menu is open at a time: opening one closes any other.
  *
  * @param {object} options
  * @param {boolean} [options.fixed=false] Position with `position: fixed` so the
@@ -51,6 +58,10 @@ export function initPopupMenu({
     if (items.length) focusItem(items[0]);
   }
 
+  function setContainerOpen(open) {
+    containerEl?.classList.toggle("is-popup-open", open);
+  }
+
   function clearFixedPosition() {
     if (!fixed) return;
     menuEl.style.position = "";
@@ -59,6 +70,8 @@ export function initPopupMenu({
     menuEl.style.right = "";
     menuEl.style.bottom = "";
     menuEl.style.zIndex = "";
+    menuEl.style.width = "";
+    menuEl.style.minWidth = "";
     menuEl.style.maxHeight = "";
     menuEl.style.overflowY = "";
   }
@@ -73,6 +86,9 @@ export function initPopupMenu({
     menuEl.style.position = "fixed";
     menuEl.style.zIndex = "200";
     menuEl.style.bottom = "auto";
+    menuEl.style.width = "max-content";
+    // Percentage min-width is viewport-relative when position is fixed.
+    menuEl.style.minWidth = `${rect.width}px`;
     menuEl.style.maxHeight = "";
     menuEl.style.overflowY = "";
     menuEl.style.top = `${rect.bottom + gap}px`;
@@ -109,19 +125,26 @@ export function initPopupMenu({
     }
   }
 
-  function closeMenu() {
+  /**
+   * @param {{ restoreFocus?: boolean }} [options]
+   */
+  function closeMenu({ restoreFocus = true } = {}) {
     if (!isOpen) return;
     isOpen = false;
+    unregisterOpenPopup(closeMenu);
+    setContainerOpen(false);
     setHidden(menuEl, true);
     clearFixedPosition();
     toggleEl?.setAttribute("aria-expanded", "false");
-    if (toggleEl?.isConnected) {
+    if (restoreFocus && toggleEl?.isConnected) {
       toggleEl.focus();
     }
   }
 
   function openMenu() {
     isOpen = true;
+    registerOpenPopup(closeMenu);
+    setContainerOpen(true);
     setHidden(menuEl, false);
     toggleEl?.setAttribute("aria-expanded", "true");
     positionFixedMenu();
@@ -138,10 +161,7 @@ export function initPopupMenu({
     // defer focus restore until afterward — focusing a trigger that is about
     // to be destroyed (e.g. remove column) would flash its tooltip.
     if (closeOnSelect) {
-      isOpen = false;
-      setHidden(menuEl, true);
-      clearFixedPosition();
-      toggleEl?.setAttribute("aria-expanded", "false");
+      closeMenu({ restoreFocus: false });
     }
     onSelect?.({
       containerEl,
@@ -167,10 +187,7 @@ export function initPopupMenu({
       // Modified clicks: let the browser open a new tab; only close the menu.
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
         if (closeOnSelect) {
-          isOpen = false;
-          setHidden(menuEl, true);
-          clearFixedPosition();
-          toggleEl?.setAttribute("aria-expanded", "false");
+          closeMenu({ restoreFocus: false });
         }
         return;
       }
@@ -242,6 +259,8 @@ export function initPopupMenu({
     toggleMenu,
     isOpen: () => isOpen,
     destroy() {
+      unregisterOpenPopup(closeMenu);
+      setContainerOpen(false);
       toggleEl?.removeEventListener("click", onToggleClick);
       menuEl.removeEventListener("click", onMenuClick);
       menuEl.removeEventListener("keydown", onMenuKeydown);

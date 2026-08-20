@@ -3,8 +3,6 @@ import { setHidden, prefersReducedMotion } from "../utils/dom.js";
 /** @type {WeakMap<HTMLElement, ReturnType<typeof setTimeout>>} */
 const expireTimers = new WeakMap();
 
-const EXPIRE_OVERLAY_CLASS = "banner-expire";
-
 function readBannerFadeMs() {
   const raw = getComputedStyle(document.documentElement)
     .getPropertyValue("--banner-fade-ms")
@@ -26,24 +24,12 @@ function resolveExpireMs(bannerEl, expire) {
   return parseExpireMs(bannerEl.dataset.bannerExpire);
 }
 
-function ensureExpireOverlay(bannerEl) {
-  let overlay = bannerEl.querySelector(`.${EXPIRE_OVERLAY_CLASS}`);
-  if (overlay) return overlay;
-
-  overlay = document.createElement("span");
-  overlay.className = EXPIRE_OVERLAY_CLASS;
-  overlay.setAttribute("aria-hidden", "true");
-  bannerEl.prepend(overlay);
-  return overlay;
-}
-
 function clearExpireProgress(bannerEl) {
   bannerEl.classList.remove("banner-is-expiring");
   bannerEl.style.removeProperty("--banner-expire-ms");
 }
 
 function startExpireProgress(bannerEl, ms) {
-  ensureExpireOverlay(bannerEl);
   clearExpireProgress(bannerEl);
   bannerEl.style.setProperty("--banner-expire-ms", `${ms}ms`);
 

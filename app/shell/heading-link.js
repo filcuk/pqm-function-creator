@@ -1,5 +1,6 @@
 import { createIcon } from "../utils/icons.js";
-import { openTooltip } from "../components/tooltip.js";
+import { copyText } from "../utils/clipboard.js";
+import { flashTooltip } from "../components/tooltip.js";
 
 const TOOLTIP_DEFAULT = "Get link";
 const TOOLTIP_COPIED = "Copied!";
@@ -17,7 +18,7 @@ function headingUrl(heading) {
  */
 export function initHeadingLinks(
   root = document,
-  { selector = "main h2[id]" } = {}
+  { selector = "main :is(h2, h3)[id]" } = {}
 ) {
   for (const heading of root.querySelectorAll(selector)) {
     if (!(heading instanceof HTMLElement)) continue;
@@ -37,19 +38,12 @@ export function initHeadingLinks(
     button.addEventListener("click", async () => {
       history.replaceState(null, "", `#${heading.id}`);
 
-      try {
-        await navigator.clipboard.writeText(headingUrl(heading));
-        button.dataset.tooltip = TOOLTIP_COPIED;
-      } catch {
-        button.dataset.tooltip = "Copy failed";
-      }
-
-      button.blur();
-      openTooltip(button);
-
-      window.setTimeout(() => {
-        button.dataset.tooltip = TOOLTIP_DEFAULT;
-      }, 2000);
+      const ok = await copyText(headingUrl(heading));
+      flashTooltip(button, {
+        text: ok ? TOOLTIP_COPIED : "Copy failed",
+        tone: ok ? "success" : "error",
+        restoreText: TOOLTIP_DEFAULT,
+      });
     });
 
     heading.append(button);
