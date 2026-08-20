@@ -345,15 +345,3 @@ export function validateState(state) {
 
   return errors;
 }
-
-/**
- * @param {FunctionCreatorState} state
- */
-export function expressionWarning(state) {
-  const trimmed = state.expression.trim();
-  if (!trimmed) return "Expression is empty.";
-  if (!/^let\b/i.test(trimmed)) {
-    return "Expression does not start with let — it will be wrapped as-is after =>.";
-  }
-  return null;
-}

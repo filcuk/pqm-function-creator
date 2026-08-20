@@ -20,7 +20,7 @@ export const APP_CONFIG = {
    * Empty array → hide named topics (ungrouped flat links still show).
    * Ungrouped flat links are never filtered by this list.
    */
-  alsoSeeTopics: ["Power BI"],
+  alsoSeeTopics: ["*"],
   /**
    * Local related apps (fallback when `alsoSeeUrl` is empty or fetch fails).
    * Set to `[]` or `false` to hide the control when there is no remote list.

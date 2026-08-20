@@ -1,6 +1,7 @@
 import { setHidden } from "./utils/dom.js";
 import { initDialog } from "./components/dialog.js";
 import { initExpand } from "./components/expand.js";
+import { initSegmentedControl } from "./components/segmented-control.js";
 import { showBanner, hideBanner } from "./components/banner.js";
 import { mountIcon } from "./utils/icons.js";
 import { initTooltips } from "./components/tooltip.js";
@@ -14,7 +15,7 @@ import {
 import { saveDraft, loadDraftState } from "./function-creator-draft.js";
 import { createExpandListController } from "./function-creator-expand.js";
 import { createRenderer } from "./function-creator-render.js";
-import { expressionWarning, generateOutput, validateState } from "./m/generate.js";
+import { generateOutput, validateState } from "./m/generate.js";
 import { tryParseFunction } from "./m/parse.js";
 import { parseLinesToValues } from "./m/escape.js";
 import {
@@ -55,12 +56,14 @@ const examplesList = document.getElementById("examples-list");
 const parametersList = document.getElementById("parameters-list");
 const outputPreview = document.getElementById("output-preview");
 const validationBanner = document.getElementById("validation-banner");
-const expressionWarningBanner = document.getElementById("expression-warning-banner");
 const copySuccessBanner = document.getElementById("copy-success-banner");
-const outputStyleToggle = document.getElementById("output-style-toggle");
+const outputStyleEl = document.getElementById("output-style");
 const importInput = /** @type {HTMLTextAreaElement | null} */ (document.getElementById("import-input"));
 const importErrorBanner = document.getElementById("import-error-banner");
 const importSuccessBanner = document.getElementById("import-success-banner");
+
+/** @type {ReturnType<typeof initSegmentedControl> | null} */
+let outputStyleControl = null;
 
 /**
  * @param {string} prefix
@@ -407,14 +410,6 @@ function updateBanners() {
   } else {
     setHidden(validationBanner, true);
   }
-
-  const exprWarning = expressionWarning(state);
-  if (exprWarning) {
-    setBannerMessage(expressionWarningBanner, exprWarning);
-    setHidden(expressionWarningBanner, false);
-  } else {
-    setHidden(expressionWarningBanner, true);
-  }
 }
 
 function updateOutputFromState() {
@@ -504,12 +499,9 @@ function confirmImport() {
 let importConfirmDialog = null;
 
 function setOutputStyle(style) {
-  state.outputStyle = style;
-  outputStyleToggle?.querySelectorAll("[data-output-style]").forEach((button) => {
-    const isActive = button.getAttribute("data-output-style") === style;
-    button.classList.toggle("is-active", isActive);
-    button.setAttribute("aria-pressed", isActive ? "true" : "false");
-  });
+  const next = style === OUTPUT_STYLES.SHARED ? OUTPUT_STYLES.SHARED : OUTPUT_STYLES.LET;
+  state.outputStyle = next;
+  outputStyleControl?.selectValue(next, { emit: false });
 }
 
 function bindParameterEvents() {
@@ -665,11 +657,13 @@ function bindStaticEvents() {
     updateOutputFromState();
   });
 
-  outputStyleToggle?.querySelectorAll("[data-output-style]").forEach((button) => {
-    button.addEventListener("click", () => {
-      setOutputStyle(button.getAttribute("data-output-style") || OUTPUT_STYLES.LET);
-      scheduleRegenerate();
-    });
+  outputStyleControl = initSegmentedControl(outputStyleEl, {
+    defaultValue: state.outputStyle || OUTPUT_STYLES.LET,
+    onChange: ({ value, source }) => {
+      state.outputStyle =
+        value === OUTPUT_STYLES.SHARED ? OUTPUT_STYLES.SHARED : OUTPUT_STYLES.LET;
+      if (source !== "init") scheduleRegenerate();
+    },
   });
 
   document.getElementById("copy-output")?.addEventListener("click", async () => {

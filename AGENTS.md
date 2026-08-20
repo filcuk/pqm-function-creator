@@ -15,7 +15,7 @@ Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functio
 | Template pin | `template.lock.json`, `template-manifest.json`, `scripts/sync-template.mjs` |
 | Shell chrome | `app/shell/` (`shell.js`, `render-shell.js`, `also-see.js`, `page-nav.js`, `theme.js`, …) |
 | Shared utils | `app/utils/` (`dom.js`, `icons.js`, `icons-template.js`, `icons-app.js`, `menu.js`, `document-listeners.js`, `brand-icon.js`) |
-| Shared components | `app/components/` (`dialog.js`, `about-dialog.js`, `expand.js`, `tooltip.js`, `banner.js`, `dropdown.js`) |
+| Shared components | `app/components/` (`dialog.js`, `about-dialog.js`, `expand.js`, `tooltip.js`, `banner.js`, `dropdown.js`, `segmented-control.js`) |
 | UI orchestration | `app/function-creator.js` |
 | Card HTML templates | `app/function-creator-render.js` |
 | Expand/collapse lists | `app/function-creator-expand.js` |
@@ -26,7 +26,7 @@ Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functio
 | About / What? dialog | `app/components/about-dialog.js` — `#about-dialog` + tagline `#about-open-btn` in `index.html` (markup stages) |
 | Confirm dialog | `app/components/dialog.js` — `#import-confirm-dialog` in `index.html` |
 
-Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. Do **not** select `code-block` — highlighting stays fork-owned.
+Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown`, `segmented-control` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. Do **not** select `code-block` — highlighting stays fork-owned.
 
 Slim `package.json` exists only for template sync/verify scripts — not a runtime or bundler step.
 

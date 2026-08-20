@@ -107,7 +107,7 @@ export function createRenderer({ nextId }) {
     <div class="record-field-card param-card expand" data-field-id="${id}">
       <div class="param-card-top">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="${panelId}">
-          <span class="expand-notch" aria-hidden="true"></span>
+          <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg" aria-hidden="true"></span>
           <span class="expand-label record-field-title">${escapeText(title)}</span>
         </button>
         <button type="button" class="btn btn-with-icon remove-record-field" aria-label="Remove field">
@@ -173,7 +173,7 @@ export function createRenderer({ nextId }) {
     <div class="param-card expand" data-param-id="${id}">
       <div class="param-card-top">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="${panelId}">
-          <span class="expand-notch" aria-hidden="true"></span>
+          <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg" aria-hidden="true"></span>
           <span class="expand-label param-card-title">${escapeText(title)}</span>
         </button>
         <button type="button" class="btn btn-with-icon remove-parameter" aria-label="Remove parameter">
@@ -256,7 +256,7 @@ export function createRenderer({ nextId }) {
     <div class="param-card expand" data-example-id="${id}">
       <div class="param-card-top">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="${panelId}">
-          <span class="expand-notch" aria-hidden="true"></span>
+          <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg" aria-hidden="true"></span>
           <span class="expand-label param-card-title">${escapeText(title)}</span>
         </button>
         <button type="button" class="btn btn-with-icon remove-example" aria-label="Remove example">

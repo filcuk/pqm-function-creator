@@ -5,3 +5,13 @@
 @import url("../vendor/prism/prism.min.css");
 @import url("../prism-theme.css");
 @import url("../function-creator.css");
+
+/* Brand accents from app/res/app.svg (#ff6600 / #ff9955). */
+:root {
+  --accent: #ff6600;
+  --accent-fg: #0d1117;
+}
+
+:root[data-theme="dark"] {
+  --accent: #ff9955;
+}

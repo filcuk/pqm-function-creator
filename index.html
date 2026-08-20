@@ -4,9 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Power Query M Function Creator</title>
-    <link rel="icon" href="app/res/icon.svg" type="image/svg+xml" data-brand-icon />
+    <link rel="icon" href="app/res/app.svg" type="image/svg+xml" data-brand-icon />
     <script>
-      window.__MICROAPP__ = { themeStorageKey: "microapp-theme" };
+      window.__MICROAPP__ = {
+        themeStorageKey: "microapp-theme",
+        // Single logo (this fork has app/res/app.svg only — not a light/dark pair).
+        appIcon: "app/res/app.svg",
+        appIconLight: "",
+        appIconDark: "",
+      };
     </script>
     <script src="app/theme-init.js"></script>
     <link rel="stylesheet" href="app/styles.css" />
@@ -15,20 +21,11 @@
     <header>
       <div class="site-brand">
         <img
-          class="site-logo brand-icon--light"
-          src="app/res/icon.svg"
+          class="site-logo"
+          src="app/res/app.svg"
           alt=""
           width="40"
           height="40"
-          data-brand-icon
-        />
-        <img
-          class="site-logo brand-icon--dark"
-          src="app/res/icon.svg"
-          alt=""
-          width="40"
-          height="40"
-          aria-hidden="true"
           data-brand-icon
         />
         <h1>Power Query M Function Creator</h1>
@@ -52,7 +49,7 @@
 
       <div class="expand" id="import-section">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="import-panel">
-          <span class="expand-notch" aria-hidden="true"></span>
+          <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg" aria-hidden="true"></span>
           <span class="expand-label" id="import-heading">Import function</span>
         </button>
         <div id="import-panel" class="expand-panel hidden" hidden>
@@ -89,10 +86,6 @@
       <section class="creator-section" aria-labelledby="expression-heading">
         <h2 id="expression-heading" class="section-title">Expression</h2>
         <p class="field-hint">Insert the full <code>let … in</code> block that becomes the function body.</p>
-        <div id="expression-warning-banner" class="banner banner-note hidden" role="note" hidden>
-          <span class="banner-icon" data-icon="note" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
-          <span class="banner-body"></span>
-        </div>
         <label class="field field-span-all" for="expression-input">
           <span class="field-label">let … in block</span>
           <textarea
@@ -114,9 +107,36 @@
           </label>
           <div class="field function-field-style">
             <span class="field-label">Output style</span>
-            <div id="output-style-toggle" class="output-style-toggle" role="group" aria-label="Output style">
-              <button type="button" class="btn is-active" data-output-style="let" data-tooltip="Nested let … in expression" data-tooltip-position="bottom" aria-pressed="true">let … in</button>
-              <button type="button" class="btn" data-output-style="shared" data-tooltip="Top-level shared query" data-tooltip-position="bottom" aria-pressed="false">shared</button>
+            <div
+              id="output-style"
+              class="segmented-control"
+              data-segmented-control-default="let"
+            >
+              <div class="segmented-control-list" role="radiogroup" aria-label="Output style">
+                <button
+                  type="button"
+                  class="segmented-control-item"
+                  role="radio"
+                  aria-checked="true"
+                  data-segmented-control-value="let"
+                  data-tooltip="Nested let … in expression"
+                  data-tooltip-position="bottom"
+                >
+                  let … in
+                </button>
+                <button
+                  type="button"
+                  class="segmented-control-item"
+                  role="radio"
+                  aria-checked="false"
+                  data-segmented-control-value="shared"
+                  data-tooltip="Top-level shared query"
+                  data-tooltip-position="bottom"
+                >
+                  shared
+                </button>
+              </div>
+              <input type="hidden" class="segmented-control-value" name="output-style" value="let" />
             </div>
           </div>
           <label class="field function-field-return" for="return-type">
