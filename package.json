@@ -1,0 +1,9 @@
+{
+  "name": "pqm-function-creator",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync:template": "node scripts/sync-template.mjs",
+    "verify:template": "node scripts/verify-template.mjs"
+  }
+}
