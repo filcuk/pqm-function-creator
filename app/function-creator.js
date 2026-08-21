@@ -59,6 +59,8 @@ const validationBanner = document.getElementById("validation-banner");
 const copySuccessBanner = document.getElementById("copy-success-banner");
 const outputStyleEl = document.getElementById("output-style");
 const importInput = /** @type {HTMLTextAreaElement | null} */ (document.getElementById("import-input"));
+const importFunctionBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("import-function"));
+const clearImportBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("clear-import"));
 const importErrorBanner = document.getElementById("import-error-banner");
 const importSuccessBanner = document.getElementById("import-success-banner");
 
@@ -470,8 +472,19 @@ function applyImportedState(importedState) {
   showBanner(importSuccessBanner, { expire: IMPORT_SUCCESS_EXPIRE_MS });
 }
 
+function syncImportActions() {
+  const hasText = Boolean(importInput?.value.trim());
+  if (importFunctionBtn) importFunctionBtn.disabled = !hasText;
+  if (clearImportBtn) clearImportBtn.disabled = !hasText;
+}
+
 function requestImportFromPaste() {
   const source = importInput?.value || "";
+  if (!source.trim()) {
+    syncImportActions();
+    return;
+  }
+
   const result = tryParseFunction(source);
 
   hideBanner(importErrorBanner);
@@ -696,15 +709,18 @@ function bindStaticEvents() {
     }
   });
 
-  document.getElementById("import-function")?.addEventListener("click", requestImportFromPaste);
+  importFunctionBtn?.addEventListener("click", requestImportFromPaste);
 
-  document.getElementById("clear-import")?.addEventListener("click", () => {
+  importInput?.addEventListener("input", syncImportActions);
+
+  clearImportBtn?.addEventListener("click", () => {
     if (importInput) {
       importInput.value = "";
       refreshCodeEditor(importInput);
     }
     hideBanner(importErrorBanner);
     hideBanner(importSuccessBanner);
+    syncImportActions();
   });
 
   importConfirmDialog = initDialog({
@@ -715,6 +731,8 @@ function bindStaticEvents() {
   });
 
   document.getElementById("import-confirm-dialog-ok")?.addEventListener("click", confirmImport);
+
+  syncImportActions();
 }
 
 export function initFunctionCreator() {
