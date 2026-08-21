@@ -362,7 +362,10 @@ function readStateFromDom() {
   state.parameters = [];
 
   parametersList?.querySelectorAll("[data-param-id]").forEach((card) => {
-    const kind = card.querySelector(".param-kind")?.value || PARAM_KINDS.SCALAR;
+    const kindEl = /** @type {HTMLInputElement | null} */ (
+      card.querySelector(".param-kind-value")
+    );
+    const kind = kindEl?.value === PARAM_KINDS.RECORD ? PARAM_KINDS.RECORD : PARAM_KINDS.SCALAR;
     const param = {
       id: card.getAttribute("data-param-id") || undefined,
       name: card.querySelector(".param-name")?.value || "",
@@ -546,30 +549,37 @@ function bindParameterEvents() {
       }
     });
 
-    card.querySelector(".param-kind")?.addEventListener("change", (event) => {
-      const isRecord = event.target.value === PARAM_KINDS.RECORD;
-      const scalarMeta = card.querySelector(".param-scalar-meta");
-      const recordFields = card.querySelector(".param-record-fields");
-      card.querySelectorAll(".param-scalar-type, .param-scalar-only").forEach((el) => {
-        setHidden(el, isRecord);
-      });
-      setHidden(scalarMeta, isRecord);
-      setHidden(recordFields, !isRecord);
+    const kindControl = card.querySelector(".param-kind");
+    initSegmentedControl(kindControl, {
+      onChange: ({ value, source }) => {
+        if (source === "init") return;
 
-      if (isRecord) {
-        const list = card.querySelector(".record-fields-list");
-        if (list && list.children.length === 0) {
-          syncIdCounters();
-          const field = createDefaultRecordField();
-          field.id = nextId("field");
-          list.innerHTML = renderRecordField(field, 0);
-          initTooltips(list);
-          initIconsIn(list);
-          bindRecordFieldEvents(card);
-          initParamToggles(list);
-          initRecordFieldsForParamCard(card, { ensureOpenFieldIds: [field.id] });
+        const isRecord = value === PARAM_KINDS.RECORD;
+        const scalarMeta = card.querySelector(".param-scalar-meta");
+        const recordFields = card.querySelector(".param-record-fields");
+        card.querySelectorAll(".param-scalar-type, .param-scalar-only").forEach((el) => {
+          setHidden(el, isRecord);
+        });
+        setHidden(scalarMeta, isRecord);
+        setHidden(recordFields, !isRecord);
+
+        if (isRecord) {
+          const list = card.querySelector(".record-fields-list");
+          if (list && list.children.length === 0) {
+            syncIdCounters();
+            const field = createDefaultRecordField();
+            field.id = nextId("field");
+            list.innerHTML = renderRecordField(field, 0);
+            initTooltips(list);
+            initIconsIn(list);
+            bindRecordFieldEvents(card);
+            initParamToggles(list);
+            initRecordFieldsForParamCard(card, { ensureOpenFieldIds: [field.id] });
+          }
         }
-      }
+
+        scheduleRegenerate();
+      },
     });
 
     card.querySelector(".remove-parameter")?.addEventListener("click", () => {

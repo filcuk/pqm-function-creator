@@ -188,13 +188,40 @@ export function createRenderer({ nextId }) {
               <span class="field-label">Parameter name</span>
               <input type="text" id="param-${id}-name" class="input param-name" value="${escapeAttr(param.name)}" autocomplete="off" />
             </label>
-            <label class="field param-field-kind" for="param-${id}-kind">
-              <span class="field-label">Kind</span>
-              <select id="param-${id}-kind" class="input param-kind">
-                <option value="${PARAM_KINDS.SCALAR}"${!isRecord ? " selected" : ""}>Scalar</option>
-                <option value="${PARAM_KINDS.RECORD}"${isRecord ? " selected" : ""}>Record</option>
-              </select>
-            </label>
+            <div class="field param-field-kind">
+              <span class="field-label" id="param-${id}-kind-label">Kind</span>
+              <div
+                class="segmented-control segmented-control--full param-kind"
+                data-segmented-control-default="${isRecord ? PARAM_KINDS.RECORD : PARAM_KINDS.SCALAR}"
+              >
+                <div class="segmented-control-list" role="radiogroup" aria-labelledby="param-${id}-kind-label">
+                  <button
+                    type="button"
+                    class="segmented-control-item"
+                    role="radio"
+                    aria-checked="${isRecord ? "false" : "true"}"
+                    data-segmented-control-value="${PARAM_KINDS.SCALAR}"
+                  >
+                    Scalar
+                  </button>
+                  <button
+                    type="button"
+                    class="segmented-control-item"
+                    role="radio"
+                    aria-checked="${isRecord ? "true" : "false"}"
+                    data-segmented-control-value="${PARAM_KINDS.RECORD}"
+                  >
+                    Record
+                  </button>
+                </div>
+                <input
+                  type="hidden"
+                  class="segmented-control-value param-kind-value"
+                  name="param-${id}-kind"
+                  value="${isRecord ? PARAM_KINDS.RECORD : PARAM_KINDS.SCALAR}"
+                />
+              </div>
+            </div>
             <label class="field param-field-type param-scalar-type${isRecord ? " hidden" : ""}" for="param-${id}-type" ${isRecord ? "hidden" : ""}>
               <span class="field-label">Type</span>
               <select id="param-${id}-type" class="input param-type">${typeOptionsHtml(param.mType)}</select>
