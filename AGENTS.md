@@ -26,7 +26,7 @@ Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functio
 | About / What? dialog | `app/components/about-dialog.js` — `#about-dialog` + tagline `#about-open-btn` in `index.html` (markup stages) |
 | Confirm dialog | `app/components/dialog.js` — `#import-confirm-dialog` in `index.html` |
 
-Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown`, `segmented-control`, `chip` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. Do **not** select `code-block` — highlighting stays fork-owned.
+Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown`, `segmented-control`, `chip`, `toggle-button` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. Do **not** select `code-block` — highlighting stays fork-owned.
 
 Slim `package.json` exists only for template sync/verify scripts — not a runtime or bundler step.
 
@@ -137,7 +137,7 @@ Configured in `app/config.js` (`alsoSeeUrl`, `alsoSeeTopics`, `alsoSee`, `appUrl
 ## Accessibility
 
 - Dialogs: focus trap, Escape to close, restore focus, `aria-modal`, labelled titles
-- Toggle buttons: `aria-pressed` on `.param-toggle`
+- Toggle buttons: framework `.btn-toggle` + `initToggleButton` (`aria-pressed`)
 - Tooltips: `aria-describedby` via `initTooltips()`
 - Collapsible cards: expand component with `aria-expanded` on triggers
 - Skip link → `#main`; page-nav up/down jumps (`showHeadingList: false` in `main.js`)

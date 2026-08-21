@@ -72,7 +72,7 @@ export function createRenderer({ nextId }) {
    * @param {{ id: string, className: string, label: string, pressed: boolean }} options
    */
   function renderToggleButton({ id, className, label, pressed }) {
-    return `<button type="button" id="${id}" class="btn param-toggle ${className}${pressed ? " is-active" : ""}" aria-pressed="${pressed ? "true" : "false"}">${escapeText(label)}</button>`;
+    return `<button type="button" id="${id}" class="btn btn-toggle ${className}" data-toggle-button aria-pressed="${pressed ? "true" : "false"}">${escapeText(label)}</button>`;
   }
 
   /**

@@ -174,16 +174,6 @@
   margin: 0;
 }
 
-.param-toggle.is-active {
-  background: var(--accent);
-  color: #ffffff;
-  border-color: var(--accent);
-}
-
-:root[data-theme="dark"] .param-toggle.is-active {
-  color: #0d1117;
-}
-
 .param-field-optional,
 .param-field-nullable,
 .meta-field-multiline,

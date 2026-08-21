@@ -3,6 +3,7 @@ import { initDialog } from "./components/dialog.js";
 import { initExpand } from "./components/expand.js";
 import { initSegmentedControl } from "./components/segmented-control.js";
 import { initChipInput } from "./components/chip.js";
+import { initToggleButton } from "./components/toggle-button.js";
 import { showBanner, hideBanner } from "./components/banner.js";
 import { mountIcon } from "./utils/icons.js";
 import { initTooltips } from "./components/tooltip.js";
@@ -259,44 +260,40 @@ function initIconsIn(scope) {
 
 /**
  * @param {Element | null | undefined} el
+ * @returns {boolean}
  */
 function isTogglePressed(el) {
   return el?.getAttribute("aria-pressed") === "true";
 }
 
 /**
- * @param {Element | null | undefined} el
- * @param {boolean} pressed
- */
-function setTogglePressed(el, pressed) {
-  if (!el) return;
-  el.classList.toggle("is-active", pressed);
-  el.setAttribute("aria-pressed", pressed ? "true" : "false");
-}
-
-/**
  * @param {ParentNode} scope
  */
 function initParamToggles(scope) {
-  scope.querySelectorAll(".param-toggle").forEach((button) => {
+  scope.querySelectorAll(".btn-toggle[data-toggle-button]").forEach((button) => {
+    if (!(button instanceof HTMLButtonElement)) return;
     if (button.dataset.toggleInit === "true") return;
     button.dataset.toggleInit = "true";
 
-    button.addEventListener("click", () => {
-      const nextPressed = !isTogglePressed(button);
-      setTogglePressed(button, nextPressed);
+    const api = initToggleButton(button, {
+      onChange: ({ pressed, source }) => {
+        if (source === "init") return;
 
-      if (
-        nextPressed &&
-        (button.classList.contains("param-optional") || button.classList.contains("field-optional"))
-      ) {
-        const scopeEl = button.closest("[data-param-id], [data-field-id]");
-        const nullable = scopeEl?.querySelector(".param-nullable, .field-nullable");
-        setTogglePressed(nullable, true);
-      }
+        if (
+          pressed &&
+          (button.classList.contains("param-optional") || button.classList.contains("field-optional"))
+        ) {
+          const scopeEl = button.closest("[data-param-id], [data-field-id]");
+          const nullable = scopeEl?.querySelector(".param-nullable, .field-nullable");
+          /** @type {{ setPressed?: (next: boolean, opts?: { emit?: boolean }) => void } | undefined} */
+          const nullableApi = nullable?.__fcToggle;
+          nullableApi?.setPressed?.(true, { emit: false });
+        }
 
-      scheduleRegenerate();
+        scheduleRegenerate();
+      },
     });
+    button.__fcToggle = api;
   });
 }
 

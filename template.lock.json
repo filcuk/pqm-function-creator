@@ -9,7 +9,8 @@
     "fields",
     "dropdown",
     "segmented-control",
-    "chip"
+    "chip",
+    "toggle-button"
   ],
   "skills": [
     "*"
