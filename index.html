@@ -54,10 +54,9 @@
         </button>
         <div id="import-panel" class="expand-panel hidden" hidden>
           <p class="field-hint">
-            Import an existing function to modify.
+            If you have an existing function, you can import it whole, pre-populating below forms for further modification.
           </p>
           <label class="field" for="import-input">
-            <span class="field-label">Function M code</span>
             <textarea
               id="import-input"
               class="textarea code-input"
@@ -85,9 +84,8 @@
 
       <section class="creator-section" aria-labelledby="expression-heading">
         <h2 id="expression-heading" class="section-title">Expression</h2>
-        <p class="field-hint">Insert the full <code>let … in</code> block that becomes the function body.</p>
+        <p class="field-hint">Insert the <code>let … in</code> block that becomes the function body.</p>
         <label class="field field-span-all" for="expression-input">
-          <span class="field-label">let … in block</span>
           <textarea
             id="expression-input"
             class="textarea code-input"
@@ -152,6 +150,9 @@
 
       <section class="creator-section" aria-labelledby="documentation-heading">
         <h2 id="documentation-heading" class="section-title">Documentation</h2>
+        <p class="panel-hint">
+          Optional name, description, and examples shown in Power Query’s function invocation dialog and function info.
+        </p>
         <div class="field-grid documentation-field-grid">
           <label class="field documentation-field-name" for="doc-name">
             <span
@@ -172,6 +173,8 @@
             <textarea id="doc-long-description" class="textarea" rows="3"></textarea>
           </label>
         </div>
+
+        <hr class="panel-divider" />
 
         <div class="function-examples">
           <div class="toolbar examples-toolbar">
