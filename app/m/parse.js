@@ -507,22 +507,22 @@ export function tryParseFunction(source) {
     return { ok: true, state: parseFunction(source) };
   } catch (error) {
     const message = error instanceof ParseError ? error.message : "Failed to parse function.";
-    const isMissingReplaceType =
-      error instanceof ParseError && message.includes("Could not find Value.ReplaceType");
 
-    if (isMissingReplaceType) {
-      const expression = detectLetExpression(source);
-      if (expression != null) {
-        return {
-          ok: false,
-          kind: "expression-only",
-          warning:
-            "This looks like a let … in expression, not a documented function.",
-          expression,
-        };
-      }
+    const expression = detectLetExpression(source);
+    if (expression != null) {
+      return {
+        ok: false,
+        kind: "expression-only",
+        warning:
+          "This looks like a let … in expression, not a documented function.",
+        expression,
+      };
     }
 
-    return { ok: false, error: message };
+    return {
+      ok: false,
+      error: message,
+      help: message.includes("Failed to detect a documented function"),
+    };
   }
 }

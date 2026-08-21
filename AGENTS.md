@@ -26,7 +26,7 @@ Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functio
 | About / What? dialog | `app/components/about-dialog.js` — `#about-dialog` + tagline `#about-open-btn` in `index.html` (markup stages) |
 | Confirm dialog | `app/components/dialog.js` — `#import-confirm-dialog` in `index.html` |
 
-Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown`, `segmented-control`, `chip`, `toggle-button`, `code-block`, `expandable-surface` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. Fork-owned editable fields use `code-editor.js`; generated **Output** uses catalogue `code-block` + Power Query Prism (`prism-powerquery.min.js`).
+Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown`, `segmented-control`, `chip`, `toggle-button`, `code-block`, `expandable-surface`, `popover` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. Fork-owned editable fields use `code-editor.js`; generated **Output** uses catalogue `code-block` + Power Query Prism (`prism-powerquery.min.js`).
 
 Slim `package.json` exists only for template sync/verify scripts — not a runtime or bundler step.
 

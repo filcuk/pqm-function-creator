@@ -229,6 +229,26 @@
   flex-shrink: 0;
 }
 
+.banner-inline .btn-link {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.import-help-popover-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.import-help-popover-body p,
+.import-help-popover-body ul {
+  margin: 0;
+}
+
+.import-help-popover-body ul {
+  padding-left: 1.25rem;
+}
+
 .banner-inline .banner-icon {
   margin-top: 0;
 }

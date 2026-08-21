@@ -6,6 +6,7 @@ import { initChipInput } from "./components/chip.js";
 import { initToggleButton } from "./components/toggle-button.js";
 import { initCodeBlock } from "./components/code-block.js";
 import { initExpandableSurfaces } from "./components/expandable-surface.js";
+import { initPopover } from "./components/popover.js";
 import { showBanner, hideBanner } from "./components/banner.js";
 import { mountIcon } from "./utils/icons.js";
 import { initTooltips } from "./components/tooltip.js";
@@ -61,6 +62,9 @@ const importInput = /** @type {HTMLTextAreaElement | null} */ (document.getEleme
 const importFunctionBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("import-function"));
 const clearImportBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("clear-import"));
 const importErrorBanner = document.getElementById("import-error-banner");
+const importErrorHelpBtn = /** @type {HTMLButtonElement | null} */ (
+  document.getElementById("import-error-help")
+);
 const importWarningBanner = document.getElementById("import-warning-banner");
 const importUseAsExpressionBtn = /** @type {HTMLButtonElement | null} */ (
   document.getElementById("import-use-as-expression")
@@ -78,6 +82,9 @@ let returnTypeDropdown = null;
 
 /** @type {ReturnType<typeof initExpand> | null} */
 let importExpand = null;
+
+/** @type {ReturnType<typeof initPopover> | null} */
+let importHelpPopover = null;
 
 /** @type {string | null} */
 let pendingExpressionOffer = null;
@@ -618,6 +625,8 @@ function hideImportBanners() {
   hideBanner(importWarningBanner);
   hideBanner(importSuccessBanner);
   setHidden(importUseAsExpressionBtn, true);
+  setHidden(importErrorHelpBtn, true);
+  importHelpPopover?.close();
   pendingExpressionOffer = null;
 }
 
@@ -664,6 +673,7 @@ function requestImportFromPaste() {
 
     setBannerMessage(importErrorBanner, result.error);
     setHidden(importErrorBanner, false);
+    setHidden(importErrorHelpBtn, !result.help);
     return;
   }
 
@@ -874,6 +884,49 @@ function bindStaticEvents() {
   importUseAsExpressionBtn?.addEventListener("click", () => {
     if (!pendingExpressionOffer) return;
     applyExpressionFromImport(pendingExpressionOffer);
+  });
+
+  importHelpPopover = initPopover({
+    anchor: importErrorHelpBtn,
+    title: "What can I import?",
+    body: (() => {
+      const wrap = document.createElement("div");
+      wrap.className = "import-help-popover-body";
+
+      const intro = document.createElement("p");
+      intro.textContent =
+        "Input a documented Power Query function that ends with Value.ReplaceType(impl, type) — either a let … in block or a shared declaration.";
+
+      const shape = document.createElement("p");
+      shape.textContent = "Typical shape:";
+
+      const list = document.createElement("ul");
+      for (const item of [
+        "an implementation (parameters) as type => expression",
+        "a type function (…) as type meta [ Documentation… ]",
+        "Value.ReplaceType(implementation, type)",
+      ]) {
+        const li = document.createElement("li");
+        li.textContent = item;
+        list.append(li);
+      }
+
+      const tip = document.createElement("p");
+      tip.textContent =
+        "A plain let … in expression (without Value.ReplaceType) can be moved into the Expression field instead.";
+
+      wrap.append(intro, shape, list, tip);
+      return wrap;
+    })(),
+    position: "auto",
+    dismissible: true,
+    actions: [{ label: "Got it", className: "btn btn-primary" }],
+  });
+
+  importErrorHelpBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    importHelpPopover?.open();
   });
 
   importConfirmDialog = initDialog({

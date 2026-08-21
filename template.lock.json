@@ -12,7 +12,8 @@
     "chip",
     "toggle-button",
     "code-block",
-    "expandable-surface"
+    "expandable-surface",
+    "popover"
   ],
   "skills": [
     "*"
