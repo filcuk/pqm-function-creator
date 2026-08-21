@@ -275,6 +275,7 @@
   border-radius: 6px;
   background: var(--bg);
   width: 100%;
+  transition: border-color var(--control-hover-ms) ease-out, background var(--control-hover-ms) ease-out;
 }
 
 .param-card-top {
@@ -288,6 +289,23 @@
   flex: 1;
   padding: 0.35rem 0;
   min-width: 0;
+  /* Framework trigger hover draws an inset ring; keep the accent on the card edge. */
+  border-color: transparent;
+}
+
+.param-card-top .expand-trigger:hover,
+.param-card-top .expand-trigger:focus-visible {
+  border-color: transparent;
+  background: transparent;
+  outline: none;
+  transition-duration: 0s;
+}
+
+.param-card:has(.expand-trigger:hover),
+.param-card:has(.expand-trigger:focus-visible) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+  transition-duration: 0s;
 }
 
 .param-card-top .remove-parameter,
