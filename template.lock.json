@@ -13,7 +13,8 @@
     "toggle-button",
     "code-block",
     "expandable-surface",
-    "popover"
+    "popover",
+    "badge"
   ],
   "skills": [
     "*"

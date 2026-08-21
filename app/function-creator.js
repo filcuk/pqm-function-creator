@@ -4,6 +4,7 @@ import { initExpand } from "./components/expand.js";
 import { initSegmentedControl } from "./components/segmented-control.js";
 import { initChipInput } from "./components/chip.js";
 import { initToggleButton } from "./components/toggle-button.js";
+import { initBadge } from "./components/badge.js";
 import { initCodeBlock } from "./components/code-block.js";
 import { initExpandableSurfaces } from "./components/expandable-surface.js";
 import { initPopover } from "./components/popover.js";
@@ -88,6 +89,12 @@ let importHelpPopover = null;
 
 /** @type {ReturnType<typeof initPopover> | null} */
 let outputStylePopover = null;
+
+/** @type {ReturnType<typeof initBadge> | null} */
+let examplesCountBadge = null;
+
+/** @type {ReturnType<typeof initBadge> | null} */
+let parametersCountBadge = null;
 
 /** @type {string | null} */
 let pendingExpressionOffer = null;
@@ -316,12 +323,18 @@ function initParamToggles(scope) {
   });
 }
 
+function syncSectionCountBadges() {
+  examplesCountBadge?.setValue(state.functionMeta?.examples?.length || 0);
+  parametersCountBadge?.setValue(state.parameters?.length || 0);
+}
+
 function renderParameters({ ensureOpenIds = [], ensureOpenFieldIds = [] } = {}) {
   if (!parametersList) return;
 
   paramExpand.syncFromDom(parametersList, "data-param-id");
 
   parametersList.innerHTML = state.parameters.map(renderParameter).join("");
+  syncSectionCountBadges();
   paramExpand.initBlocks(parametersList, {
     idAttr: "data-param-id",
     ensureOpenIds,
@@ -353,6 +366,7 @@ function renderExamples({ ensureOpenIds = [] } = {}) {
   examplesList.innerHTML = state.functionMeta.examples
     .map((example, index) => renderExample(example, index))
     .join("");
+  syncSectionCountBadges();
   exampleExpand.initBlocks(examplesList, {
     idAttr: "data-example-id",
     ensureOpenIds,
@@ -1051,6 +1065,9 @@ function bindStaticEvents() {
 
 export function initFunctionCreator() {
   if (!root) return;
+
+  examplesCountBadge = initBadge(document.getElementById("examples-count-badge"), { value: 0 });
+  parametersCountBadge = initBadge(document.getElementById("parameters-count-badge"), { value: 0 });
 
   mountReturnTypeDropdown();
   bindStaticEvents();

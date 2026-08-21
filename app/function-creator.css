@@ -302,6 +302,17 @@
   justify-content: space-between;
 }
 
+.examples-toolbar .badge-host,
+.parameters-toolbar .badge-host {
+  --badge-ring: var(--surface);
+}
+
+/* Keep corner placement; nudge further past the title’s right edge */
+.examples-toolbar .badge,
+.parameters-toolbar .badge {
+  transform: translate(115%, -40%);
+}
+
 .parameters-toolbar-actions {
   display: flex;
   flex-wrap: wrap;
