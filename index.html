@@ -50,11 +50,11 @@
       <div class="expand" id="import-section">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="import-panel">
           <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg" aria-hidden="true"></span>
-          <span class="expand-label" id="import-heading">Import function</span>
+          <span class="expand-label" id="import-heading">Import existing function</span>
         </button>
         <div id="import-panel" class="expand-panel hidden" hidden>
           <p class="field-hint">
-            If you have an existing function, you can import it whole, pre-populating below forms for further modification.
+            You can import an existing function for further modification.
           </p>
           <label class="field" for="import-input">
             <textarea
@@ -73,6 +73,11 @@
                 <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
                 <span class="banner-body"></span>
               </div>
+              <div id="import-warning-banner" class="banner banner-inline banner-warning hidden" role="status" hidden>
+                <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+                <span class="banner-body"></span>
+              </div>
+              <button type="button" id="import-use-as-expression" class="btn hidden" hidden>Use as expression</button>
               <div id="import-success-banner" class="banner banner-inline banner-success hidden" role="status" hidden>
                 <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
                 <span class="banner-body">Function imported.</span>

@@ -61,6 +61,10 @@ const importInput = /** @type {HTMLTextAreaElement | null} */ (document.getEleme
 const importFunctionBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("import-function"));
 const clearImportBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("clear-import"));
 const importErrorBanner = document.getElementById("import-error-banner");
+const importWarningBanner = document.getElementById("import-warning-banner");
+const importUseAsExpressionBtn = /** @type {HTMLButtonElement | null} */ (
+  document.getElementById("import-use-as-expression")
+);
 const importSuccessBanner = document.getElementById("import-success-banner");
 
 /** @type {ReturnType<typeof initSegmentedControl> | null} */
@@ -71,6 +75,12 @@ let outputCodeBlock = null;
 
 /** @type {HTMLElement | null} */
 let returnTypeDropdown = null;
+
+/** @type {ReturnType<typeof initExpand> | null} */
+let importExpand = null;
+
+/** @type {string | null} */
+let pendingExpressionOffer = null;
 
 /**
  * @param {string} prefix
@@ -598,7 +608,32 @@ function applyImportedState(importedState) {
   applyStateToDom();
   saveDraft(state);
 
+  hideImportBanners();
+  setBannerMessage(importSuccessBanner, "Function imported.");
   showBanner(importSuccessBanner, { expire: IMPORT_SUCCESS_EXPIRE_MS });
+}
+
+function hideImportBanners() {
+  hideBanner(importErrorBanner);
+  hideBanner(importWarningBanner);
+  hideBanner(importSuccessBanner);
+  setHidden(importUseAsExpressionBtn, true);
+  pendingExpressionOffer = null;
+}
+
+function applyExpressionFromImport(expression) {
+  expressionInput.value = expression;
+  refreshCodeEditor(expressionInput);
+  readStateFromDom();
+  regenerate();
+
+  if (importInput) {
+    importInput.value = "";
+    refreshCodeEditor(importInput);
+  }
+  syncImportActions();
+  hideImportBanners();
+  importExpand?.close();
 }
 
 function syncImportActions() {
@@ -616,10 +651,17 @@ function requestImportFromPaste() {
 
   const result = tryParseFunction(source);
 
-  hideBanner(importErrorBanner);
-  hideBanner(importSuccessBanner);
+  hideImportBanners();
 
   if (!result.ok) {
+    if (result.kind === "expression-only") {
+      pendingExpressionOffer = result.expression;
+      setBannerMessage(importWarningBanner, result.warning);
+      setHidden(importWarningBanner, false);
+      setHidden(importUseAsExpressionBtn, false);
+      return;
+    }
+
     setBannerMessage(importErrorBanner, result.error);
     setHidden(importErrorBanner, false);
     return;
@@ -813,16 +855,25 @@ function bindStaticEvents() {
 
   importFunctionBtn?.addEventListener("click", requestImportFromPaste);
 
-  importInput?.addEventListener("input", syncImportActions);
+  importInput?.addEventListener("input", () => {
+    hideBanner(importWarningBanner);
+    setHidden(importUseAsExpressionBtn, true);
+    pendingExpressionOffer = null;
+    syncImportActions();
+  });
 
   clearImportBtn?.addEventListener("click", () => {
     if (importInput) {
       importInput.value = "";
       refreshCodeEditor(importInput);
     }
-    hideBanner(importErrorBanner);
-    hideBanner(importSuccessBanner);
+    hideImportBanners();
     syncImportActions();
+  });
+
+  importUseAsExpressionBtn?.addEventListener("click", () => {
+    if (!pendingExpressionOffer) return;
+    applyExpressionFromImport(pendingExpressionOffer);
   });
 
   importConfirmDialog = initDialog({
@@ -843,7 +894,7 @@ export function initFunctionCreator() {
   mountReturnTypeDropdown();
   bindStaticEvents();
 
-  initExpand(document.getElementById("import-section"));
+  importExpand = initExpand(document.getElementById("import-section"));
 
   initCodeEditors(root);
   if (outputPreview instanceof HTMLElement) {

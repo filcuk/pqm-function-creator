@@ -213,7 +213,9 @@
 
 .banner-inline {
   margin: 0;
-  padding: 0.5rem 1rem;
+  /* Match catalogue `.banner` box (padding is included in min-height). */
+  min-height: var(--control-height);
+  padding: 0 1rem;
   font: inherit;
   align-items: center;
   gap: 0.5rem;
@@ -221,6 +223,10 @@
   width: 100%;
   min-width: 0;
   max-width: none;
+}
+
+#import-use-as-expression {
+  flex-shrink: 0;
 }
 
 .banner-inline .banner-icon {
