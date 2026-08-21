@@ -202,21 +202,22 @@
         <div id="parameters-list" class="param-list"></div>
       </section>
 
-      <section class="creator-section" aria-labelledby="output-heading">
-        <h2 id="output-heading" class="section-title">M Function</h2>
+      <section class="output-section" aria-labelledby="output-heading">
+        <h2 id="output-heading" class="section-title">Output</h2>
         <div
           id="output-preview"
-          class="code-editor code-editor-readonly code-output-block"
-          aria-label="Generated M code"
-          style="--code-rows: 16"
+          class="code-block code-block--full"
+          data-code-mode="select"
+          data-code-toolbar="top"
+          data-code-toolbar-actions="copy,maximize"
+          data-code-surface-actions="none"
+          data-expandable-surface
+          data-expandable-surface-label="Output"
+          data-expandable-surface-control="false"
         >
-          <pre class="code-editor-highlight language-powerquery"><code></code></pre>
-        </div>
-        <div class="toolbar output-actions">
-          <button type="button" id="copy-output" class="btn btn-primary btn-with-icon">
-            <span data-icon="copy" aria-hidden="true"></span>
-            <span class="copy-output-label">Copy</span>
-          </button>
+          <div class="code-block-body" data-expandable-surface-trigger>
+            <pre class="line-numbers language-powerquery"><code class="language-powerquery"></code></pre>
+          </div>
         </div>
       </section>
       </div>
@@ -308,7 +309,8 @@
       </div>
     </div>
 
-    <script src="app/vendor/prism/prism-core.min.js"></script>
+    <script src="app/vendor/prism/prism.min.js"></script>
+    <script src="app/vendor/prism/prism-line-numbers.min.js"></script>
     <script src="app/vendor/prism/prism-powerquery.min.js"></script>
     <script type="module" src="app/main.js"></script>
   </body>

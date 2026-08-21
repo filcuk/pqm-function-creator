@@ -4,17 +4,15 @@ import { initExpand } from "./components/expand.js";
 import { initSegmentedControl } from "./components/segmented-control.js";
 import { initChipInput } from "./components/chip.js";
 import { initToggleButton } from "./components/toggle-button.js";
+import { initCodeBlock } from "./components/code-block.js";
+import { initExpandableSurfaces } from "./components/expandable-surface.js";
 import { showBanner, hideBanner } from "./components/banner.js";
 import { mountIcon } from "./utils/icons.js";
 import { initTooltips } from "./components/tooltip.js";
-import { copyText } from "./utils/clipboard.js";
 import { initPopupMenu } from "./utils/menu.js";
 import {
-  getCodeBlockText,
-  initCodeBlock,
   initCodeEditors,
   refreshCodeEditor,
-  setCodeBlock,
 } from "./code-editor.js";
 import { saveDraft, loadDraftState } from "./function-creator-draft.js";
 import { createExpandListController } from "./function-creator-expand.js";
@@ -33,7 +31,6 @@ import {
 } from "./m/types.js";
 
 const REGEN_DELAY_MS = 200;
-const COPY_FEEDBACK_MS = 2000;
 const IMPORT_SUCCESS_EXPIRE_MS = 4000;
 
 /** @type {ReturnType<typeof createDefaultState> & { parameters: ReturnType<typeof createDefaultParameter>[] }} */
@@ -59,7 +56,6 @@ const examplesList = document.getElementById("examples-list");
 const parametersList = document.getElementById("parameters-list");
 const outputPreview = document.getElementById("output-preview");
 const validationBanner = document.getElementById("validation-banner");
-const copyOutputBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("copy-output"));
 const outputStyleEl = document.getElementById("output-style");
 const importInput = /** @type {HTMLTextAreaElement | null} */ (document.getElementById("import-input"));
 const importFunctionBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("import-function"));
@@ -69,6 +65,9 @@ const importSuccessBanner = document.getElementById("import-success-banner");
 
 /** @type {ReturnType<typeof initSegmentedControl> | null} */
 let outputStyleControl = null;
+
+/** @type {ReturnType<typeof initCodeBlock> | null} */
+let outputCodeBlock = null;
 
 /** @type {HTMLElement | null} */
 let returnTypeDropdown = null;
@@ -547,7 +546,7 @@ function updateBanners() {
 function updateOutputFromState() {
   updateBanners();
   const output = errorsBlockGeneration() ? "" : generateOutput(state);
-  if (outputPreview) setCodeBlock(outputPreview, output);
+  outputCodeBlock?.setSource(output);
   saveDraft(state);
 }
 
@@ -640,23 +639,6 @@ function confirmImport() {
 
 /** @type {ReturnType<typeof initDialog> | null} */
 let importConfirmDialog = null;
-
-/** @type {number | undefined} */
-let copyFeedbackTimer;
-
-function flashCopyOutputFeedback(ok) {
-  const btn = copyOutputBtn;
-  if (!btn) return;
-
-  const labelEl = btn.querySelector(".copy-output-label");
-  if (!(labelEl instanceof HTMLElement)) return;
-
-  window.clearTimeout(copyFeedbackTimer);
-  labelEl.textContent = ok ? "Copied" : "Failed";
-  copyFeedbackTimer = window.setTimeout(() => {
-    labelEl.textContent = "Copy";
-  }, COPY_FEEDBACK_MS);
-}
 
 function setOutputStyle(style) {
   const next = style === OUTPUT_STYLES.SHARED ? OUTPUT_STYLES.SHARED : OUTPUT_STYLES.LET;
@@ -829,23 +811,6 @@ function bindStaticEvents() {
     },
   });
 
-  copyOutputBtn?.addEventListener("click", async () => {
-    regenerate();
-    const text = outputPreview ? getCodeBlockText(outputPreview) : "";
-
-    if (!text) {
-      const errors = validateState(state);
-      if (errors.length > 0) {
-        setBannerMessage(validationBanner, errors.join(" "));
-        setHidden(validationBanner, false);
-      }
-      return;
-    }
-
-    const ok = await copyText(text);
-    flashCopyOutputFeedback(ok);
-  });
-
   importFunctionBtn?.addEventListener("click", requestImportFromPaste);
 
   importInput?.addEventListener("input", syncImportActions);
@@ -881,7 +846,10 @@ export function initFunctionCreator() {
   initExpand(document.getElementById("import-section"));
 
   initCodeEditors(root);
-  if (outputPreview) initCodeBlock(outputPreview);
+  if (outputPreview instanceof HTMLElement) {
+    outputCodeBlock = initCodeBlock(outputPreview);
+    initExpandableSurfaces(root);
+  }
 
   const draft = loadDraftState();
   if (draft) {

@@ -10,7 +10,9 @@
     "dropdown",
     "segmented-control",
     "chip",
-    "toggle-button"
+    "toggle-button",
+    "code-block",
+    "expandable-surface"
   ],
   "skills": [
     "*"

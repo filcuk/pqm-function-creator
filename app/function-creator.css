@@ -20,6 +20,17 @@
   margin-bottom: 0.25rem;
 }
 
+.output-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Collapsed output height only — do not override maximised / gutter layout. */
+#output-preview.code-block:not(.is-expanded) .code-block-body pre {
+  min-height: 14rem;
+}
+
 /* Code fields span the full section width (override .field max-width) */
 #function-creator .field:has(.code-input),
 #function-creator .field:has(.code-editor) {
@@ -180,15 +191,6 @@
 .meta-field-code {
   display: flex;
   align-items: center;
-}
-
-.output-actions {
-  width: 100%;
-}
-
-.output-actions #copy-output {
-  margin-left: auto;
-  flex-shrink: 0;
 }
 
 .toolbar-with-status {

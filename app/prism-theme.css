@@ -97,9 +97,9 @@
   color: var(--prism-property);
 }
 
-/* Override default Prism theme backgrounds — use app tokens */
-code[class*="language-"],
-pre[class*="language-"] {
+/* Override default Prism theme backgrounds — fork code-editor only (not catalogue code-block). */
+.code-editor-highlight code[class*="language-"],
+pre.code-editor-highlight[class*="language-"] {
   background: transparent;
   text-shadow: none;
 }

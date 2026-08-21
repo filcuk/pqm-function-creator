@@ -15,18 +15,18 @@ Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functio
 | Template pin | `template.lock.json`, `template-manifest.json`, `scripts/sync-template.mjs` |
 | Shell chrome | `app/shell/` (`shell.js`, `render-shell.js`, `also-see.js`, `page-nav.js`, `theme.js`, …) |
 | Shared utils | `app/utils/` (`dom.js`, `icons.js`, `icons-template.js`, `icons-app.js`, `menu.js`, `document-listeners.js`, `brand-icon.js`) |
-| Shared components | `app/components/` (`dialog.js`, `about-dialog.js`, `expand.js`, `tooltip.js`, `banner.js`, `dropdown.js`, `segmented-control.js`) |
+| Shared components | `app/components/` (`dialog.js`, `about-dialog.js`, `expand.js`, `tooltip.js`, `banner.js`, `dropdown.js`, `segmented-control.js`, `chip.js`, `toggle-button.js`, `code-block.js`, `expandable-surface.js`) |
 | UI orchestration | `app/function-creator.js` |
 | Card HTML templates | `app/function-creator-render.js` |
 | Expand/collapse lists | `app/function-creator-expand.js` |
 | localStorage draft | `app/function-creator-draft.js` |
 | M generate/parse/format | `app/m/generate.js`, `parse.js`, `format.js`, `scan.js`, `types.js`, `escape.js` |
-| Code highlighting | `app/code-editor.js` + fork Prism (`app/vendor/prism/prism-core.min.js`, `prism-powerquery.min.js`) |
+| Code highlighting | Editable: `app/code-editor.js`. Output: catalogue `code-block` + Prism (`prism.min.js`, `prism-line-numbers.min.js`, fork `prism-powerquery.min.js`) |
 | App-specific layout | `app/function-creator.css` (imported from `app/css/app.css`) |
 | About / What? dialog | `app/components/about-dialog.js` — `#about-dialog` + tagline `#about-open-btn` in `index.html` (markup stages) |
 | Confirm dialog | `app/components/dialog.js` — `#import-confirm-dialog` in `index.html` |
 
-Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown`, `segmented-control`, `chip`, `toggle-button` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. Do **not** select `code-block` — highlighting stays fork-owned.
+Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown`, `segmented-control`, `chip`, `toggle-button`, `code-block`, `expandable-surface` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. Fork-owned editable fields use `code-editor.js`; generated **Output** uses catalogue `code-block` + Power Query Prism (`prism-powerquery.min.js`).
 
 Slim `package.json` exists only for template sync/verify scripts — not a runtime or bundler step.
 
@@ -150,7 +150,7 @@ Run with `npx serve .` and verify:
 2. **Parameters** — add scalar and record parameters; toggle optional/nullable; expand/collapse all; record fields add/remove/expand.
 3. **Examples** — add/remove; description updates card title; code/result edit and appear in generated meta.
 4. **Return type** — primitive options including `null` and `none`; custom type field shows for “custom…”.
-5. **Output styles** — switch let/shared; copy button flashes Copy → Copied (or Failed), or shows validation banner when invalid.
+5. **Output** — section has no card chrome; top toolbar Copy / Maximize; maximize expands overlay; switch let/shared regenerates.
 6. **Import** — invalid paste shows error banner; valid paste opens confirm dialog; cancel leaves form; confirm replaces state and shows success banner.
 7. **Draft** — edit fields, reload page, draft restores; corrupt localStorage does not break the app.
 8. **Theme** — light/dark/auto via footer toggle without flash on reload.

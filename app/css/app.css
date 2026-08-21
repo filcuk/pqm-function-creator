@@ -2,7 +2,7 @@
  * Fork-owned styles. Never overwritten by template sync.
  * App sheets and local Prism theme live here (not in the generated template index).
  */
-@import url("../vendor/prism/prism.min.css");
+@import url("../prism.css");
 @import url("../prism-theme.css");
 @import url("../function-creator.css");
 
