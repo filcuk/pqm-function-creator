@@ -316,6 +316,10 @@
   width: 100%;
 }
 
+.param-list:empty {
+  display: none;
+}
+
 .param-card {
   border: 1px solid var(--border);
   border-radius: 6px;
