@@ -2,6 +2,7 @@ import { setHidden } from "./utils/dom.js";
 import { initDialog } from "./components/dialog.js";
 import { initExpand } from "./components/expand.js";
 import { initSegmentedControl } from "./components/segmented-control.js";
+import { initChipInput } from "./components/chip.js";
 import { showBanner, hideBanner } from "./components/banner.js";
 import { mountIcon } from "./utils/icons.js";
 import { initTooltips } from "./components/tooltip.js";
@@ -19,7 +20,6 @@ import { createExpandListController } from "./function-creator-expand.js";
 import { createRenderer, typeDropdownHtml } from "./function-creator-render.js";
 import { generateOutput, validateState } from "./m/generate.js";
 import { tryParseFunction } from "./m/parse.js";
-import { parseLinesToValues } from "./m/escape.js";
 import {
   createDefaultExample,
   createDefaultParameter,
@@ -160,6 +160,52 @@ function getReturnTypeDropdownValue() {
 }
 
 /**
+ * @param {HTMLElement} el
+ * @returns {string[]}
+ */
+function parseChipValuesAttr(el) {
+  try {
+    const raw = el.getAttribute("data-chip-values");
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed)
+      ? parsed.filter((value) => typeof value === "string" && value.trim())
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * @param {Element | null | undefined} chipInputEl
+ * @returns {string[]}
+ */
+function readChipInputValues(chipInputEl) {
+  if (!chipInputEl) return [];
+  return [...chipInputEl.querySelectorAll(":scope > .chip-input-list .chip")]
+    .map((chip) => {
+      const label = chip.querySelector(".chip-label");
+      return (chip.getAttribute("data-chip-value") ?? label?.textContent ?? "").trim();
+    })
+    .filter(Boolean);
+}
+
+/**
+ * @param {ParentNode | null | undefined} scope
+ */
+function initMetaChipInputs(scope) {
+  if (!scope) return;
+  scope.querySelectorAll(".chip-input.meta-sample, .chip-input.meta-allowed").forEach((el) => {
+    if (!(el instanceof HTMLElement)) return;
+    if (el.dataset.chipInputReady === "1") return;
+    el.dataset.chipInputReady = "1";
+    initChipInput(el, {
+      values: parseChipValuesAttr(el),
+      onChange: () => scheduleRegenerate(),
+    });
+  });
+}
+
+/**
  * @returns {Set<string>}
  */
 function allRecordFieldIds() {
@@ -272,6 +318,7 @@ function renderParameters({ ensureOpenIds = [], ensureOpenFieldIds = [] } = {}) 
   bindParameterEvents();
   initParamToggles(parametersList);
   initTypeDropdowns(parametersList);
+  initMetaChipInputs(parametersList);
   parametersList.querySelectorAll("[data-param-id]").forEach((card) => {
     initRecordFieldsForParamCard(card, { ensureOpenFieldIds });
   });
@@ -402,8 +449,8 @@ function readScalarMeta(card) {
   return {
     fieldCaption: card.querySelector(".meta-caption")?.value || "",
     fieldDescription: card.querySelector(".meta-description")?.value || "",
-    sampleValues: parseLinesToValues(card.querySelector(".meta-sample")?.value || ""),
-    allowedValues: parseLinesToValues(card.querySelector(".meta-allowed")?.value || ""),
+    sampleValues: readChipInputValues(card.querySelector(".meta-sample")),
+    allowedValues: readChipInputValues(card.querySelector(".meta-allowed")),
     isMultiLine: isTogglePressed(card.querySelector(".meta-multiline")),
     isCode: isTogglePressed(card.querySelector(".meta-code")),
   };
@@ -657,6 +704,7 @@ function bindParameterEvents() {
             bindRecordFieldEvents(card);
             initParamToggles(list);
             initTypeDropdowns(list);
+            initMetaChipInputs(list);
             initRecordFieldsForParamCard(card, { ensureOpenFieldIds: [field.id] });
           }
         }

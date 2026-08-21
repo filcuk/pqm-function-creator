@@ -506,3 +506,8 @@
 #function-creator #return-type-host {
   width: 100%;
 }
+
+#function-creator .chip-input.field-span-all {
+  max-width: none;
+  width: 100%;
+}

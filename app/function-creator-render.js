@@ -103,21 +103,31 @@ export function createRenderer({ nextId }) {
    * @param {string} idPrefix
    */
   function scalarSampleAllowedHtml(meta, idPrefix) {
+    const sampleValues = JSON.stringify(meta.sampleValues || []);
+    const allowedValues = JSON.stringify(meta.allowedValues || []);
     return `
-    <label class="field field-span-all" for="${idPrefix}-sample">
+    <div class="chip-input field-span-all meta-sample" id="${idPrefix}-sample" data-chip-values="${escapeAttr(sampleValues)}">
       <span class="field-label-line">
-        <span class="field-label">Sample values</span>
-        <span class="field-hint">One value per line</span>
+        <label class="field-label" for="${idPrefix}-sample-field">Sample values</label>
+        <span class="field-hint">Enter or comma to add, select to remove</span>
       </span>
-      <textarea id="${idPrefix}-sample" class="textarea meta-sample" rows="2" spellcheck="false">${escapeText(meta.sampleValues?.join("\n") || "")}</textarea>
-    </label>
-    <label class="field field-span-all" for="${idPrefix}-allowed">
+      <div class="chip-input-control">
+        <input type="text" id="${idPrefix}-sample-field" class="input chip-input-field" placeholder="Add value…" autocomplete="off" />
+      </div>
+      <div class="chip-input-list" aria-live="polite"></div>
+      <input type="hidden" class="chip-input-value" />
+    </div>
+    <div class="chip-input field-span-all meta-allowed" id="${idPrefix}-allowed" data-chip-values="${escapeAttr(allowedValues)}">
       <span class="field-label-line">
-        <span class="field-label">Allowed values</span>
-        <span class="field-hint">One value per line; enables dropdown in function invocation dialog</span>
+        <label class="field-label" for="${idPrefix}-allowed-field">Allowed values</label>
+        <span class="field-hint">Enables dropdown in function invocation dialog</span>
       </span>
-      <textarea id="${idPrefix}-allowed" class="textarea meta-allowed" rows="2" spellcheck="false">${escapeText(meta.allowedValues?.join("\n") || "")}</textarea>
-    </label>
+      <div class="chip-input-control">
+        <input type="text" id="${idPrefix}-allowed-field" class="input chip-input-field" placeholder="Add value…" autocomplete="off" />
+      </div>
+      <div class="chip-input-list" aria-live="polite"></div>
+      <input type="hidden" class="chip-input-value" />
+    </div>
   `;
   }
 
