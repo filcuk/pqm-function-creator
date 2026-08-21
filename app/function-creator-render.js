@@ -1,22 +1,72 @@
 import { escapeAttr, escapeText } from "./m/escape.js";
-import { PARAM_KINDS, PRIMITIVE_TYPES } from "./m/types.js";
+import { PARAM_KINDS, PRIMITIVE_TYPE_GROUPS } from "./m/types.js";
+
+/**
+ * Framework dropdown for M types (group headers via `.dropdown-menu-group`).
+ *
+ * @param {{
+ *   id: string,
+ *   selected: string,
+ *   includeRecord?: boolean,
+ *   includeCustom?: boolean,
+ *   valueClass?: string,
+ * }} options
+ */
+export function typeDropdownHtml({
+  id,
+  selected,
+  includeRecord = false,
+  includeCustom = false,
+  valueClass = "",
+}) {
+  const selectedValue = selected || "text";
+  const triggerLabel = selectedValue === "custom" ? "custom…" : selectedValue;
+
+  const groupItems = PRIMITIVE_TYPE_GROUPS.map((group) => {
+    const types = includeRecord
+      ? group.types
+      : group.types.filter((type) => type !== "record");
+    if (types.length === 0) return "";
+
+    const items = types
+      .map((type) => {
+        const isSelected = type === selectedValue;
+        return `<li role="none">
+          <button type="button" class="dropdown-menu-item${isSelected ? " is-selected" : ""}" role="menuitem" data-value="${escapeAttr(type)}"${isSelected ? ' aria-checked="true"' : ""}>${escapeText(type)}</button>
+        </li>`;
+      })
+      .join("");
+
+    return `<li role="presentation">
+      <div class="dropdown-menu-group">${escapeText(group.label)}</div>
+    </li>${items}`;
+  }).join("");
+
+  const customItem = includeCustom
+    ? `<li role="presentation"><div class="dropdown-menu-separator" role="separator"></div></li>
+    <li role="none">
+      <button type="button" class="dropdown-menu-item${selectedValue === "custom" ? " is-selected" : ""}" role="menuitem" data-value="custom"${selectedValue === "custom" ? ' aria-checked="true"' : ""}>custom…</button>
+    </li>`
+    : "";
+
+  const valueClassAttr = valueClass ? ` ${valueClass}` : "";
+
+  return `<div class="dropdown type-dropdown" id="${escapeAttr(id)}">
+    <button type="button" class="btn dropdown-trigger" aria-haspopup="menu" aria-expanded="false" aria-controls="${escapeAttr(id)}-menu">
+      <span class="dropdown-trigger-label">${escapeText(triggerLabel)}</span>
+      <span class="combo-btn-chevron" aria-hidden="true"></span>
+    </button>
+    <ul id="${escapeAttr(id)}-menu" class="dropdown-menu hidden" role="menu" hidden>
+      ${groupItems}${customItem}
+    </ul>
+    <input type="hidden" class="type-dropdown-value${valueClassAttr}" value="${escapeAttr(selectedValue)}" />
+  </div>`;
+}
 
 /**
  * @param {{ nextId: (prefix: string) => string }} deps
  */
 export function createRenderer({ nextId }) {
-  /**
-   * @param {string} selected
-   * @param {boolean} [includeRecord]
-   */
-  function typeOptionsHtml(selected, includeRecord = false) {
-    const types = includeRecord
-      ? [...PRIMITIVE_TYPES, "record"]
-      : PRIMITIVE_TYPES.filter((t) => t !== "record");
-    return types
-      .map((type) => `<option value="${type}"${type === selected ? " selected" : ""}>${type}</option>`)
-      .join("");
-  }
 
   /**
    * @param {{ id: string, className: string, label: string, pressed: boolean }} options
@@ -122,10 +172,14 @@ export function createRenderer({ nextId }) {
             <span class="field-label">Field name</span>
             <input type="text" id="${idPrefix}-name" class="input field-name" value="${escapeAttr(field.name)}" autocomplete="off" />
           </label>
-          <label class="field record-field-type" for="${idPrefix}-type">
-            <span class="field-label">Type</span>
-            <select id="${idPrefix}-type" class="input field-type">${typeOptionsHtml(field.mType)}</select>
-          </label>
+          <div class="field record-field-type">
+            <span class="field-label" id="${idPrefix}-type-label">Type</span>
+            ${typeDropdownHtml({
+              id: `${idPrefix}-type`,
+              selected: field.mType,
+              valueClass: "field-type",
+            })}
+          </div>
           ${scalarCaptionDescriptionHtml(field.meta, idPrefix, {
             captionClass: "record-field-caption",
             descriptionClass: "record-field-description",
@@ -222,10 +276,14 @@ export function createRenderer({ nextId }) {
                 />
               </div>
             </div>
-            <label class="field param-field-type param-scalar-type${isRecord ? " hidden" : ""}" for="param-${id}-type" ${isRecord ? "hidden" : ""}>
-              <span class="field-label">Type</span>
-              <select id="param-${id}-type" class="input param-type">${typeOptionsHtml(param.mType)}</select>
-            </label>
+            <div class="field param-field-type param-scalar-type${isRecord ? " hidden" : ""}"${isRecord ? " hidden" : ""}>
+              <span class="field-label" id="param-${id}-type-label">Type</span>
+              ${typeDropdownHtml({
+                id: `param-${id}-type`,
+                selected: param.mType,
+                valueClass: "param-type",
+              })}
+            </div>
             ${scalarCaptionDescriptionHtml(param.meta, `param-${id}`, {
               captionClass: "param-field-caption param-scalar-only",
               descriptionClass: "param-field-description param-scalar-only",

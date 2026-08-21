@@ -489,3 +489,20 @@
 #validation-banner {
   margin-bottom: 0;
 }
+
+/* Type pickers: framework dropdown, full field width */
+#function-creator .type-dropdown {
+  display: block;
+  width: 100%;
+  max-width: none;
+  align-self: stretch;
+}
+
+#function-creator .type-dropdown .dropdown-trigger {
+  width: 100%;
+  justify-content: space-between;
+}
+
+#function-creator #return-type-host {
+  width: 100%;
+}

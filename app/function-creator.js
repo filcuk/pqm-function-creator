@@ -6,6 +6,7 @@ import { showBanner, hideBanner } from "./components/banner.js";
 import { mountIcon } from "./utils/icons.js";
 import { initTooltips } from "./components/tooltip.js";
 import { copyText } from "./utils/clipboard.js";
+import { initPopupMenu } from "./utils/menu.js";
 import {
   getCodeBlockText,
   initCodeBlock,
@@ -15,7 +16,7 @@ import {
 } from "./code-editor.js";
 import { saveDraft, loadDraftState } from "./function-creator-draft.js";
 import { createExpandListController } from "./function-creator-expand.js";
-import { createRenderer } from "./function-creator-render.js";
+import { createRenderer, typeDropdownHtml } from "./function-creator-render.js";
 import { generateOutput, validateState } from "./m/generate.js";
 import { tryParseFunction } from "./m/parse.js";
 import { parseLinesToValues } from "./m/escape.js";
@@ -48,7 +49,7 @@ let pendingImportState = null;
 const root = document.getElementById("function-creator");
 const expressionInput = /** @type {HTMLTextAreaElement} */ (document.getElementById("expression-input"));
 const functionNameInput = /** @type {HTMLInputElement} */ (document.getElementById("function-name"));
-const returnTypeSelect = /** @type {HTMLSelectElement} */ (document.getElementById("return-type"));
+const returnTypeHost = document.getElementById("return-type-host");
 const returnTypeCustomField = document.getElementById("return-type-custom-field");
 const returnTypeCustomInput = /** @type {HTMLInputElement} */ (document.getElementById("return-type-custom"));
 const docNameInput = /** @type {HTMLInputElement} */ (document.getElementById("doc-name"));
@@ -68,6 +69,9 @@ const importSuccessBanner = document.getElementById("import-success-banner");
 /** @type {ReturnType<typeof initSegmentedControl> | null} */
 let outputStyleControl = null;
 
+/** @type {HTMLElement | null} */
+let returnTypeDropdown = null;
+
 /**
  * @param {string} prefix
  */
@@ -78,6 +82,82 @@ function nextId(prefix) {
 }
 
 const { renderParameter, renderExample, renderRecordField } = createRenderer({ nextId });
+
+/**
+ * @param {HTMLElement} dropdownEl
+ * @param {string} value
+ */
+function setTypeDropdownValue(dropdownEl, value) {
+  const next = value || "";
+  const hidden = /** @type {HTMLInputElement | null} */ (
+    dropdownEl.querySelector(".type-dropdown-value")
+  );
+  const triggerLabel = dropdownEl.querySelector(".dropdown-trigger-label");
+  if (hidden) hidden.value = next;
+  if (triggerLabel) {
+    triggerLabel.textContent = next === "custom" ? "custom…" : next;
+  }
+  dropdownEl.querySelectorAll(".dropdown-menu-item").forEach((item) => {
+    const selected = item.getAttribute("data-value") === next;
+    item.classList.toggle("is-selected", selected);
+    if (selected) item.setAttribute("aria-checked", "true");
+    else item.removeAttribute("aria-checked");
+  });
+}
+
+/**
+ * @param {ParentNode | null | undefined} scope
+ * @param {{ onSelect?: (detail: { value: string, label: string, dropdownEl: HTMLElement }) => void }} [options]
+ */
+function initTypeDropdowns(scope, { onSelect } = {}) {
+  if (!scope) return;
+  scope.querySelectorAll(".type-dropdown").forEach((dropdownEl) => {
+    if (!(dropdownEl instanceof HTMLElement)) return;
+    if (dropdownEl.dataset.typeDropdownReady === "1") return;
+    dropdownEl.dataset.typeDropdownReady = "1";
+
+    const trigger = dropdownEl.querySelector(".dropdown-trigger");
+    const menu = dropdownEl.querySelector(".dropdown-menu");
+    initPopupMenu({
+      containerEl: dropdownEl,
+      menuEl: menu,
+      toggleEl: trigger,
+      itemSelector: ".dropdown-menu-item",
+      fixed: true,
+      onSelect: (detail) => {
+        setTypeDropdownValue(dropdownEl, detail.value || "");
+        onSelect?.({ ...detail, dropdownEl });
+        scheduleRegenerate();
+      },
+    });
+  });
+}
+
+function mountReturnTypeDropdown() {
+  if (!returnTypeHost) return;
+  returnTypeHost.innerHTML = typeDropdownHtml({
+    id: "return-type",
+    selected: "table",
+    includeRecord: true,
+    includeCustom: true,
+  });
+  returnTypeDropdown = returnTypeHost.querySelector(".type-dropdown");
+  initTypeDropdowns(returnTypeHost, {
+    onSelect: ({ value }) => {
+      setHidden(returnTypeCustomField, value !== "custom");
+    },
+  });
+}
+
+/**
+ * @returns {string}
+ */
+function getReturnTypeDropdownValue() {
+  const hidden = /** @type {HTMLInputElement | null} */ (
+    returnTypeDropdown?.querySelector(".type-dropdown-value")
+  );
+  return hidden?.value || "table";
+}
 
 /**
  * @returns {Set<string>}
@@ -191,6 +271,7 @@ function renderParameters({ ensureOpenIds = [], ensureOpenFieldIds = [] } = {}) 
   initIconsIn(parametersList);
   bindParameterEvents();
   initParamToggles(parametersList);
+  initTypeDropdowns(parametersList);
   parametersList.querySelectorAll("[data-param-id]").forEach((card) => {
     initRecordFieldsForParamCard(card, { ensureOpenFieldIds });
   });
@@ -346,10 +427,11 @@ function readExamplesFromDom() {
 }
 
 function readStateFromDom() {
+  const selectedReturn = getReturnTypeDropdownValue();
   const returnType =
-    returnTypeSelect.value === "custom"
+    selectedReturn === "custom"
       ? returnTypeCustomInput.value.trim() || "any"
-      : returnTypeSelect.value;
+      : selectedReturn;
 
   state.expression = expressionInput.value;
   state.functionName = functionNameInput.value;
@@ -450,11 +532,11 @@ function applyStateToDom() {
 
   const isCustomReturn = !PRIMITIVE_TYPES.includes(state.returnType);
   if (isCustomReturn) {
-    returnTypeSelect.value = "custom";
+    if (returnTypeDropdown) setTypeDropdownValue(returnTypeDropdown, "custom");
     returnTypeCustomInput.value = state.returnType;
     setHidden(returnTypeCustomField, false);
   } else {
-    returnTypeSelect.value = state.returnType || "table";
+    if (returnTypeDropdown) setTypeDropdownValue(returnTypeDropdown, state.returnType || "table");
     setHidden(returnTypeCustomField, true);
   }
 
@@ -574,6 +656,7 @@ function bindParameterEvents() {
             initIconsIn(list);
             bindRecordFieldEvents(card);
             initParamToggles(list);
+            initTypeDropdowns(list);
             initRecordFieldsForParamCard(card, { ensureOpenFieldIds: [field.id] });
           }
         }
@@ -666,13 +749,7 @@ function bindExampleEvents() {
 
 function bindStaticEvents() {
   root?.addEventListener("input", scheduleRegenerate);
-  root?.addEventListener("change", (event) => {
-    if (event.target === returnTypeSelect) {
-      const isCustom = returnTypeSelect.value === "custom";
-      setHidden(returnTypeCustomField, !isCustom);
-    }
-    scheduleRegenerate();
-  });
+  root?.addEventListener("change", scheduleRegenerate);
 
   document.getElementById("add-parameter")?.addEventListener("click", () => {
     readStateFromDom();
@@ -753,6 +830,7 @@ function bindStaticEvents() {
 export function initFunctionCreator() {
   if (!root) return;
 
+  mountReturnTypeDropdown();
   bindStaticEvents();
 
   initExpand(document.getElementById("import-section"));
