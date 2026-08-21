@@ -249,6 +249,35 @@
   padding-left: 1.25rem;
 }
 
+.output-style-popover.popover {
+  max-width: min(40rem, calc(100vw - 1.5rem));
+}
+
+.output-style-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: none;
+}
+
+.output-style-preview p {
+  margin: 0;
+}
+
+.output-style-preview-code {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--code-bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  white-space: pre;
+  overflow-x: auto;
+}
+
 .banner-inline .banner-icon {
   margin-top: 0;
 }

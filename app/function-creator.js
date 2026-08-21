@@ -86,6 +86,9 @@ let importExpand = null;
 /** @type {ReturnType<typeof initPopover> | null} */
 let importHelpPopover = null;
 
+/** @type {ReturnType<typeof initPopover> | null} */
+let outputStylePopover = null;
+
 /** @type {string | null} */
 let pendingExpressionOffer = null;
 
@@ -698,6 +701,110 @@ function setOutputStyle(style) {
   outputStyleControl?.selectValue(next, { emit: false });
 }
 
+/**
+ * @param {"let" | "shared"} style
+ */
+function outputStylePreviewBody(style) {
+  const wrap = document.createElement("div");
+  wrap.className = "output-style-preview";
+
+  const blurb = document.createElement("p");
+  const pre = document.createElement("pre");
+  pre.className = "output-style-preview-code";
+
+  if (style === OUTPUT_STYLES.SHARED) {
+    blurb.textContent = "Emits top-level shared declarations (common in the query editor).";
+    pre.textContent = `shared MyFunc = Value.ReplaceType(MyFuncImpl, MyFuncImplType);
+
+MyFuncImplType = type function (…) as … meta [ … ];
+
+MyFuncImpl = (…) as … =>
+    …;`;
+  } else {
+    blurb.textContent = "Emits a nested let … in expression (easy to paste into another query).";
+    pre.textContent = `let
+    MyFuncImpl = (…) as … =>
+        …,
+    MyFuncImplType = type function (…) as … meta [ … ],
+    MyFunc = Value.ReplaceType(MyFuncImpl, MyFuncImplType)
+in
+    MyFunc`;
+  }
+
+  wrap.append(blurb, pre);
+  return wrap;
+}
+
+/**
+ * @param {HTMLElement | null} controlEl
+ */
+function initOutputStylePreviews(controlEl) {
+  if (!controlEl) return;
+
+  const listEl = controlEl.querySelector(".segmented-control-list");
+  const items = [
+    ...controlEl.querySelectorAll(".segmented-control-item[data-segmented-control-value]"),
+  ];
+  if (!listEl || !items.length) return;
+
+  outputStylePopover = initPopover({
+    anchor: items[0],
+    title: "let … in",
+    body: outputStylePreviewBody(OUTPUT_STYLES.LET),
+    position: "bottom",
+    dismissible: false,
+    closeOnOutsideClick: true,
+    trapFocus: false,
+    actions: [],
+  });
+  outputStylePopover.getElement()?.classList.add("output-style-popover");
+
+  /** @type {ReturnType<typeof setTimeout> | undefined} */
+  let closeTimer;
+
+  function cancelClose() {
+    window.clearTimeout(closeTimer);
+  }
+
+  function scheduleClose() {
+    cancelClose();
+    closeTimer = window.setTimeout(() => {
+      outputStylePopover?.close();
+    }, 150);
+  }
+
+  /**
+   * @param {HTMLElement} item
+   */
+  function showPreview(item) {
+    cancelClose();
+    const value = item.getAttribute("data-segmented-control-value");
+    const style = value === OUTPUT_STYLES.SHARED ? OUTPUT_STYLES.SHARED : OUTPUT_STYLES.LET;
+    outputStylePopover?.setAnchor(item);
+    outputStylePopover?.update({
+      title: style === OUTPUT_STYLES.SHARED ? "shared" : "let … in",
+      body: outputStylePreviewBody(style),
+    });
+    outputStylePopover?.open();
+    // Catalogue popover focuses itself on open; keep the segment focused for keyboard use.
+    item.focus({ preventScroll: true });
+    cancelClose();
+  }
+
+  for (const item of items) {
+    if (!(item instanceof HTMLElement)) continue;
+    item.addEventListener("mouseenter", () => showPreview(item));
+    item.addEventListener("focus", () => showPreview(item));
+  }
+
+  listEl.addEventListener("mouseleave", scheduleClose);
+  listEl.addEventListener("focusout", (event) => {
+    const next = event.relatedTarget;
+    if (next instanceof Node && listEl.contains(next)) return;
+    scheduleClose();
+  });
+}
+
 function bindParameterEvents() {
   parametersList?.querySelectorAll("[data-param-id]").forEach((card) => {
     const paramId = card.getAttribute("data-param-id");
@@ -862,6 +969,7 @@ function bindStaticEvents() {
       if (source !== "init") scheduleRegenerate();
     },
   });
+  initOutputStylePreviews(outputStyleEl);
 
   importFunctionBtn?.addEventListener("click", requestImportFromPaste);
 
