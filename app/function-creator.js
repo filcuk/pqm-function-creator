@@ -5,6 +5,7 @@ import { initSegmentedControl } from "./components/segmented-control.js";
 import { showBanner, hideBanner } from "./components/banner.js";
 import { mountIcon } from "./utils/icons.js";
 import { initTooltips } from "./components/tooltip.js";
+import { copyText } from "./utils/clipboard.js";
 import {
   getCodeBlockText,
   initCodeBlock,
@@ -30,7 +31,7 @@ import {
 } from "./m/types.js";
 
 const REGEN_DELAY_MS = 200;
-const COPY_SUCCESS_EXPIRE_MS = 2500;
+const COPY_FEEDBACK_MS = 2000;
 const IMPORT_SUCCESS_EXPIRE_MS = 4000;
 
 /** @type {ReturnType<typeof createDefaultState> & { parameters: ReturnType<typeof createDefaultParameter>[] }} */
@@ -56,7 +57,7 @@ const examplesList = document.getElementById("examples-list");
 const parametersList = document.getElementById("parameters-list");
 const outputPreview = document.getElementById("output-preview");
 const validationBanner = document.getElementById("validation-banner");
-const copySuccessBanner = document.getElementById("copy-success-banner");
+const copyOutputBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("copy-output"));
 const outputStyleEl = document.getElementById("output-style");
 const importInput = /** @type {HTMLTextAreaElement | null} */ (document.getElementById("import-input"));
 const importFunctionBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("import-function"));
@@ -511,6 +512,23 @@ function confirmImport() {
 /** @type {ReturnType<typeof initDialog> | null} */
 let importConfirmDialog = null;
 
+/** @type {number | undefined} */
+let copyFeedbackTimer;
+
+function flashCopyOutputFeedback(ok) {
+  const btn = copyOutputBtn;
+  if (!btn) return;
+
+  const labelEl = btn.querySelector(".copy-output-label");
+  if (!(labelEl instanceof HTMLElement)) return;
+
+  window.clearTimeout(copyFeedbackTimer);
+  labelEl.textContent = ok ? "Copied" : "Failed";
+  copyFeedbackTimer = window.setTimeout(() => {
+    labelEl.textContent = "Copy";
+  }, COPY_FEEDBACK_MS);
+}
+
 function setOutputStyle(style) {
   const next = style === OUTPUT_STYLES.SHARED ? OUTPUT_STYLES.SHARED : OUTPUT_STYLES.LET;
   state.outputStyle = next;
@@ -679,7 +697,7 @@ function bindStaticEvents() {
     },
   });
 
-  document.getElementById("copy-output")?.addEventListener("click", async () => {
+  copyOutputBtn?.addEventListener("click", async () => {
     regenerate();
     const text = outputPreview ? getCodeBlockText(outputPreview) : "";
 
@@ -692,21 +710,8 @@ function bindStaticEvents() {
       return;
     }
 
-    try {
-      await navigator.clipboard.writeText(text);
-      showBanner(copySuccessBanner, { expire: COPY_SUCCESS_EXPIRE_MS });
-    } catch {
-      if (outputPreview) {
-        const range = document.createRange();
-        range.selectNodeContents(outputPreview);
-        const selection = window.getSelection();
-        selection?.removeAllRanges();
-        selection?.addRange(range);
-        document.execCommand("copy");
-        selection?.removeAllRanges();
-        showBanner(copySuccessBanner, { expire: COPY_SUCCESS_EXPIRE_MS });
-      }
-    }
+    const ok = await copyText(text);
+    flashCopyOutputFeedback(ok);
   });
 
   importFunctionBtn?.addEventListener("click", requestImportFromPaste);

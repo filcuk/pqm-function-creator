@@ -150,7 +150,7 @@ Run with `npx serve .` and verify:
 2. **Parameters** — add scalar and record parameters; toggle optional/nullable; expand/collapse all; record fields add/remove/expand.
 3. **Examples** — add/remove; description updates card title; code/result edit and appear in generated meta.
 4. **Return type** — primitive options including `null` and `none`; custom type field shows for “custom…”.
-5. **Output styles** — switch let/shared; copy button copies M or shows validation banner when invalid.
+5. **Output styles** — switch let/shared; copy button flashes Copy → Copied (or Failed), or shows validation banner when invalid.
 6. **Import** — invalid paste shows error banner; valid paste opens confirm dialog; cancel leaves form; confirm replaces state and shows success banner.
 7. **Draft** — edit fields, reload page, draft restores; corrupt localStorage does not break the app.
 8. **Theme** — light/dark/auto via footer toggle without flash on reload.
