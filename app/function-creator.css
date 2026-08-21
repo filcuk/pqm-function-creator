@@ -291,8 +291,8 @@
   transition-duration: 0s;
 }
 
-.param-card:has(.expand-trigger:hover),
-.param-card:has(.expand-trigger:focus-visible) {
+.param-card:has(> .param-card-top > .expand-trigger:hover),
+.param-card:has(> .param-card-top > .expand-trigger:focus-visible) {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) 6%, var(--bg));
   transition-duration: 0s;
