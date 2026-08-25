@@ -85,6 +85,7 @@ function parseListValues(listText) {
     if (value === "true" || value === "false") return value;
     if (value === "null") return "null";
     if (/^-?\d+(\.\d+)?$/.test(value)) return value;
+    if (/^#(date|datetime|datetimezone|time|duration)\s*\(/i.test(value)) return value;
     return parseMString(value);
   });
 }
@@ -448,8 +449,26 @@ function detectReplaceType(text) {
   }
 
   throw new ParseError(
-    "Could not find Value.ReplaceType(impl, type). Paste a documented function in let or shared form."
+    "Failed to detect a documented function."
   );
+}
+
+/**
+ * Heuristic: pasted text looks like a bare `let … in` expression (not a typed function).
+ * @param {string} source
+ * @returns {string | null} formatted expression, or null if it does not look like one
+ */
+export function detectLetExpression(source) {
+  const text = String(source ?? "")
+    .trim()
+    .replace(/\r\n/g, "\n");
+  if (!text) return null;
+  if (/Value\.ReplaceType\s*\(/i.test(text)) return null;
+  if (/\btype\s+function\s*\(/i.test(text)) return null;
+  if (/^\s*shared\b/i.test(text)) return null;
+  if (!/^\s*let\b/i.test(text)) return null;
+  if (!/\blet\b[\s\S]*\bin\b/i.test(text)) return null;
+  return formatExpression(text);
 }
 
 /**
@@ -478,13 +497,33 @@ export function parseFunction(source) {
 
 /**
  * @param {string} source
- * @returns {{ ok: true, state: FunctionCreatorState } | { ok: false, error: string }}
+ * @returns {
+ *   | { ok: true, state: FunctionCreatorState }
+ *   | { ok: false, error: string }
+ *   | { ok: false, kind: "expression-only", warning: string, expression: string }
+ * }
  */
 export function tryParseFunction(source) {
   try {
     return { ok: true, state: parseFunction(source) };
   } catch (error) {
     const message = error instanceof ParseError ? error.message : "Failed to parse function.";
-    return { ok: false, error: message };
+
+    const expression = detectLetExpression(source);
+    if (expression != null) {
+      return {
+        ok: false,
+        kind: "expression-only",
+        warning:
+          "This looks like a let … in expression, not a documented function.",
+        expression,
+      };
+    }
+
+    return {
+      ok: false,
+      error: message,
+      help: message.includes("Failed to detect a documented function"),
+    };
   }
 }

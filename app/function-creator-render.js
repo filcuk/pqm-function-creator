@@ -1,28 +1,92 @@
 import { escapeAttr, escapeText } from "./m/escape.js";
-import { PARAM_KINDS, PRIMITIVE_TYPES } from "./m/types.js";
+import { PARAM_KINDS, PRIMITIVE_TYPE_GROUPS } from "./m/types.js";
+
+/**
+ * Framework dropdown for M types (group headers via `.dropdown-menu-group`).
+ *
+ * @param {{
+ *   id: string,
+ *   selected: string,
+ *   includeRecord?: boolean,
+ *   includeCustom?: boolean,
+ *   valueClass?: string,
+ *   grid?: boolean | number,
+ *   gridCols?: number,
+ * }} options
+ */
+export function typeDropdownHtml({
+  id,
+  selected,
+  includeRecord = false,
+  includeCustom = false,
+  valueClass = "",
+  grid = false,
+  gridCols,
+}) {
+  const selectedValue = selected || "text";
+  const triggerLabel = selectedValue === "custom" ? "custom…" : selectedValue;
+
+  const groupItems = PRIMITIVE_TYPE_GROUPS.map((group) => {
+    const types = includeRecord
+      ? group.types
+      : group.types.filter((type) => type !== "record");
+    if (types.length === 0) return "";
+
+    const items = types
+      .map((type) => {
+        const isSelected = type === selectedValue;
+        return `<li role="none">
+          <button type="button" class="dropdown-menu-item${isSelected ? " is-selected" : ""}" role="menuitem" data-value="${escapeAttr(type)}"${isSelected ? ' aria-checked="true"' : ""}>${escapeText(type)}</button>
+        </li>`;
+      })
+      .join("");
+
+    return `<li role="presentation">
+      <div class="dropdown-menu-group">${escapeText(group.label)}</div>
+    </li>${items}`;
+  }).join("");
+
+  const customItem = includeCustom
+    ? `<li role="presentation"><div class="dropdown-menu-separator" role="separator"></div></li>
+    <li role="none">
+      <button type="button" class="dropdown-menu-item${selectedValue === "custom" ? " is-selected" : ""}" role="menuitem" data-value="custom"${selectedValue === "custom" ? ' aria-checked="true"' : ""}>custom…</button>
+    </li>`
+    : "";
+
+  const valueClassAttr = valueClass ? ` ${valueClass}` : "";
+  const gridAttrs = [];
+  if (grid === true) {
+    gridAttrs.push('data-dropdown-grid="true"');
+  } else if (typeof grid === "number" && Number.isFinite(grid) && grid >= 0) {
+    gridAttrs.push(`data-dropdown-grid="${escapeAttr(String(grid))}"`);
+  }
+  if (typeof gridCols === "number" && Number.isFinite(gridCols) && gridCols >= 1) {
+    gridAttrs.push(`data-dropdown-grid-cols="${escapeAttr(String(Math.trunc(gridCols)))}"`);
+  }
+  const gridAttr = gridAttrs.length ? ` ${gridAttrs.join(" ")}` : "";
+
+  return `<div class="dropdown type-dropdown" id="${escapeAttr(id)}"${gridAttr}>
+    <button type="button" class="btn dropdown-trigger" aria-haspopup="menu" aria-expanded="false" aria-controls="${escapeAttr(id)}-menu">
+      <span class="dropdown-trigger-label">${escapeText(triggerLabel)}</span>
+      <span class="combo-btn-chevron" aria-hidden="true"></span>
+    </button>
+    <ul id="${escapeAttr(id)}-menu" class="dropdown-menu hidden" role="menu" hidden>
+      ${groupItems}${customItem}
+    </ul>
+    <input type="hidden" class="type-dropdown-value${valueClassAttr}" value="${escapeAttr(selectedValue)}" />
+  </div>`;
+}
 
 /**
  * @param {{ nextId: (prefix: string) => string }} deps
  */
 export function createRenderer({ nextId }) {
-  /**
-   * @param {string} selected
-   * @param {boolean} [includeRecord]
-   */
-  function typeOptionsHtml(selected, includeRecord = false) {
-    const types = includeRecord
-      ? [...PRIMITIVE_TYPES, "record"]
-      : PRIMITIVE_TYPES.filter((t) => t !== "record");
-    return types
-      .map((type) => `<option value="${type}"${type === selected ? " selected" : ""}>${type}</option>`)
-      .join("");
-  }
 
   /**
    * @param {{ id: string, className: string, label: string, pressed: boolean }} options
    */
   function renderToggleButton({ id, className, label, pressed }) {
-    return `<button type="button" id="${id}" class="btn param-toggle ${className}${pressed ? " is-active" : ""}" aria-pressed="${pressed ? "true" : "false"}">${escapeText(label)}</button>`;
+    return `<button type="button" id="${id}" class="btn btn-toggle ${className}" data-toggle-button aria-pressed="${pressed ? "true" : "false"}">${escapeText(label)}</button>`;
   }
 
   /**
@@ -39,11 +103,11 @@ export function createRenderer({ nextId }) {
     return `
     <label class="field ${captionClass}${hiddenClass}" for="${idPrefix}-caption"${hiddenAttr}>
       <span class="field-label">Caption</span>
-      <input type="text" id="${idPrefix}-caption" class="input meta-caption" value="${escapeAttr(meta.fieldCaption || "")}" />
+      <input type="text" id="${idPrefix}-caption" class="input meta-caption" value="${escapeAttr(meta.fieldCaption || "")}" placeholder="Label in the invoke dialog" />
     </label>
     <label class="field ${descriptionClass}${hiddenClass}" for="${idPrefix}-description"${hiddenAttr}>
       <span class="field-label">Description</span>
-      <input type="text" id="${idPrefix}-description" class="input meta-description" value="${escapeAttr(meta.fieldDescription || "")}" />
+      <input type="text" id="${idPrefix}-description" class="input meta-description" value="${escapeAttr(meta.fieldDescription || "")}" placeholder="Help text for this field" />
     </label>
   `;
   }
@@ -53,21 +117,31 @@ export function createRenderer({ nextId }) {
    * @param {string} idPrefix
    */
   function scalarSampleAllowedHtml(meta, idPrefix) {
+    const sampleValues = JSON.stringify(meta.sampleValues || []);
+    const allowedValues = JSON.stringify(meta.allowedValues || []);
     return `
-    <label class="field field-span-all" for="${idPrefix}-sample">
+    <div class="chip-input field-span-all meta-sample" id="${idPrefix}-sample" data-chip-values="${escapeAttr(sampleValues)}">
       <span class="field-label-line">
-        <span class="field-label">Sample values</span>
-        <span class="field-hint">One value per line</span>
+        <label class="field-label" for="${idPrefix}-sample-field">Sample values</label>
+        <span class="field-hint">Enter or comma to add, select to remove</span>
       </span>
-      <textarea id="${idPrefix}-sample" class="textarea meta-sample" rows="2" spellcheck="false">${escapeText(meta.sampleValues?.join("\n") || "")}</textarea>
-    </label>
-    <label class="field field-span-all" for="${idPrefix}-allowed">
+      <div class="chip-input-control">
+        <input type="text" id="${idPrefix}-sample-field" class="input chip-input-field" placeholder="Add value…" autocomplete="off" />
+      </div>
+      <div class="chip-input-list" aria-live="polite"></div>
+      <input type="hidden" class="chip-input-value" />
+    </div>
+    <div class="chip-input field-span-all meta-allowed" id="${idPrefix}-allowed" data-chip-values="${escapeAttr(allowedValues)}">
       <span class="field-label-line">
-        <span class="field-label">Allowed values</span>
-        <span class="field-hint">One value per line; enables dropdown in function invocation dialog</span>
+        <label class="field-label" for="${idPrefix}-allowed-field">Allowed values</label>
+        <span class="field-hint">Enables dropdown in function invocation dialog</span>
       </span>
-      <textarea id="${idPrefix}-allowed" class="textarea meta-allowed" rows="2" spellcheck="false">${escapeText(meta.allowedValues?.join("\n") || "")}</textarea>
-    </label>
+      <div class="chip-input-control">
+        <input type="text" id="${idPrefix}-allowed-field" class="input chip-input-field" placeholder="Add value…" autocomplete="off" />
+      </div>
+      <div class="chip-input-list" aria-live="polite"></div>
+      <input type="hidden" class="chip-input-value" />
+    </div>
   `;
   }
 
@@ -107,7 +181,7 @@ export function createRenderer({ nextId }) {
     <div class="record-field-card param-card expand" data-field-id="${id}">
       <div class="param-card-top">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="${panelId}">
-          <span class="expand-notch" aria-hidden="true"></span>
+          <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg" aria-hidden="true"></span>
           <span class="expand-label record-field-title">${escapeText(title)}</span>
         </button>
         <button type="button" class="btn btn-with-icon remove-record-field" aria-label="Remove field">
@@ -120,12 +194,17 @@ export function createRenderer({ nextId }) {
         <div class="field-grid record-field-grid">
           <label class="field record-field-name" for="${idPrefix}-name">
             <span class="field-label">Field name</span>
-            <input type="text" id="${idPrefix}-name" class="input field-name" value="${escapeAttr(field.name)}" autocomplete="off" />
+            <input type="text" id="${idPrefix}-name" class="input field-name" value="${escapeAttr(field.name)}" placeholder="e.g. ColumnName" autocomplete="off" />
           </label>
-          <label class="field record-field-type" for="${idPrefix}-type">
-            <span class="field-label">Type</span>
-            <select id="${idPrefix}-type" class="input field-type">${typeOptionsHtml(field.mType)}</select>
-          </label>
+          <div class="field record-field-type">
+            <span class="field-label" id="${idPrefix}-type-label">Type</span>
+            ${typeDropdownHtml({
+              id: `${idPrefix}-type`,
+              selected: field.mType,
+              valueClass: "field-type",
+              grid: true,
+            })}
+          </div>
           ${scalarCaptionDescriptionHtml(field.meta, idPrefix, {
             captionClass: "record-field-caption",
             descriptionClass: "record-field-description",
@@ -173,7 +252,7 @@ export function createRenderer({ nextId }) {
     <div class="param-card expand" data-param-id="${id}">
       <div class="param-card-top">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="${panelId}">
-          <span class="expand-notch" aria-hidden="true"></span>
+          <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg" aria-hidden="true"></span>
           <span class="expand-label param-card-title">${escapeText(title)}</span>
         </button>
         <button type="button" class="btn btn-with-icon remove-parameter" aria-label="Remove parameter">
@@ -186,19 +265,51 @@ export function createRenderer({ nextId }) {
           <div class="field-grid param-field-grid">
             <label class="field param-field-name" for="param-${id}-name">
               <span class="field-label">Parameter name</span>
-              <input type="text" id="param-${id}-name" class="input param-name" value="${escapeAttr(param.name)}" autocomplete="off" />
+              <input type="text" id="param-${id}-name" class="input param-name" value="${escapeAttr(param.name)}" placeholder="e.g. StartDate" autocomplete="off" />
             </label>
-            <label class="field param-field-kind" for="param-${id}-kind">
-              <span class="field-label">Kind</span>
-              <select id="param-${id}-kind" class="input param-kind">
-                <option value="${PARAM_KINDS.SCALAR}"${!isRecord ? " selected" : ""}>Scalar</option>
-                <option value="${PARAM_KINDS.RECORD}"${isRecord ? " selected" : ""}>Record</option>
-              </select>
-            </label>
-            <label class="field param-field-type param-scalar-type${isRecord ? " hidden" : ""}" for="param-${id}-type" ${isRecord ? "hidden" : ""}>
-              <span class="field-label">Type</span>
-              <select id="param-${id}-type" class="input param-type">${typeOptionsHtml(param.mType)}</select>
-            </label>
+            <div class="field param-field-kind">
+              <span class="field-label" id="param-${id}-kind-label">Kind</span>
+              <div
+                class="segmented-control segmented-control--full param-kind"
+                data-segmented-control-default="${isRecord ? PARAM_KINDS.RECORD : PARAM_KINDS.SCALAR}"
+              >
+                <div class="segmented-control-list" role="radiogroup" aria-labelledby="param-${id}-kind-label">
+                  <button
+                    type="button"
+                    class="segmented-control-item"
+                    role="radio"
+                    aria-checked="${isRecord ? "false" : "true"}"
+                    data-segmented-control-value="${PARAM_KINDS.SCALAR}"
+                  >
+                    Scalar
+                  </button>
+                  <button
+                    type="button"
+                    class="segmented-control-item"
+                    role="radio"
+                    aria-checked="${isRecord ? "true" : "false"}"
+                    data-segmented-control-value="${PARAM_KINDS.RECORD}"
+                  >
+                    Record
+                  </button>
+                </div>
+                <input
+                  type="hidden"
+                  class="segmented-control-value param-kind-value"
+                  name="param-${id}-kind"
+                  value="${isRecord ? PARAM_KINDS.RECORD : PARAM_KINDS.SCALAR}"
+                />
+              </div>
+            </div>
+            <div class="field param-field-type param-scalar-type${isRecord ? " hidden" : ""}"${isRecord ? " hidden" : ""}>
+              <span class="field-label" id="param-${id}-type-label">Type</span>
+              ${typeDropdownHtml({
+                id: `param-${id}-type`,
+                selected: param.mType,
+                valueClass: "param-type",
+                grid: true,
+              })}
+            </div>
             ${scalarCaptionDescriptionHtml(param.meta, `param-${id}`, {
               captionClass: "param-field-caption param-scalar-only",
               descriptionClass: "param-field-description param-scalar-only",
@@ -225,7 +336,7 @@ export function createRenderer({ nextId }) {
           </div>
           <div class="param-record-fields record-fields${isRecord ? "" : " hidden"}" ${isRecord ? "" : "hidden"}>
             <div class="toolbar record-fields-toolbar">
-              <span class="section-heading">Record fields</span>
+              <span class="section-title">Record fields</span>
               <div class="record-fields-toolbar-actions">
                 <button type="button" class="btn toggle-all-record-fields" disabled>Expand all</button>
                 <button type="button" class="btn btn-with-icon add-record-field">
@@ -256,7 +367,7 @@ export function createRenderer({ nextId }) {
     <div class="param-card expand" data-example-id="${id}">
       <div class="param-card-top">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="${panelId}">
-          <span class="expand-notch" aria-hidden="true"></span>
+          <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg" aria-hidden="true"></span>
           <span class="expand-label param-card-title">${escapeText(title)}</span>
         </button>
         <button type="button" class="btn btn-with-icon remove-example" aria-label="Remove example">
@@ -268,16 +379,44 @@ export function createRenderer({ nextId }) {
         <div class="param-card-body example-field-grid">
           <label class="field example-field-description" for="example-${id}-description">
             <span class="field-label">Description</span>
-            <input type="text" id="example-${id}-description" class="input example-description" value="${escapeAttr(example.description)}" />
+            <input type="text" id="example-${id}-description" class="input example-description" value="${escapeAttr(example.description)}" placeholder="e.g. Filter last 30 days" />
           </label>
-          <label class="field example-field-code" for="example-${id}-code">
-            <span class="field-label">Code</span>
-            <textarea id="example-${id}-code" class="textarea code-input example-code" rows="2" spellcheck="false">${escapeText(example.code)}</textarea>
-          </label>
-          <label class="field example-field-result" for="example-${id}-result">
-            <span class="field-label">Result</span>
-            <textarea id="example-${id}-result" class="textarea code-input code-input-plain example-result" data-code-language="plain" rows="2" spellcheck="false">${escapeText(example.result)}</textarea>
-          </label>
+          <div class="field example-field-code">
+            <span class="field-label" id="example-${id}-code-label">Code</span>
+            <div
+              id="example-${id}-code"
+              class="code-block code-block--full example-code"
+              data-code-mode="edit"
+              data-code-toolbar="none"
+              data-code-toolbar-actions="none"
+              data-code-surface-actions="none"
+              data-code-editor-label="Example code"
+              aria-labelledby="example-${id}-code-label"
+            >
+              <div class="code-block-body">
+                <pre class="line-numbers language-powerquery"><code class="language-powerquery">${escapeText(example.code)}</code></pre>
+              </div>
+            </div>
+          </div>
+          <div class="field example-field-result">
+            <span class="field-label" id="example-${id}-result-label">Result</span>
+            <div
+              id="example-${id}-result"
+              class="code-block code-block--full example-result"
+              data-code-mode="edit"
+              data-code-toolbar="none"
+              data-code-toolbar-actions="none"
+              data-code-surface-actions="none"
+              data-code-highlight="false"
+              data-code-line-numbers="false"
+              data-code-editor-label="Example result"
+              aria-labelledby="example-${id}-result-label"
+            >
+              <div class="code-block-body">
+                <pre><code>${escapeText(example.result)}</code></pre>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

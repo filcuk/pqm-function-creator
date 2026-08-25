@@ -1,0 +1,17 @@
+/**
+ * Fork-owned styles. Never overwritten by template sync.
+ * App sheets and local Prism theme live here (not in the generated template index).
+ */
+@import url("../prism.css");
+@import url("../prism-theme.css");
+@import url("../function-creator.css");
+
+/* Brand accents from app/res/app.svg (#ff6600 / #ff9955); light slightly toned down. */
+:root {
+  --accent: #f86a00;
+  --accent-fg: #0d1117;
+}
+
+:root[data-theme="dark"] {
+  --accent: #ff9955;
+}

@@ -2,30 +2,33 @@
 
 Rules for AI agents working in the **Power Query M Function Creator** repository.
 
-Based on [microapp-template](https://github.com/filcuk/microapp-template) `TEMPLATE_VERSION` in `app/version.js` (currently **0.8.0**).
+Based on [SMA1 Framework](https://github.com/filcuk/sma1-framework) `FRAMEWORK_VERSION` in `app/version.js` (currently **0.13.0**). Pin and sync via `framework.lock.json` + `npm run sync:framework` / `verify:framework`.
 
 ## App overview
 
-Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functions with `Value.ReplaceType`. Entry point: `index.html` → `app/main.js` → `initShell()` + `initFunctionCreator()`.
+Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functions with `Value.ReplaceType`. Entry point: `index.html` → `app/main.js` → `initShell()` + `initAboutDialog()` + `initFunctionCreator()`.
 
 | Area | Key files |
 | ---- | --------- |
 | Fork defaults | `app/config.js` (repo/Pages URLs, also-see, theme keys) |
-| Versions | `app/version.js` (`APP_VERSION`, `TEMPLATE_VERSION`) |
+| Versions | `app/version.js` (`APP_VERSION`, `FRAMEWORK_VERSION`) |
+| Framework pin | `framework.lock.json`, `framework-manifest.json`, `scripts/sync-framework.mjs` |
 | Shell chrome | `app/shell/` (`shell.js`, `render-shell.js`, `also-see.js`, `page-nav.js`, `theme.js`, …) |
-| Shared utils | `app/utils/` (`dom.js`, `icons.js`, `menu.js`, `document-listeners.js`, `brand-icon.js`) |
-| Shared components | `app/components/` (`dialog.js`, `expand.js`, `tooltip.js`, `banner.js`) |
+| Shared utils | `app/utils/` (`dom.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `menu.js`, `document-listeners.js`, `brand-icon.js`) |
+| Shared components | `app/components/` (`dialog.js`, `about-dialog.js`, `expand.js`, `tooltip.js`, `banner.js`, `dropdown.js`, `segmented-control.js`, `chip.js`, `toggle-button.js`, `code-block.js`, `expandable-surface.js`, `popover.js`, `badge.js`, `tutorial.js`) |
 | UI orchestration | `app/function-creator.js` |
 | Card HTML templates | `app/function-creator-render.js` |
 | Expand/collapse lists | `app/function-creator-expand.js` |
 | localStorage draft | `app/function-creator-draft.js` |
-| M generate/parse/format | `app/m/generate.js`, `parse.js`, `format.js`, `scan.js`, `types.js`, `escape.js` |
-| Code highlighting | `app/code-editor.js` + Prism vendor |
-| App-specific layout | `app/function-creator.css` (imported from `app/styles.css`) |
-| About / What? dialog | `app/about-dialog.js` — `#about-dialog` + tagline `#about-open-btn` in `index.html` |
+| M generate/parse/format | `app/m/generate.js`, `parse.js`, `format.js`, `scan.js`, `types.js`, `escape.js`, `example.js` |
+| Code highlighting | Catalogue `code-block` + Prism (`prism.min.js`, `prism-line-numbers.min.js`, fork `prism-powerquery.min.js`) — edit mode for Expression / Import / examples; select mode for Output |
+| App-specific layout | `app/function-creator.css` (imported from `app/css/app.css`) |
+| About / What? dialog | `app/components/about-dialog.js` — `#about-dialog` + tagline `#about-open-btn` in `index.html` (markup stages) |
 | Confirm dialog | `app/components/dialog.js` — `#import-confirm-dialog` in `index.html` |
 
-Unused template demo modules (tabular-input, rich-text, Toast UI, combo/tabs demos, etc.) are **not** vendored. Keep `menu.js` for the footer also-see dropdown.
+Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown`, `segmented-control`, `chip`, `toggle-button`, `code-block`, `expandable-surface`, `popover`, `badge`, `tutorial` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. All M code surfaces (Expression, Import, examples, Output) use catalogue `code-block` + Power Query Prism (`prism-powerquery.min.js`).
+
+Slim `package.json` exists only for framework sync/verify scripts — not a runtime or bundler step.
 
 ## Confirm before complexity
 
@@ -42,13 +45,15 @@ Prefer the simplest approach that fits the existing template.
 
 - Plain HTML, CSS, and JavaScript ES modules
 - No build step unless explicitly approved
-- No `package.json` unless the user requests it
+- Keep `package.json` limited to framework tooling (`sync:framework` / `verify:framework`) unless the user asks for more
 
 ## Reuse the design system
 
 - Use CSS custom properties from `app/tokens.css` (`--bg`, `--accent`, etc.)
+- Fork brand accent overrides belong in `app/css/app.css` (not `tokens.css`)
 - Use existing component classes: `.btn`, `.btn-primary`, `.modal`, `.banner`, `.theme-toggle`
-- Add or edit inline UI icons in `app/utils/icons.js` only — do not duplicate SVG paths in HTML
+- Add fork icons in `app/utils/icons-app.js` only; framework catalogue is `icons-framework.js` (synced). Public API: `icons.js`
+- Do not invent SVG path data — use `add-icon` / `handle-assets`
 - Do not introduce parallel styling systems (Tailwind, CSS-in-JS, component libraries)
 
 ## Page boot conventions
@@ -57,19 +62,19 @@ Every HTML entry point should:
 
 1. Set `window.__MICROAPP__ = { themeStorageKey: "…" }` before `theme-init.js` (must match `APP_CONFIG.themeStorageKey`)
 2. Include blocking `app/theme-init.js` in `<head>` (prevents theme flash)
-3. Link `app/styles.css` (imports `tokens.css` + used `app/css/*` partials + `function-creator.css`)
+3. Link `app/styles.css` (fork entry: `tokens.css` → `css/framework.css` → `css/app.css`)
 4. Use `<main id="main">` (skip link + page-nav). Keep app root as `#function-creator` inside main
 5. Call `initShell()` from `app/shell/shell.js` as the first step in the page module
 
 `initShell()` reads `APP_CONFIG`, renders shared chrome via `renderPageShell()`, then boots icons, external/heading links, also-see, theme, sticky chrome, tooltips, and page-nav. Do **not** duplicate footer, theme toggle, or page-nav markup in HTML.
 
-Optional: `data-sticky-header` / `data-sticky-section-headings` on `<html>`.
+Optional: `data-sticky-header` / `data-sticky-section-headings` on `<html>`. Section titles use `.section-title` (not `.section-heading`).
 
 ## Module conventions
 
 | Pattern | Use for |
 | -------- | ------- |
-| `initX({ … })` | Single instance (dialog, expand) |
+| `initX({ … })` | Single instance (dialog, about-dialog, expand) |
 | `initXBlocks(root)` / `initTooltips(root)` | Scan a subtree for blocks |
 | `initShell()` | Standard page boot |
 | `setHidden(el, hidden)` | Toggle visibility — always sets **both** `.hidden` class and `hidden` attribute |
@@ -89,8 +94,8 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 
 - Declare icons with `data-icon="name"` and optional `data-icon-class="…"` in HTML
 - Call `initIcons()` (via `initShell()`) to inject SVGs
-- Add new icon paths only in `app/utils/icons.js`
-- Domain alias: `add` → `plus` (keep existing `data-icon="add"` call sites)
+- Framework icons: `app/utils/icons-framework.js` (synced). Fork icons / aliases: `app/utils/icons-app.js`
+- Domain alias: `add` → `plus` in `icons-app.js` (keep existing `data-icon="add"` call sites)
 
 ### HTML escaping
 
@@ -114,11 +119,13 @@ Configured in `app/config.js` (`alsoSeeUrl`, `alsoSeeTopics`, `alsoSee`, `appUrl
 
 | File | Contents |
 | ---- | -------- |
-| `app/styles.css` | Entry point — `@import` only |
-| `app/tokens.css` | Reset, tokens, dark theme, base typography |
+| `app/styles.css` | Fork entry — `tokens.css` → `css/framework.css` → `css/app.css` |
+| `app/tokens.css` | Reset, tokens, dark theme, base typography (synced) |
+| `app/css/framework.css` | Generated partial index (sync regenerates; do not hand-edit) |
+| `app/css/app.css` | Fork-owned — Prism CSS, `prism-theme.css`, `function-creator.css`, optional accent |
 | `app/css/layout.css` | Shell layout, footer, page-nav, also-see, sticky |
 | `app/css/controls-*.css` | Buttons, fields, disclosure, menus |
-| `app/css/overlays.css` | Banners, tooltips, modals |
+| `app/css/overlays.css` | Banners, tooltips, modals, about-dialog stages |
 | `app/function-creator.css` | Function creator layout and cards |
 
 ## Keep GitHub Pages deployable
@@ -130,7 +137,7 @@ Configured in `app/config.js` (`alsoSeeUrl`, `alsoSeeTopics`, `alsoSee`, `appUrl
 ## Accessibility
 
 - Dialogs: focus trap, Escape to close, restore focus, `aria-modal`, labelled titles
-- Toggle buttons: `aria-pressed` on `.param-toggle`
+- Toggle buttons: framework `.btn-toggle` + `initToggleButton` (`aria-pressed`)
 - Tooltips: `aria-describedby` via `initTooltips()`
 - Collapsible cards: expand component with `aria-expanded` on triggers
 - Skip link → `#main`; page-nav up/down jumps (`showHeadingList: false` in `main.js`)
@@ -143,16 +150,17 @@ Run with `npx serve .` and verify:
 2. **Parameters** — add scalar and record parameters; toggle optional/nullable; expand/collapse all; record fields add/remove/expand.
 3. **Examples** — add/remove; description updates card title; code/result edit and appear in generated meta.
 4. **Return type** — primitive options including `null` and `none`; custom type field shows for “custom…”.
-5. **Output styles** — switch let/shared; copy button copies M or shows validation banner when invalid.
-6. **Import** — invalid paste shows error banner; valid paste opens confirm dialog; cancel leaves form; confirm replaces state and shows success banner.
+5. **Output** — section has no card chrome; top toolbar Copy / Maximize; maximize expands overlay; switch let/shared regenerates.
+6. **Import** — invalid paste shows error banner; valid paste opens confirm dialog; cancel leaves form; confirm replaces state and shows success banner at the top (import collapses). **Load example** (Expression toolbar) applies a documented sample immediately when the form is empty/default; otherwise opens the same confirm flow. **Reset** (danger) confirms, then clears the form, import box, and draft localStorage.
 7. **Draft** — edit fields, reload page, draft restores; corrupt localStorage does not break the app.
 8. **Theme** — light/dark/auto via footer toggle without flash on reload.
 9. **Shell** — page-nav up/down jumps (heading hover menu off); footer shows app version; **also see** loads Power BI peers (this app absent).
-10. **About** — tagline **What?** opens dialog; **Got it** / Escape / backdrop close; **Huh?** reveals simpler help, then redirects on third click.
+10. **About** — first visit shows a popover to the right of **What?** (guided tour available; dismissed once via Got it / opening What?); tagline **What?** opens dialog; **Got it** / Escape / backdrop close; **Huh?** reveals simpler stages; after the last stage, **I don't get it** link appears (opens PBS Kids in a new tab). **Guided tour** closes the dialog and runs a spotlight walkthrough of Import → Output.
 
 ## When extending this app
 
 1. Read `README.md` for the one-line description
 2. Keep M logic in `app/m/`; keep DOM wiring in `function-creator*.js`
 3. Prefer shared modules under `app/shell/`, `app/components/`, `app/utils/`, `app/css/` over reinventing chrome
-4. Update this file if you add modules, change draft schema, bump template version, or new workflows
+4. Prefer `npm run sync:framework` / `verify:framework` over hand-merging framework files; use `migrate-framework` for version bumps
+5. Update this file if you add modules, change draft schema, bump framework version, or new workflows

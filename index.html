@@ -4,9 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Power Query M Function Creator</title>
-    <link rel="icon" href="app/res/icon.svg" type="image/svg+xml" data-brand-icon />
+    <link rel="icon" href="app/res/app.svg" type="image/svg+xml" data-brand-icon />
     <script>
-      window.__MICROAPP__ = { themeStorageKey: "microapp-theme" };
+      window.__MICROAPP__ = {
+        themeStorageKey: "microapp-theme",
+        // Single logo (this fork has app/res/app.svg only — not a light/dark pair).
+        appIcon: "app/res/app.svg",
+        appIconLight: "",
+        appIconDark: "",
+      };
     </script>
     <script src="app/theme-init.js"></script>
     <link rel="stylesheet" href="app/styles.css" />
@@ -15,26 +21,17 @@
     <header>
       <div class="site-brand">
         <img
-          class="site-logo brand-icon--light"
-          src="app/res/icon.svg"
+          class="site-logo"
+          src="app/res/app.svg"
           alt=""
           width="40"
           height="40"
-          data-brand-icon
-        />
-        <img
-          class="site-logo brand-icon--dark"
-          src="app/res/icon.svg"
-          alt=""
-          width="40"
-          height="40"
-          aria-hidden="true"
           data-brand-icon
         />
         <h1>Power Query M Function Creator</h1>
       </div>
       <p class="tagline">
-        <em>Let</em>'s get formal! Turn a <code>let … in</code> block into a typed, documented function easily.
+        <em>Let</em>'s get <em>in</em>formal! Turn a <code>M</code> expression into a typed, documented function without fuss.
         <button type="button" id="about-open-btn" class="btn-link tagline-link">What?</button>
       </p>
     </header>
@@ -45,136 +42,166 @@
         <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
         <span class="banner-body">Something went wrong. Check the console for details.</span>
       </div>
-      <div id="validation-banner" class="banner banner-warning hidden" role="alert" hidden>
-        <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+      <div id="form-success-banner" class="banner banner-success hidden" role="status" hidden>
+        <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
         <span class="banner-body"></span>
       </div>
 
       <div class="expand" id="import-section">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="import-panel">
-          <span class="expand-notch" aria-hidden="true"></span>
-          <span class="expand-label" id="import-heading">Import function</span>
+          <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg" aria-hidden="true"></span>
+          <span class="expand-label" id="import">Import existing function</span>
         </button>
         <div id="import-panel" class="expand-panel hidden" hidden>
           <p class="field-hint">
-            Import an existing function to modify.
+            You can import an existing function for further modifications.
           </p>
-          <label class="field" for="import-input">
-            <span class="field-label">Function M code</span>
-            <textarea
-              id="import-input"
-              class="textarea code-input"
-              rows="10"
-              spellcheck="false"
-              placeholder="let&#10;    MyFuncImpl = (…) as … =>&#10;    let … in …,&#10;    MyFuncImplType = type function (…) as … meta [ … ],&#10;    MyFunc = Value.ReplaceType(MyFuncImpl, MyFuncImplType)&#10;in&#10;    MyFunc"
-            ></textarea>
-          </label>
+          <div class="field field-span-all">
+            <div
+              id="import-editor"
+              class="code-block code-block--full"
+              data-code-mode="edit"
+              data-code-toolbar="top"
+              data-code-toolbar-actions="paste,clear"
+              data-code-surface-actions="none"
+              data-code-editor-label="Paste documented M"
+            >
+              <div class="code-block-body">
+                <pre class="line-numbers language-powerquery"><code class="language-powerquery"></code></pre>
+              </div>
+            </div>
+          </div>
           <div class="toolbar toolbar-with-status">
-            <button type="button" id="import-function" class="btn btn-primary">Import</button>
-            <button type="button" id="clear-import" class="btn">Clear</button>
+            <button type="button" id="import-function" class="btn btn-primary" disabled>Import</button>
             <div class="toolbar-status">
               <div id="import-error-banner" class="banner banner-inline banner-error hidden" role="alert" hidden>
                 <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
                 <span class="banner-body"></span>
+                <button type="button" id="import-error-help" class="btn-link hidden" hidden>Help!</button>
               </div>
-              <div id="import-success-banner" class="banner banner-inline banner-success hidden" role="status" hidden>
-                <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
-                <span class="banner-body">Function imported.</span>
+              <div id="import-warning-banner" class="banner banner-inline banner-warning hidden" role="status" hidden>
+                <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+                <span class="banner-body"></span>
               </div>
+              <button type="button" id="import-use-as-expression" class="btn hidden" hidden>Use as expression</button>
             </div>
           </div>
         </div>
       </div>
 
-      <section class="creator-section" aria-labelledby="expression-heading">
-        <h2 id="expression-heading" class="section-heading">Expression</h2>
-        <p class="field-hint">Insert the full <code>let … in</code> block that becomes the function body.</p>
-        <div id="expression-warning-banner" class="banner banner-note hidden" role="note" hidden>
-          <span class="banner-icon" data-icon="note" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
-          <span class="banner-body"></span>
+      <section id="expression-section" class="creator-section" aria-labelledby="expression">
+        <div class="toolbar expression-toolbar">
+          <h2 id="expression" class="section-title">Expression</h2>
+          <div class="expression-toolbar-actions">
+            <button type="button" id="load-example" class="btn">Load example</button>
+            <button type="button" id="reset-form" class="btn btn-danger">Reset all</button>
+          </div>
         </div>
-        <label class="field field-span-all" for="expression-input">
-          <span class="field-label">let … in block</span>
-          <textarea
-            id="expression-input"
-            class="textarea code-input"
-            rows="12"
-            spellcheck="false"
-            placeholder="let&#10;    Source = …&#10;in&#10;    Source"
-          ></textarea>
-        </label>
+        <p class="field-hint">Insert the <code>let … in</code> block that becomes the function body.</p>
+        <div class="field field-span-all">
+          <div
+            id="expression-editor"
+            class="code-block code-block--full"
+            data-code-mode="edit"
+            data-code-toolbar="top"
+            data-code-toolbar-actions="paste,clear"
+            data-code-surface-actions="none"
+            data-code-editor-label="Expression"
+          >
+            <div class="code-block-body">
+              <pre class="line-numbers language-powerquery"><code class="language-powerquery"></code></pre>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section class="creator-section" aria-labelledby="function-heading">
-        <h2 id="function-heading" class="section-heading">Function</h2>
+      <section id="function-section" class="creator-section" aria-labelledby="function">
+        <h2 id="function" class="section-title">Function</h2>
+        <p class="panel-hint">
+          Define your function name, structure and type.
+        </p>
         <div class="field-grid function-field-grid">
           <label class="field function-field-name" for="function-name">
             <span class="field-label">Function name</span>
-            <input type="text" id="function-name" class="input" value="MyFunc" autocomplete="off" />
+            <input
+              type="text"
+              id="function-name"
+              class="input"
+              value="MyFunction"
+              placeholder="MyFunction"
+              autocomplete="off"
+              aria-describedby="function-validation-banner"
+            />
           </label>
+          <div class="field function-field-return">
+            <span class="field-label" id="return-type-label">Return type</span>
+            <div id="return-type-host"></div>
+          </div>
           <div class="field function-field-style">
             <span class="field-label">Output style</span>
-            <div id="output-style-toggle" class="output-style-toggle" role="group" aria-label="Output style">
-              <button type="button" class="btn is-active" data-output-style="let" data-tooltip="Nested let … in expression" data-tooltip-position="bottom" aria-pressed="true">let … in</button>
-              <button type="button" class="btn" data-output-style="shared" data-tooltip="Top-level shared query" data-tooltip-position="bottom" aria-pressed="false">shared</button>
+            <div
+              id="output-style"
+              class="segmented-control"
+              data-segmented-control-default="let"
+            >
+              <div class="segmented-control-list" role="radiogroup" aria-label="Output style">
+                <button
+                  type="button"
+                  class="segmented-control-item"
+                  role="radio"
+                  aria-checked="true"
+                  data-segmented-control-value="let"
+                >
+                  let … in
+                </button>
+                <button
+                  type="button"
+                  class="segmented-control-item"
+                  role="radio"
+                  aria-checked="false"
+                  data-segmented-control-value="shared"
+                >
+                  shared
+                </button>
+              </div>
+              <input type="hidden" class="segmented-control-value" name="output-style" value="let" />
             </div>
           </div>
-          <label class="field function-field-return" for="return-type">
-            <span class="field-label">Return type</span>
-            <select id="return-type" class="input">
-              <option value="any">any</option>
-              <option value="text">text</option>
-              <option value="number">number</option>
-              <option value="logical">logical</option>
-              <option value="date">date</option>
-              <option value="datetime">datetime</option>
-              <option value="datetimezone">datetimezone</option>
-              <option value="time">time</option>
-              <option value="duration">duration</option>
-              <option value="binary">binary</option>
-              <option value="list">list</option>
-              <option value="record">record</option>
-              <option value="table" selected>table</option>
-              <option value="function">function</option>
-              <option value="type">type</option>
-              <option value="null">null</option>
-              <option value="none">none</option>
-              <option value="custom">custom…</option>
-            </select>
-          </label>
           <label class="field function-field-custom hidden" id="return-type-custom-field" for="return-type-custom" hidden>
             <span class="field-label">Custom return type</span>
             <input type="text" id="return-type-custom" class="input" placeholder="e.g. nullable text" autocomplete="off" />
           </label>
         </div>
+        <div id="function-validation-banner" class="banner banner-warning hidden" role="alert" hidden>
+          <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+          <span class="banner-body"></span>
+        </div>
       </section>
 
-      <section class="creator-section" aria-labelledby="documentation-heading">
-        <h2 id="documentation-heading" class="section-heading">Documentation</h2>
+      <section id="documentation-section" class="creator-section" aria-labelledby="documentation">
+        <h2 id="documentation" class="section-title">Documentation</h2>
+        <p class="panel-hint">
+          Optional name, description, and examples shown in Power Query’s function invocation dialog and function info.
+        </p>
         <div class="field-grid documentation-field-grid">
           <label class="field documentation-field-name" for="doc-name">
-            <span
-              class="field-label"
-              data-tooltip="Documentation.Name - title shown in the function invocation dialog."
-              data-tooltip-position="top"
-              >Name</span
-            >
-            <input type="text" id="doc-name" class="input" autocomplete="off" />
+            <span class="field-label">Name</span>
+            <input type="text" id="doc-name" class="input" placeholder="Function proper name" autocomplete="off" />
           </label>
           <label class="field documentation-field-description" for="doc-long-description">
-            <span
-              class="field-label"
-              data-tooltip="Documentation.LongDescription - full description shown in function info."
-              data-tooltip-position="top"
-              >Long description</span
-            >
-            <textarea id="doc-long-description" class="textarea" rows="3"></textarea>
+            <span class="field-label">Long description</span>
+            <textarea id="doc-long-description" class="textarea" rows="3" placeholder="Detailed function description"></textarea>
           </label>
         </div>
 
+        <hr class="panel-divider" />
+
         <div class="function-examples">
           <div class="toolbar examples-toolbar">
-            <h3 class="section-heading">Examples</h3>
+            <span class="badge-host" id="examples-count-badge" data-badge-label="Examples">
+              <h3 class="section-title" data-badge-control>Examples</h3>
+              <span class="badge" aria-hidden="true"></span>
+            </span>
             <div class="parameters-toolbar-actions">
               <button type="button" id="toggle-all-examples" class="btn" disabled>Expand all</button>
               <button type="button" id="add-example" class="btn btn-with-icon">
@@ -183,13 +210,19 @@
               </button>
             </div>
           </div>
+          <p class="panel-hint">
+            Optional examples shown in Power Query’s function invocation dialog.
+          </p>
           <div id="examples-list" class="param-list"></div>
         </div>
       </section>
 
-      <section class="creator-section" aria-labelledby="parameters-heading">
+      <section id="parameters-section" class="creator-section" aria-labelledby="parameters">
         <div class="toolbar parameters-toolbar">
-          <h2 id="parameters-heading" class="section-heading">Parameters</h2>
+          <span class="badge-host" id="parameters-count-badge" data-badge-label="Parameters">
+            <h2 id="parameters" class="section-title" data-badge-control>Parameters</h2>
+            <span class="badge" aria-hidden="true"></span>
+          </span>
           <div class="parameters-toolbar-actions">
             <button type="button" id="toggle-all-parameters" class="btn" disabled>Expand all</button>
             <button type="button" id="add-parameter" class="btn btn-with-icon">
@@ -199,29 +232,28 @@
           </div>
         </div>
         <div id="parameters-list" class="param-list"></div>
+        <div id="parameters-validation-banner" class="banner banner-warning hidden" role="alert" hidden>
+          <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+          <span class="banner-body"></span>
+        </div>
       </section>
 
-      <section class="creator-section" aria-labelledby="output-heading">
-        <h2 id="output-heading" class="section-heading">M Function</h2>
+      <section id="output-section" class="output-section" aria-labelledby="output">
+        <h2 id="output" class="section-title">Output</h2>
         <div
           id="output-preview"
-          class="code-editor code-editor-readonly code-output-block"
-          aria-label="Generated M code"
-          style="--code-rows: 16"
+          class="code-block code-block--full"
+          data-code-mode="select"
+          data-code-toolbar="top"
+          data-code-toolbar-actions="copy,maximize"
+          data-code-surface-actions="none"
+          data-expandable-surface
+          data-expandable-surface-label="Output"
+          data-expandable-surface-control="false"
         >
-          <pre class="code-editor-highlight language-powerquery"><code></code></pre>
-        </div>
-        <div class="toolbar output-actions toolbar-with-status">
-          <div class="toolbar-status">
-            <div id="copy-success-banner" class="banner banner-inline banner-success hidden" role="status" hidden>
-              <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
-              <span class="banner-body">Copied to clipboard.</span>
-            </div>
+          <div class="code-block-body" data-expandable-surface-trigger>
+            <pre class="line-numbers language-powerquery"><code class="language-powerquery"></code></pre>
           </div>
-          <button type="button" id="copy-output" class="btn btn-primary btn-with-icon">
-            <span data-icon="copy" aria-hidden="true"></span>
-            Copy
-          </button>
         </div>
       </section>
       </div>
@@ -250,6 +282,29 @@
       </div>
     </div>
 
+    <div id="reset-confirm-dialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="reset-confirm-dialog-title" hidden>
+      <div class="modal-backdrop" data-dialog-close></div>
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h2 id="reset-confirm-dialog-title">Reset everything?</h2>
+          <button type="button" class="modal-close" aria-label="Close" data-dialog-close>
+            ×
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <div class="modal-footer-actions">
+            <button type="button" class="btn" data-dialog-close>Cancel</button>
+            <button type="button" class="btn btn-danger" id="reset-confirm-dialog-ok">
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div
       id="about-dialog"
       class="modal hidden"
@@ -268,20 +323,45 @@
         </div>
         <div class="modal-body" id="about-dialog-body">
           <p>
-            A <code>let … in</code> query is fine for a one-off transformation. A documented M
-            function is better when you need to <b>reuse the same logic</b> with different <b>inputs</b>: callers
-            get named parameters, type checks, and descriptions in Power Query invoke dialog.
+            Functions are a way to <b>reuse logic</b>, which is generally good practice. <br>
+            But creating a documented <code>M</code> function can be finicky, 
+            and the structure isn't easy to remember. 
           </p>
           <p>
-            Building that wrapper by hand is <em>hard</em>.
-            This tool does the scaffolding for you: fill in the form (or import an existing function),
-            then copy the generated M into Excel or Power BI.
+            This tool does the scaffolding for you, allowing you to enter your existing expression 
+            and use forms to generate the function declaration and documentation.
           </p>
-          <div id="about-extra-content" class="about-extra-content hidden" hidden></div>
+          <div class="about-extra-content" data-about-extra>
+            <div class="about-extra-block hidden" data-about-stage data-about-next-label="Uhh..." hidden>
+              <p>
+                <em>Okay</em>, so Power Query is the data-cleaning bit of Excel and Power BI. You write a
+                <code>let … in</code> block that does something useful, and may want to make it reusable.
+              </p>
+              <p>
+                By inserting your block into the form, you can easily generate a documented function.
+              </p>
+            </div>
+            <div class="about-extra-block hidden" data-about-stage data-about-next-label="I don't get it" hidden>
+              <p>You make work. Work good. Work need many times. Hard write by hand. We wrap. You fill boxes. Pretty come out. Copy. Paste. Happy.</p>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="button" id="about-confused-btn" class="btn">Huh?</button>
+          <button type="button" class="btn" data-about-confused>Huh?</button>
+          <a
+            class="btn hidden"
+            data-about-final
+            href="https://pbskids.org/games/play/symmetry-painter/11734"
+            target="_blank"
+            rel="noopener noreferrer"
+            hidden
+          >
+            I don't get it
+          </a>
           <div class="modal-footer-actions">
+            <button type="button" id="about-guided-tour" class="btn">
+              Guided tour
+            </button>
             <button type="button" id="about-close-btn" class="btn btn-primary" data-dialog-close>
               Got it
             </button>
@@ -291,6 +371,7 @@
     </div>
 
     <script src="app/vendor/prism/prism.min.js"></script>
+    <script src="app/vendor/prism/prism-line-numbers.min.js"></script>
     <script src="app/vendor/prism/prism-powerquery.min.js"></script>
     <script type="module" src="app/main.js"></script>
   </body>

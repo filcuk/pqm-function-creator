@@ -299,19 +299,22 @@ export function generateOutput(state) {
 
 /**
  * @param {FunctionCreatorState} state
- * @returns {string[]}
+ * @returns {{ function: string[], parameters: string[] }}
  */
-export function validateState(state) {
-  const errors = [];
+export function getValidationIssues(state) {
+  /** @type {string[]} */
+  const functionErrors = [];
+  /** @type {string[]} */
+  const parameterErrors = [];
 
   if (!state.functionName.trim()) {
-    errors.push("Function name is required.");
+    functionErrors.push("Function name is required.");
   } else if (!isValidIdentifier(state.functionName.trim())) {
-    errors.push(`Function name "${state.functionName}" is not a valid M identifier.`);
+    functionErrors.push(`Function name "${state.functionName}" is not a valid M identifier.`);
   }
 
   if (!state.returnType.trim()) {
-    errors.push("Return type is required.");
+    functionErrors.push("Return type is required.");
   }
 
   const seen = new Set();
@@ -320,10 +323,10 @@ export function validateState(state) {
     if (!name) continue;
 
     if (!isValidIdentifier(name)) {
-      errors.push(`Parameter "${name}" is not a valid M identifier.`);
+      parameterErrors.push(`Parameter "${name}" is not a valid M identifier.`);
     }
     if (seen.has(name)) {
-      errors.push(`Duplicate parameter name "${name}".`);
+      parameterErrors.push(`Duplicate parameter name "${name}".`);
     }
     seen.add(name);
 
@@ -333,27 +336,26 @@ export function validateState(state) {
         const fieldName = field.name.trim();
         if (!fieldName) continue;
         if (!isValidIdentifier(fieldName)) {
-          errors.push(`Record field "${fieldName}" in parameter "${name}" is not a valid M identifier.`);
+          parameterErrors.push(
+            `Record field "${fieldName}" in parameter "${name}" is not a valid M identifier.`
+          );
         }
         if (fieldNames.has(fieldName)) {
-          errors.push(`Duplicate record field "${fieldName}" in parameter "${name}".`);
+          parameterErrors.push(`Duplicate record field "${fieldName}" in parameter "${name}".`);
         }
         fieldNames.add(fieldName);
       }
     }
   }
 
-  return errors;
+  return { function: functionErrors, parameters: parameterErrors };
 }
 
 /**
  * @param {FunctionCreatorState} state
+ * @returns {string[]}
  */
-export function expressionWarning(state) {
-  const trimmed = state.expression.trim();
-  if (!trimmed) return "Expression is empty.";
-  if (!/^let\b/i.test(trimmed)) {
-    return "Expression does not start with let — it will be wrapped as-is after =>.";
-  }
-  return null;
+export function validateState(state) {
+  const issues = getValidationIssues(state);
+  return [...issues.function, ...issues.parameters];
 }

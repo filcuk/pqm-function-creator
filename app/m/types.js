@@ -5,26 +5,24 @@ export const OUTPUT_STYLES = /** @type {const} */ ({
   SHARED: "shared",
 });
 
-export const PRIMITIVE_TYPES = [
-  "any",
-  "text",
-  "number",
-  "logical",
-  "date",
-  "datetime",
-  "datetimezone",
-  "time",
-  "duration",
-  "binary",
-  "list",
-  "record",
-  "table",
-  "function",
-  "type",
-  "null",
-  "none",
+/**
+ * Primitive M types grouped for dropdown menus (`.dropdown-menu-group`).
+ * Flat `PRIMITIVE_TYPES` is derived from this list.
+ *
+ * @type {{ label: string, types: string[] }[]}
+ */
+export const PRIMITIVE_TYPE_GROUPS = [
+  { label: "General", types: ["any", "null", "none"] },
+  { label: "Primitive", types: ["text", "number", "logical", "binary"] },
+  {
+    label: "Date and time",
+    types: ["date", "datetime", "datetimezone", "time", "duration"],
+  },
+  { label: "Structured", types: ["list", "record", "table"] },
+  { label: "Other", types: ["function", "type"] },
 ];
 
+export const PRIMITIVE_TYPES = PRIMITIVE_TYPE_GROUPS.flatMap((group) => group.types);
 export const PARAM_KINDS = /** @type {const} */ ({
   SCALAR: "scalar",
   RECORD: "record",
