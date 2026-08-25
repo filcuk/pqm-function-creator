@@ -56,18 +56,23 @@
           <p class="field-hint">
             You can import an existing function for further modifications.
           </p>
-          <label class="field" for="import-input">
-            <textarea
-              id="import-input"
-              class="textarea code-input"
-              rows="10"
-              spellcheck="false"
-              placeholder="let&#10;    MyFuncImpl = (…) as … =>&#10;    let … in …,&#10;    MyFuncImplType = type function (…) as … meta [ … ],&#10;    MyFunc = Value.ReplaceType(MyFuncImpl, MyFuncImplType)&#10;in&#10;    MyFunc"
-            ></textarea>
-          </label>
+          <div class="field field-span-all">
+            <div
+              id="import-editor"
+              class="code-block code-block--full"
+              data-code-mode="edit"
+              data-code-toolbar="top"
+              data-code-toolbar-actions="paste,clear"
+              data-code-surface-actions="none"
+              data-code-editor-label="Paste documented M"
+            >
+              <div class="code-block-body">
+                <pre class="line-numbers language-powerquery"><code class="language-powerquery"></code></pre>
+              </div>
+            </div>
+          </div>
           <div class="toolbar toolbar-with-status">
             <button type="button" id="import-function" class="btn btn-primary" disabled>Import</button>
-            <button type="button" id="clear-import" class="btn" disabled>Clear</button>
             <div class="toolbar-status">
               <div id="import-error-banner" class="banner banner-inline banner-error hidden" role="alert" hidden>
                 <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
@@ -93,15 +98,21 @@
           </div>
         </div>
         <p class="field-hint">Insert the <code>let … in</code> block that becomes the function body.</p>
-        <label class="field field-span-all" for="expression-input">
-          <textarea
-            id="expression-input"
-            class="textarea code-input"
-            rows="12"
-            spellcheck="false"
-            placeholder="let&#10;    Source = …&#10;in&#10;    Source"
-          ></textarea>
-        </label>
+        <div class="field field-span-all">
+          <div
+            id="expression-editor"
+            class="code-block code-block--full"
+            data-code-mode="edit"
+            data-code-toolbar="top"
+            data-code-toolbar-actions="paste,clear"
+            data-code-surface-actions="none"
+            data-code-editor-label="Expression"
+          >
+            <div class="code-block-body">
+              <pre class="line-numbers language-powerquery"><code class="language-powerquery"></code></pre>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section id="function-section" class="creator-section" aria-labelledby="function-heading">

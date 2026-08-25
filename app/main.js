@@ -28,7 +28,7 @@ const tour = initTutorial({
       position: "bottom",
     },
     {
-      target: "#expression-input",
+      target: "#expression-editor",
       title: "Expression",
       body: "This is the main logic of our function-to-be, executed when the function is called.",
       position: "bottom",

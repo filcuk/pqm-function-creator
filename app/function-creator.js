@@ -12,10 +12,6 @@ import { showBanner, hideBanner } from "./components/banner.js";
 import { mountIcon } from "./utils/icons.js";
 import { initTooltips } from "./components/tooltip.js";
 import { initPopupMenu } from "./utils/menu.js";
-import {
-  initCodeEditors,
-  refreshCodeEditor,
-} from "./code-editor.js";
 import { saveDraft, loadDraftState, clearDraft } from "./function-creator-draft.js";
 import { createExpandListController } from "./function-creator-expand.js";
 import { createRenderer, typeDropdownHtml } from "./function-creator-render.js";
@@ -51,7 +47,8 @@ let pendingImportState = null;
 let pendingImportIsExample = false;
 
 const root = document.getElementById("function-creator");
-const expressionInput = /** @type {HTMLTextAreaElement} */ (document.getElementById("expression-input"));
+const expressionEditorEl = document.getElementById("expression-editor");
+const importEditorEl = document.getElementById("import-editor");
 const functionNameInput = /** @type {HTMLInputElement} */ (document.getElementById("function-name"));
 const returnTypeHost = document.getElementById("return-type-host");
 const returnTypeCustomField = document.getElementById("return-type-custom-field");
@@ -64,9 +61,7 @@ const outputPreview = document.getElementById("output-preview");
 const functionValidationBanner = document.getElementById("function-validation-banner");
 const parametersValidationBanner = document.getElementById("parameters-validation-banner");
 const outputStyleEl = document.getElementById("output-style");
-const importInput = /** @type {HTMLTextAreaElement | null} */ (document.getElementById("import-input"));
 const importFunctionBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("import-function"));
-const clearImportBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("clear-import"));
 const loadExampleBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("load-example"));
 const resetFormBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("reset-form"));
 const importErrorBanner = document.getElementById("import-error-banner");
@@ -83,7 +78,16 @@ const importSuccessBanner = document.getElementById("form-success-banner");
 let outputStyleControl = null;
 
 /** @type {ReturnType<typeof initCodeBlock> | null} */
+let expressionCodeBlock = null;
+
+/** @type {ReturnType<typeof initCodeBlock> | null} */
+let importCodeBlock = null;
+
+/** @type {ReturnType<typeof initCodeBlock> | null} */
 let outputCodeBlock = null;
+
+/** @type {WeakMap<HTMLElement, NonNullable<ReturnType<typeof initCodeBlock>>>} */
+const exampleCodeBlocks = new WeakMap();
 
 /** @type {HTMLElement | null} */
 let returnTypeDropdown = null;
@@ -384,13 +388,37 @@ function renderExamples({ ensureOpenIds = [] } = {}) {
 
   initTooltips(examplesList);
   initIconsIn(examplesList);
-  initCodeEditors(examplesList);
+  initExampleCodeBlocks(examplesList);
   bindExampleEvents();
 }
 
 function toggleAllExamples() {
   exampleExpand.toggleAll();
   exampleExpand.updateToggleAllLabel(document.getElementById("toggle-all-examples"));
+}
+
+/**
+ * @param {ParentNode} listRoot
+ */
+function initExampleCodeBlocks(listRoot) {
+  listRoot.querySelectorAll(".example-code, .example-result").forEach((el) => {
+    if (!(el instanceof HTMLElement)) return;
+    const instance = initCodeBlock(el);
+    if (instance) exampleCodeBlocks.set(el, instance);
+  });
+}
+
+/**
+ * Fires when toolbar paste/clear update `data-source` (no input event).
+ * Pair with a bubbling `input` listener when typing should also notify.
+ * @param {HTMLElement | null} container
+ * @param {() => void} onChange
+ */
+function onCodeBlockSourceAttrChange(container, onChange) {
+  const code = container?.querySelector("code");
+  if (!code) return;
+  const observer = new MutationObserver(onChange);
+  observer.observe(code, { attributes: true, attributeFilter: ["data-source"] });
 }
 
 /**
@@ -471,12 +499,17 @@ function syncIdCounters() {
  */
 function readExampleFromCard(row) {
   const id = row.getAttribute("data-example-id") || "";
+  const codeEl = row.querySelector(".example-code");
+  const resultEl = row.querySelector(".example-result");
 
   return {
     id: id || undefined,
     description: row.querySelector(".example-description")?.value ?? "",
-    code: row.querySelector("textarea.example-code")?.value ?? "",
-    result: row.querySelector("textarea.example-result")?.value ?? "",
+    code:
+      (codeEl instanceof HTMLElement ? exampleCodeBlocks.get(codeEl)?.getSource() : null) ?? "",
+    result:
+      (resultEl instanceof HTMLElement ? exampleCodeBlocks.get(resultEl)?.getSource() : null) ??
+      "",
   };
 }
 
@@ -518,7 +551,7 @@ function readStateFromDom() {
       ? returnTypeCustomInput.value.trim() || "any"
       : selectedReturn;
 
-  state.expression = expressionInput.value;
+  state.expression = expressionCodeBlock?.getSource() ?? "";
   state.functionName = functionNameInput.value;
   state.returnType = returnType;
   state.functionMeta = {
@@ -672,7 +705,7 @@ function scheduleRegenerate() {
 }
 
 function applyStateToDom() {
-  expressionInput.value = state.expression || "";
+  expressionCodeBlock?.setSource(state.expression || "");
   functionNameInput.value = state.functionName || "MyFunc";
   docNameInput.value = state.functionMeta?.documentationName || "";
   docLongDescriptionInput.value = state.functionMeta?.longDescription || "";
@@ -691,8 +724,6 @@ function applyStateToDom() {
   syncIdCounters();
   renderExamples();
   renderParameters();
-  refreshCodeEditor(expressionInput);
-  if (importInput) refreshCodeEditor(importInput);
   regenerate();
 }
 
@@ -754,28 +785,23 @@ function hideImportBanners() {
 }
 
 function applyExpressionFromImport(expression) {
-  expressionInput.value = expression;
-  refreshCodeEditor(expressionInput);
+  expressionCodeBlock?.setSource(expression);
   readStateFromDom();
   regenerate();
 
-  if (importInput) {
-    importInput.value = "";
-    refreshCodeEditor(importInput);
-  }
+  importCodeBlock?.setSource("");
   syncImportActions();
   hideImportBanners();
   importExpand?.close();
 }
 
 function syncImportActions() {
-  const hasText = Boolean(importInput?.value.trim());
+  const hasText = Boolean(importCodeBlock?.getSource().trim());
   if (importFunctionBtn) importFunctionBtn.disabled = !hasText;
-  if (clearImportBtn) clearImportBtn.disabled = !hasText;
 }
 
 function requestImportFromPaste() {
-  const source = importInput?.value || "";
+  const source = importCodeBlock?.getSource() || "";
   if (!source.trim()) {
     syncImportActions();
     return;
@@ -822,10 +848,7 @@ function resetForm() {
   applyStateToDom();
   clearDraft();
 
-  if (importInput) {
-    importInput.value = "";
-    refreshCodeEditor(importInput);
-  }
+  importCodeBlock?.setSource("");
   syncImportActions();
   hideImportBanners();
   importExpand?.close();
@@ -1131,22 +1154,6 @@ function bindStaticEvents() {
 
   importFunctionBtn?.addEventListener("click", requestImportFromPaste);
 
-  importInput?.addEventListener("input", () => {
-    hideBanner(importWarningBanner);
-    setHidden(importUseAsExpressionBtn, true);
-    pendingExpressionOffer = null;
-    syncImportActions();
-  });
-
-  clearImportBtn?.addEventListener("click", () => {
-    if (importInput) {
-      importInput.value = "";
-      refreshCodeEditor(importInput);
-    }
-    hideImportBanners();
-    syncImportActions();
-  });
-
   loadExampleBtn?.addEventListener("click", () => {
     hideImportBanners();
     requestLoadExample();
@@ -1237,7 +1244,21 @@ export function initFunctionCreator() {
 
   importExpand = initExpand(document.getElementById("import-section"));
 
-  initCodeEditors(root);
+  if (expressionEditorEl instanceof HTMLElement) {
+    expressionCodeBlock = initCodeBlock(expressionEditorEl);
+    onCodeBlockSourceAttrChange(expressionEditorEl, scheduleRegenerate);
+  }
+  if (importEditorEl instanceof HTMLElement) {
+    importCodeBlock = initCodeBlock(importEditorEl);
+    const syncImportFromEditor = () => {
+      hideBanner(importWarningBanner);
+      setHidden(importUseAsExpressionBtn, true);
+      pendingExpressionOffer = null;
+      syncImportActions();
+    };
+    importEditorEl.addEventListener("input", syncImportFromEditor);
+    onCodeBlockSourceAttrChange(importEditorEl, syncImportFromEditor);
+  }
   if (outputPreview instanceof HTMLElement) {
     outputCodeBlock = initCodeBlock(outputPreview);
     initExpandableSurfaces(root);

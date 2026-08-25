@@ -21,12 +21,12 @@ Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functio
 | Expand/collapse lists | `app/function-creator-expand.js` |
 | localStorage draft | `app/function-creator-draft.js` |
 | M generate/parse/format | `app/m/generate.js`, `parse.js`, `format.js`, `scan.js`, `types.js`, `escape.js`, `example.js` |
-| Code highlighting | Editable: `app/code-editor.js`. Output: catalogue `code-block` + Prism (`prism.min.js`, `prism-line-numbers.min.js`, fork `prism-powerquery.min.js`) |
+| Code highlighting | Catalogue `code-block` + Prism (`prism.min.js`, `prism-line-numbers.min.js`, fork `prism-powerquery.min.js`) — edit mode for Expression / Import / examples; select mode for Output |
 | App-specific layout | `app/function-creator.css` (imported from `app/css/app.css`) |
 | About / What? dialog | `app/components/about-dialog.js` — `#about-dialog` + tagline `#about-open-btn` in `index.html` (markup stages) |
 | Confirm dialog | `app/components/dialog.js` — `#import-confirm-dialog` in `index.html` |
 
-Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown`, `segmented-control`, `chip`, `toggle-button`, `code-block`, `expandable-surface`, `popover`, `badge`, `tutorial` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. Fork-owned editable fields use `code-editor.js`; generated **Output** uses catalogue `code-block` + Power Query Prism (`prism-powerquery.min.js`).
+Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown`, `segmented-control`, `chip`, `toggle-button`, `code-block`, `expandable-surface`, `popover`, `badge`, `tutorial` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. All M code surfaces (Expression, Import, examples, Output) use catalogue `code-block` + Power Query Prism (`prism-powerquery.min.js`).
 
 Slim `package.json` exists only for framework sync/verify scripts — not a runtime or bundler step.
 

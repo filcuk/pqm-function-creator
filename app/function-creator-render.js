@@ -381,14 +381,42 @@ export function createRenderer({ nextId }) {
             <span class="field-label">Description</span>
             <input type="text" id="example-${id}-description" class="input example-description" value="${escapeAttr(example.description)}" placeholder="e.g. Filter last 30 days" />
           </label>
-          <label class="field example-field-code" for="example-${id}-code">
-            <span class="field-label">Code</span>
-            <textarea id="example-${id}-code" class="textarea code-input example-code" rows="2" spellcheck="false" placeholder="MyFunc(…)">${escapeText(example.code)}</textarea>
-          </label>
-          <label class="field example-field-result" for="example-${id}-result">
-            <span class="field-label">Result</span>
-            <textarea id="example-${id}-result" class="textarea code-input code-input-plain example-result" data-code-language="plain" rows="2" spellcheck="false" placeholder="#table(…)">${escapeText(example.result)}</textarea>
-          </label>
+          <div class="field example-field-code">
+            <span class="field-label" id="example-${id}-code-label">Code</span>
+            <div
+              id="example-${id}-code"
+              class="code-block code-block--full example-code"
+              data-code-mode="edit"
+              data-code-toolbar="none"
+              data-code-toolbar-actions="none"
+              data-code-surface-actions="none"
+              data-code-editor-label="Example code"
+              aria-labelledby="example-${id}-code-label"
+            >
+              <div class="code-block-body">
+                <pre class="line-numbers language-powerquery"><code class="language-powerquery">${escapeText(example.code)}</code></pre>
+              </div>
+            </div>
+          </div>
+          <div class="field example-field-result">
+            <span class="field-label" id="example-${id}-result-label">Result</span>
+            <div
+              id="example-${id}-result"
+              class="code-block code-block--full example-result"
+              data-code-mode="edit"
+              data-code-toolbar="none"
+              data-code-toolbar-actions="none"
+              data-code-surface-actions="none"
+              data-code-highlight="false"
+              data-code-line-numbers="false"
+              data-code-editor-label="Example result"
+              aria-labelledby="example-${id}-result-label"
+            >
+              <div class="code-block-body">
+                <pre><code>${escapeText(example.result)}</code></pre>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
