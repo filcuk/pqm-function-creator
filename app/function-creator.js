@@ -169,6 +169,7 @@ function mountReturnTypeDropdown() {
     selected: "table",
     includeRecord: true,
     includeCustom: true,
+    grid: true,
   });
   returnTypeDropdown = returnTypeHost.querySelector(".type-dropdown");
   initTypeDropdowns(returnTypeHost, {

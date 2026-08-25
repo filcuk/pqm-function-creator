@@ -10,6 +10,8 @@ import { PARAM_KINDS, PRIMITIVE_TYPE_GROUPS } from "./m/types.js";
  *   includeRecord?: boolean,
  *   includeCustom?: boolean,
  *   valueClass?: string,
+ *   grid?: boolean | number,
+ *   gridCols?: number,
  * }} options
  */
 export function typeDropdownHtml({
@@ -18,6 +20,8 @@ export function typeDropdownHtml({
   includeRecord = false,
   includeCustom = false,
   valueClass = "",
+  grid = false,
+  gridCols,
 }) {
   const selectedValue = selected || "text";
   const triggerLabel = selectedValue === "custom" ? "custom…" : selectedValue;
@@ -50,8 +54,18 @@ export function typeDropdownHtml({
     : "";
 
   const valueClassAttr = valueClass ? ` ${valueClass}` : "";
+  const gridAttrs = [];
+  if (grid === true) {
+    gridAttrs.push('data-dropdown-grid="true"');
+  } else if (typeof grid === "number" && Number.isFinite(grid) && grid >= 0) {
+    gridAttrs.push(`data-dropdown-grid="${escapeAttr(String(grid))}"`);
+  }
+  if (typeof gridCols === "number" && Number.isFinite(gridCols) && gridCols >= 1) {
+    gridAttrs.push(`data-dropdown-grid-cols="${escapeAttr(String(Math.trunc(gridCols)))}"`);
+  }
+  const gridAttr = gridAttrs.length ? ` ${gridAttrs.join(" ")}` : "";
 
-  return `<div class="dropdown type-dropdown" id="${escapeAttr(id)}">
+  return `<div class="dropdown type-dropdown" id="${escapeAttr(id)}"${gridAttr}>
     <button type="button" class="btn dropdown-trigger" aria-haspopup="menu" aria-expanded="false" aria-controls="${escapeAttr(id)}-menu">
       <span class="dropdown-trigger-label">${escapeText(triggerLabel)}</span>
       <span class="combo-btn-chevron" aria-hidden="true"></span>
