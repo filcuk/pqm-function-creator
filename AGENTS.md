@@ -20,7 +20,7 @@ Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functio
 | Card HTML templates | `app/function-creator-render.js` |
 | Expand/collapse lists | `app/function-creator-expand.js` |
 | localStorage draft | `app/function-creator-draft.js` |
-| M generate/parse/format | `app/m/generate.js`, `parse.js`, `format.js`, `scan.js`, `types.js`, `escape.js` |
+| M generate/parse/format | `app/m/generate.js`, `parse.js`, `format.js`, `scan.js`, `types.js`, `escape.js`, `example.js` |
 | Code highlighting | Editable: `app/code-editor.js`. Output: catalogue `code-block` + Prism (`prism.min.js`, `prism-line-numbers.min.js`, fork `prism-powerquery.min.js`) |
 | App-specific layout | `app/function-creator.css` (imported from `app/css/app.css`) |
 | About / What? dialog | `app/components/about-dialog.js` — `#about-dialog` + tagline `#about-open-btn` in `index.html` (markup stages) |
@@ -151,7 +151,7 @@ Run with `npx serve .` and verify:
 3. **Examples** — add/remove; description updates card title; code/result edit and appear in generated meta.
 4. **Return type** — primitive options including `null` and `none`; custom type field shows for “custom…”.
 5. **Output** — section has no card chrome; top toolbar Copy / Maximize; maximize expands overlay; switch let/shared regenerates.
-6. **Import** — invalid paste shows error banner; valid paste opens confirm dialog; cancel leaves form; confirm replaces state and shows success banner.
+6. **Import** — invalid paste shows error banner; valid paste opens confirm dialog; cancel leaves form; confirm replaces state and shows success banner. **Load example** applies a documented sample (two examples, two scalars, one record) immediately when the form is empty/default; otherwise opens the same confirm flow and does not change the form until confirmed.
 7. **Draft** — edit fields, reload page, draft restores; corrupt localStorage does not break the app.
 8. **Theme** — light/dark/auto via footer toggle without flash on reload.
 9. **Shell** — page-nav up/down jumps (heading hover menu off); footer shows app version; **also see** loads Power BI peers (this app absent).

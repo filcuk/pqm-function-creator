@@ -42,6 +42,10 @@
         <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
         <span class="banner-body">Something went wrong. Check the console for details.</span>
       </div>
+      <div id="form-success-banner" class="banner banner-success hidden" role="status" hidden>
+        <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+        <span class="banner-body"></span>
+      </div>
 
       <div class="expand" id="import-section">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="import-panel">
@@ -50,7 +54,7 @@
         </button>
         <div id="import-panel" class="expand-panel hidden" hidden>
           <p class="field-hint">
-            You can import an existing function for further modifications.
+            You can import an existing function for further modifications, or load a sample that uses documentation, examples, scalar parameters, and a record parameter.
           </p>
           <label class="field" for="import-input">
             <textarea
@@ -64,6 +68,7 @@
           <div class="toolbar toolbar-with-status">
             <button type="button" id="import-function" class="btn btn-primary" disabled>Import</button>
             <button type="button" id="clear-import" class="btn" disabled>Clear</button>
+            <button type="button" id="load-example" class="btn">Load example</button>
             <div class="toolbar-status">
               <div id="import-error-banner" class="banner banner-inline banner-error hidden" role="alert" hidden>
                 <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
@@ -75,10 +80,6 @@
                 <span class="banner-body"></span>
               </div>
               <button type="button" id="import-use-as-expression" class="btn hidden" hidden>Use as expression</button>
-              <div id="import-success-banner" class="banner banner-inline banner-success hidden" role="status" hidden>
-                <span class="banner-icon" data-icon="success" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
-                <span class="banner-body">Function imported.</span>
-              </div>
             </div>
           </div>
         </div>

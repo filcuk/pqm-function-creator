@@ -21,6 +21,7 @@ import { createExpandListController } from "./function-creator-expand.js";
 import { createRenderer, typeDropdownHtml } from "./function-creator-render.js";
 import { generateOutput, getValidationIssues, validateState } from "./m/generate.js";
 import { tryParseFunction } from "./m/parse.js";
+import { createExampleState } from "./m/example.js";
 import { isValidIdentifier } from "./m/escape.js";
 import {
   createDefaultExample,
@@ -46,6 +47,8 @@ let regenTimer = null;
 
 /** @type {import("./m/types.js").FunctionCreatorState | null} */
 let pendingImportState = null;
+/** True when {@link pendingImportState} came from Load example (not paste). */
+let pendingImportIsExample = false;
 
 const root = document.getElementById("function-creator");
 const expressionInput = /** @type {HTMLTextAreaElement} */ (document.getElementById("expression-input"));
@@ -64,6 +67,7 @@ const outputStyleEl = document.getElementById("output-style");
 const importInput = /** @type {HTMLTextAreaElement | null} */ (document.getElementById("import-input"));
 const importFunctionBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("import-function"));
 const clearImportBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("clear-import"));
+const loadExampleBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("load-example"));
 const importErrorBanner = document.getElementById("import-error-banner");
 const importErrorHelpBtn = /** @type {HTMLButtonElement | null} */ (
   document.getElementById("import-error-help")
@@ -72,7 +76,7 @@ const importWarningBanner = document.getElementById("import-warning-banner");
 const importUseAsExpressionBtn = /** @type {HTMLButtonElement | null} */ (
   document.getElementById("import-use-as-expression")
 );
-const importSuccessBanner = document.getElementById("import-success-banner");
+const importSuccessBanner = document.getElementById("form-success-banner");
 
 /** @type {ReturnType<typeof initSegmentedControl> | null} */
 let outputStyleControl = null;
@@ -691,15 +695,51 @@ function applyStateToDom() {
   regenerate();
 }
 
-function applyImportedState(importedState) {
+function applyImportedState(importedState, { successMessage = "Function imported." } = {}) {
   state = normalizeLoadedState(importedState);
   syncIdCounters();
   applyStateToDom();
   saveDraft(state);
 
   hideImportBanners();
-  setBannerMessage(importSuccessBanner, "Function imported.");
+  importExpand?.close();
+  setBannerMessage(importSuccessBanner, successMessage);
   showBanner(importSuccessBanner, { expire: IMPORT_SUCCESS_EXPIRE_MS });
+}
+
+/**
+ * True when the form has no user content beyond blank defaults.
+ * @param {import("./m/types.js").FunctionCreatorState} current
+ */
+function isFormPristine(current) {
+  const defaults = createDefaultState();
+  const name = current.functionName.trim();
+  const defaultNames = new Set([defaults.functionName, "MyFunction", ""]);
+
+  return (
+    !current.expression.trim() &&
+    defaultNames.has(name) &&
+    (current.returnType.trim() || defaults.returnType) === defaults.returnType &&
+    (current.outputStyle || defaults.outputStyle) === defaults.outputStyle &&
+    !current.functionMeta?.documentationName?.trim() &&
+    !current.functionMeta?.longDescription?.trim() &&
+    (current.functionMeta?.examples?.length ?? 0) === 0 &&
+    (current.parameters?.length ?? 0) === 0
+  );
+}
+
+function requestLoadExample() {
+  readStateFromDom();
+  const exampleState = normalizeLoadedState(createExampleState());
+
+  if (isFormPristine(state)) {
+    applyImportedState(exampleState, { successMessage: "Example loaded." });
+    return;
+  }
+
+  pendingImportState = exampleState;
+  pendingImportIsExample = true;
+  importConfirmDialog?.openDialog();
 }
 
 function hideImportBanners() {
@@ -760,14 +800,18 @@ function requestImportFromPaste() {
   }
 
   pendingImportState = normalizeLoadedState(result.state);
+  pendingImportIsExample = false;
   importConfirmDialog?.openDialog();
 }
 
 function confirmImport() {
   if (!pendingImportState) return;
 
-  applyImportedState(pendingImportState);
+  applyImportedState(pendingImportState, {
+    successMessage: pendingImportIsExample ? "Example loaded." : "Function imported.",
+  });
   pendingImportState = null;
+  pendingImportIsExample = false;
   importConfirmDialog?.closeDialog();
 }
 
@@ -1068,6 +1112,11 @@ function bindStaticEvents() {
     syncImportActions();
   });
 
+  loadExampleBtn?.addEventListener("click", () => {
+    hideImportBanners();
+    requestLoadExample();
+  });
+
   importUseAsExpressionBtn?.addEventListener("click", () => {
     if (!pendingExpressionOffer) return;
     applyExpressionFromImport(pendingExpressionOffer);
@@ -1120,6 +1169,7 @@ function bindStaticEvents() {
     dialogEl: document.getElementById("import-confirm-dialog"),
     onClose: () => {
       pendingImportState = null;
+      pendingImportIsExample = false;
     },
   });
 
