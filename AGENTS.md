@@ -2,7 +2,7 @@
 
 Rules for AI agents working in the **Power Query M Function Creator** repository.
 
-Based on [SMA1 Framework](https://github.com/filcuk/sma1-framework) `TEMPLATE_VERSION` in `app/version.js` (currently **0.12.3**). Pin and sync via `template.lock.json` + `npm run sync:template` / `verify:template`.
+Based on [SMA1 Framework](https://github.com/filcuk/sma1-framework) `FRAMEWORK_VERSION` in `app/version.js` (currently **0.13.0**). Pin and sync via `framework.lock.json` + `npm run sync:framework` / `verify:framework`.
 
 ## App overview
 
@@ -11,10 +11,10 @@ Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functio
 | Area | Key files |
 | ---- | --------- |
 | Fork defaults | `app/config.js` (repo/Pages URLs, also-see, theme keys) |
-| Versions | `app/version.js` (`APP_VERSION`, `TEMPLATE_VERSION`) |
-| Template pin | `template.lock.json`, `template-manifest.json`, `scripts/sync-template.mjs` |
+| Versions | `app/version.js` (`APP_VERSION`, `FRAMEWORK_VERSION`) |
+| Framework pin | `framework.lock.json`, `framework-manifest.json`, `scripts/sync-framework.mjs` |
 | Shell chrome | `app/shell/` (`shell.js`, `render-shell.js`, `also-see.js`, `page-nav.js`, `theme.js`, …) |
-| Shared utils | `app/utils/` (`dom.js`, `icons.js`, `icons-template.js`, `icons-app.js`, `menu.js`, `document-listeners.js`, `brand-icon.js`) |
+| Shared utils | `app/utils/` (`dom.js`, `icons.js`, `icons-framework.js`, `icons-app.js`, `menu.js`, `document-listeners.js`, `brand-icon.js`) |
 | Shared components | `app/components/` (`dialog.js`, `about-dialog.js`, `expand.js`, `tooltip.js`, `banner.js`, `dropdown.js`, `segmented-control.js`, `chip.js`, `toggle-button.js`, `code-block.js`, `expandable-surface.js`, `popover.js`, `badge.js`, `tutorial.js`) |
 | UI orchestration | `app/function-creator.js` |
 | Card HTML templates | `app/function-creator-render.js` |
@@ -28,7 +28,7 @@ Vanilla HTML/CSS/JS microapp (no build step) that generates documented M functio
 
 Partial lock keeps: `dialog`, `about-dialog`, `expand`, `fields`, `dropdown`, `segmented-control`, `chip`, `toggle-button`, `code-block`, `expandable-surface`, `popover`, `badge`, `tutorial` (plus always-on shell pieces). Unused catalogue demos (tabular-input, rich-text, Toast UI, charts, etc.) are **not** selected. Keep `menu.js` for the footer also-see dropdown. Fork-owned editable fields use `code-editor.js`; generated **Output** uses catalogue `code-block` + Power Query Prism (`prism-powerquery.min.js`).
 
-Slim `package.json` exists only for template sync/verify scripts — not a runtime or bundler step.
+Slim `package.json` exists only for framework sync/verify scripts — not a runtime or bundler step.
 
 ## Confirm before complexity
 
@@ -45,14 +45,14 @@ Prefer the simplest approach that fits the existing template.
 
 - Plain HTML, CSS, and JavaScript ES modules
 - No build step unless explicitly approved
-- Keep `package.json` limited to template tooling (`sync:template` / `verify:template`) unless the user asks for more
+- Keep `package.json` limited to framework tooling (`sync:framework` / `verify:framework`) unless the user asks for more
 
 ## Reuse the design system
 
 - Use CSS custom properties from `app/tokens.css` (`--bg`, `--accent`, etc.)
 - Fork brand accent overrides belong in `app/css/app.css` (not `tokens.css`)
 - Use existing component classes: `.btn`, `.btn-primary`, `.modal`, `.banner`, `.theme-toggle`
-- Add fork icons in `app/utils/icons-app.js` only; template catalogue is `icons-template.js` (synced). Public API: `icons.js`
+- Add fork icons in `app/utils/icons-app.js` only; framework catalogue is `icons-framework.js` (synced). Public API: `icons.js`
 - Do not invent SVG path data — use `add-icon` / `handle-assets`
 - Do not introduce parallel styling systems (Tailwind, CSS-in-JS, component libraries)
 
@@ -62,7 +62,7 @@ Every HTML entry point should:
 
 1. Set `window.__MICROAPP__ = { themeStorageKey: "…" }` before `theme-init.js` (must match `APP_CONFIG.themeStorageKey`)
 2. Include blocking `app/theme-init.js` in `<head>` (prevents theme flash)
-3. Link `app/styles.css` (fork entry: `tokens.css` → `css/template.css` → `css/app.css`)
+3. Link `app/styles.css` (fork entry: `tokens.css` → `css/framework.css` → `css/app.css`)
 4. Use `<main id="main">` (skip link + page-nav). Keep app root as `#function-creator` inside main
 5. Call `initShell()` from `app/shell/shell.js` as the first step in the page module
 
@@ -94,7 +94,7 @@ Always use `setHidden()` from `app/utils/dom.js` when showing/hiding elements pr
 
 - Declare icons with `data-icon="name"` and optional `data-icon-class="…"` in HTML
 - Call `initIcons()` (via `initShell()`) to inject SVGs
-- Template icons: `app/utils/icons-template.js` (synced). Fork icons / aliases: `app/utils/icons-app.js`
+- Framework icons: `app/utils/icons-framework.js` (synced). Fork icons / aliases: `app/utils/icons-app.js`
 - Domain alias: `add` → `plus` in `icons-app.js` (keep existing `data-icon="add"` call sites)
 
 ### HTML escaping
@@ -119,9 +119,9 @@ Configured in `app/config.js` (`alsoSeeUrl`, `alsoSeeTopics`, `alsoSee`, `appUrl
 
 | File | Contents |
 | ---- | -------- |
-| `app/styles.css` | Fork entry — `tokens.css` → `css/template.css` → `css/app.css` |
+| `app/styles.css` | Fork entry — `tokens.css` → `css/framework.css` → `css/app.css` |
 | `app/tokens.css` | Reset, tokens, dark theme, base typography (synced) |
-| `app/css/template.css` | Generated partial index (sync regenerates; do not hand-edit) |
+| `app/css/framework.css` | Generated partial index (sync regenerates; do not hand-edit) |
 | `app/css/app.css` | Fork-owned — Prism CSS, `prism-theme.css`, `function-creator.css`, optional accent |
 | `app/css/layout.css` | Shell layout, footer, page-nav, also-see, sticky |
 | `app/css/controls-*.css` | Buttons, fields, disclosure, menus |
@@ -162,5 +162,5 @@ Run with `npx serve .` and verify:
 1. Read `README.md` for the one-line description
 2. Keep M logic in `app/m/`; keep DOM wiring in `function-creator*.js`
 3. Prefer shared modules under `app/shell/`, `app/components/`, `app/utils/`, `app/css/` over reinventing chrome
-4. Prefer `npm run sync:template` / `verify:template` over hand-merging template files; use `migrate-template` for version bumps
-5. Update this file if you add modules, change draft schema, bump template version, or new workflows
+4. Prefer `npm run sync:framework` / `verify:framework` over hand-merging framework files; use `migrate-framework` for version bumps
+5. Update this file if you add modules, change draft schema, bump framework version, or new workflows

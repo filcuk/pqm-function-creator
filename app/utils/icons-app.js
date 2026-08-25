@@ -3,7 +3,7 @@
  *
  * Add app-specific entries here (or blank stubs with empty `markup` when the
  * user will supply paths). Prefer `{ ref: "template-id" }` to alias a template
- * icon. Import `ICON_ATTRIBUTIONS` from `./icons.js` (or `./icons-template.js`)
+ * icon. Import `ICON_ATTRIBUTIONS` from `./icons.js` (or `./icons-framework.js`)
  * when setting `attribution`.
  *
  * Available (app): add (ref→plus)
