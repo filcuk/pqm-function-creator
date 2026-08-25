@@ -793,6 +793,9 @@ function applyExpressionFromImport(expression) {
   syncImportActions();
   hideImportBanners();
   importExpand?.close();
+
+  setBannerMessage(importSuccessBanner, "Code moved to expression.");
+  showBanner(importSuccessBanner, { expire: IMPORT_SUCCESS_EXPIRE_MS });
 }
 
 function syncImportActions() {
