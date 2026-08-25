@@ -1,7 +1,10 @@
 import { initShell } from "./shell/shell.js";
 import { initAboutDialog } from "./components/about-dialog.js";
+import { initPopover } from "./components/popover.js";
 import { initTutorial } from "./components/tutorial.js";
 import { initFunctionCreator } from "./function-creator.js";
+
+const TOUR_HINT_STORAGE_KEY = "pqm-function-creator-tour-hint-seen";
 
 initShell({ pageNav: { showHeadingList: false } });
 
@@ -12,9 +15,39 @@ document.querySelectorAll(".heading-anchor").forEach((heading) => {
   delete heading.dataset.headingLink;
 });
 
+const aboutOpenBtn = document.getElementById("about-open-btn");
+
+/** @type {ReturnType<typeof initPopover> | null} */
+let tourHintPopover = null;
+
+function hasSeenTourHint() {
+  try {
+    return localStorage.getItem(TOUR_HINT_STORAGE_KEY) === "1";
+  } catch {
+    return true;
+  }
+}
+
+function markTourHintSeen() {
+  try {
+    localStorage.setItem(TOUR_HINT_STORAGE_KEY, "1");
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
+function dismissTourHint() {
+  if (!tourHintPopover) return;
+  const popover = tourHintPopover;
+  tourHintPopover = null;
+  markTourHintSeen();
+  popover.destroy();
+}
+
 const aboutDialog = initAboutDialog({
   dialogEl: document.getElementById("about-dialog"),
-  openTriggers: [document.getElementById("about-open-btn")],
+  openTriggers: [aboutOpenBtn],
+  onOpen: () => dismissTourHint(),
 });
 
 const tour = initTutorial({
@@ -70,8 +103,39 @@ const tour = initTutorial({
 
 document.getElementById("about-guided-tour")?.addEventListener("click", (event) => {
   event.preventDefault();
+  dismissTourHint();
   aboutDialog?.closeDialog();
   tour?.start();
 });
+
+if (aboutOpenBtn instanceof HTMLElement && !hasSeenTourHint()) {
+  tourHintPopover = initPopover({
+    anchor: aboutOpenBtn,
+    body: "Check here for more into and a guided tour!",
+    position: "right",
+    dismissible: false,
+    trapFocus: false,
+    actions: [
+      {
+        label: "Got it",
+        className: "btn btn-primary",
+        closeOnClick: false,
+        onClick: () => dismissTourHint(),
+      },
+    ],
+    onClose: () => {
+      // Escape / outside click / × — destroy after close() returns.
+      if (!tourHintPopover) return;
+      const popover = tourHintPopover;
+      tourHintPopover = null;
+      markTourHintSeen();
+      queueMicrotask(() => popover.destroy());
+    },
+  });
+  // Let shell / layout settle before measuring the anchor.
+  window.requestAnimationFrame(() => {
+    tourHintPopover?.open();
+  });
+}
 
 initFunctionCreator();

@@ -155,7 +155,7 @@ Run with `npx serve .` and verify:
 7. **Draft** — edit fields, reload page, draft restores; corrupt localStorage does not break the app.
 8. **Theme** — light/dark/auto via footer toggle without flash on reload.
 9. **Shell** — page-nav up/down jumps (heading hover menu off); footer shows app version; **also see** loads Power BI peers (this app absent).
-10. **About** — tagline **What?** opens dialog; **Got it** / Escape / backdrop close; **Huh?** reveals simpler stages; after the last stage, **I don't get it** link appears (opens PBS Kids in a new tab). **Guided tour** closes the dialog and runs a spotlight walkthrough of Import → Output.
+10. **About** — first visit shows a popover to the right of **What?** (guided tour available; dismissed once via Got it / opening What?); tagline **What?** opens dialog; **Got it** / Escape / backdrop close; **Huh?** reveals simpler stages; after the last stage, **I don't get it** link appears (opens PBS Kids in a new tab). **Guided tour** closes the dialog and runs a spotlight walkthrough of Import → Output.
 
 ## When extending this app
 
