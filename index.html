@@ -54,7 +54,7 @@
         </button>
         <div id="import-panel" class="expand-panel hidden" hidden>
           <p class="field-hint">
-            You can import an existing function for further modifications, or load a sample that uses documentation, examples, scalar parameters, and a record parameter.
+            You can import an existing function for further modifications.
           </p>
           <label class="field" for="import-input">
             <textarea
@@ -68,7 +68,6 @@
           <div class="toolbar toolbar-with-status">
             <button type="button" id="import-function" class="btn btn-primary" disabled>Import</button>
             <button type="button" id="clear-import" class="btn" disabled>Clear</button>
-            <button type="button" id="load-example" class="btn">Load example</button>
             <div class="toolbar-status">
               <div id="import-error-banner" class="banner banner-inline banner-error hidden" role="alert" hidden>
                 <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
@@ -86,7 +85,13 @@
       </div>
 
       <section class="creator-section" aria-labelledby="expression-heading">
-        <h2 id="expression-heading" class="section-title">Expression</h2>
+        <div class="toolbar expression-toolbar">
+          <h2 id="expression-heading" class="section-title">Expression</h2>
+          <div class="expression-toolbar-actions">
+            <button type="button" id="load-example" class="btn">Load example</button>
+            <button type="button" id="reset-form" class="btn btn-danger">Reset all</button>
+          </div>
+        </div>
         <p class="field-hint">Insert the <code>let … in</code> block that becomes the function body.</p>
         <label class="field field-span-all" for="expression-input">
           <textarea
@@ -260,6 +265,29 @@
             <button type="button" class="btn" data-dialog-close>Cancel</button>
             <button type="button" class="btn btn-primary" id="import-confirm-dialog-ok">
               Import
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="reset-confirm-dialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="reset-confirm-dialog-title" hidden>
+      <div class="modal-backdrop" data-dialog-close></div>
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h2 id="reset-confirm-dialog-title">Reset form?</h2>
+          <button type="button" class="modal-close" aria-label="Close" data-dialog-close>
+            ×
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>This clears the expression, function settings, documentation, examples, parameters, import box, and the saved draft in this browser. This cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <div class="modal-footer-actions">
+            <button type="button" class="btn" data-dialog-close>Cancel</button>
+            <button type="button" class="btn btn-danger" id="reset-confirm-dialog-ok">
+              Reset
             </button>
           </div>
         </div>

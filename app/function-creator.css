@@ -302,6 +302,22 @@
   justify-content: space-between;
 }
 
+.expression-toolbar {
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.expression-toolbar .section-title {
+  margin: 0;
+}
+
+.expression-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .examples-toolbar .badge-host,
 .parameters-toolbar .badge-host {
   --badge-ring: var(--surface);

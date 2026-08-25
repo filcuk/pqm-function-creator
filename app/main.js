@@ -28,13 +28,13 @@ const tour = initTutorial({
     {
       target: "#import-section",
       title: "Import",
-      body: "Paste an existing documented function here to load it into the form. Load example fills a sample that uses documentation, two examples, two scalar parameters, and a record parameter. You can also drop in a bare let…in expression and use it as the function body.",
+      body: "Paste an existing documented function here to load it into the form. You can also drop in a bare let…in expression and use it as the function body.",
       position: "bottom",
     },
     {
-      target: "#expression-heading",
+      target: ".expression-toolbar",
       title: "Expression",
-      body: "This is the function body — usually a let…in query (or any M expression) that runs when the function is called.",
+      body: "This is the function body — usually a let…in query (or any M expression) that runs when the function is called. Load example fills a documented sample; Reset clears the form and saved draft.",
       position: "bottom",
     },
     {

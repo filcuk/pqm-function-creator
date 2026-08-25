@@ -15,6 +15,14 @@ export function saveDraft(state) {
   }
 }
 
+export function clearDraft() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    /* private mode */
+  }
+}
+
 /**
  * @param {unknown} parsed
  */

@@ -151,7 +151,7 @@ Run with `npx serve .` and verify:
 3. **Examples** — add/remove; description updates card title; code/result edit and appear in generated meta.
 4. **Return type** — primitive options including `null` and `none`; custom type field shows for “custom…”.
 5. **Output** — section has no card chrome; top toolbar Copy / Maximize; maximize expands overlay; switch let/shared regenerates.
-6. **Import** — invalid paste shows error banner; valid paste opens confirm dialog; cancel leaves form; confirm replaces state and shows success banner. **Load example** applies a documented sample (two examples, two scalars, one record) immediately when the form is empty/default; otherwise opens the same confirm flow and does not change the form until confirmed.
+6. **Import** — invalid paste shows error banner; valid paste opens confirm dialog; cancel leaves form; confirm replaces state and shows success banner at the top (import collapses). **Load example** (Expression toolbar) applies a documented sample immediately when the form is empty/default; otherwise opens the same confirm flow. **Reset** (danger) confirms, then clears the form, import box, and draft localStorage.
 7. **Draft** — edit fields, reload page, draft restores; corrupt localStorage does not break the app.
 8. **Theme** — light/dark/auto via footer toggle without flash on reload.
 9. **Shell** — page-nav up/down jumps (heading hover menu off); footer shows app version; **also see** loads Power BI peers (this app absent).

@@ -16,7 +16,7 @@ import {
   initCodeEditors,
   refreshCodeEditor,
 } from "./code-editor.js";
-import { saveDraft, loadDraftState } from "./function-creator-draft.js";
+import { saveDraft, loadDraftState, clearDraft } from "./function-creator-draft.js";
 import { createExpandListController } from "./function-creator-expand.js";
 import { createRenderer, typeDropdownHtml } from "./function-creator-render.js";
 import { generateOutput, getValidationIssues, validateState } from "./m/generate.js";
@@ -35,7 +35,7 @@ import {
 } from "./m/types.js";
 
 const REGEN_DELAY_MS = 200;
-const IMPORT_SUCCESS_EXPIRE_MS = 4000;
+const IMPORT_SUCCESS_EXPIRE_MS = 2000;
 
 /** @type {ReturnType<typeof createDefaultState> & { parameters: ReturnType<typeof createDefaultParameter>[] }} */
 let state = createDefaultState();
@@ -68,6 +68,7 @@ const importInput = /** @type {HTMLTextAreaElement | null} */ (document.getEleme
 const importFunctionBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("import-function"));
 const clearImportBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("clear-import"));
 const loadExampleBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("load-example"));
+const resetFormBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("reset-form"));
 const importErrorBanner = document.getElementById("import-error-banner");
 const importErrorHelpBtn = /** @type {HTMLButtonElement | null} */ (
   document.getElementById("import-error-help")
@@ -815,8 +816,29 @@ function confirmImport() {
   importConfirmDialog?.closeDialog();
 }
 
+function resetForm() {
+  state = createDefaultState();
+  syncIdCounters();
+  applyStateToDom();
+  clearDraft();
+
+  if (importInput) {
+    importInput.value = "";
+    refreshCodeEditor(importInput);
+  }
+  syncImportActions();
+  hideImportBanners();
+  importExpand?.close();
+  importConfirmDialog?.closeDialog();
+
+  setBannerMessage(importSuccessBanner, "Form reset.");
+  showBanner(importSuccessBanner, { expire: IMPORT_SUCCESS_EXPIRE_MS });
+}
+
 /** @type {ReturnType<typeof initDialog> | null} */
 let importConfirmDialog = null;
+/** @type {ReturnType<typeof initDialog> | null} */
+let resetConfirmDialog = null;
 
 function setOutputStyle(style) {
   const next = style === OUTPUT_STYLES.SHARED ? OUTPUT_STYLES.SHARED : OUTPUT_STYLES.LET;
@@ -1117,6 +1139,10 @@ function bindStaticEvents() {
     requestLoadExample();
   });
 
+  resetFormBtn?.addEventListener("click", () => {
+    resetConfirmDialog?.openDialog();
+  });
+
   importUseAsExpressionBtn?.addEventListener("click", () => {
     if (!pendingExpressionOffer) return;
     applyExpressionFromImport(pendingExpressionOffer);
@@ -1174,6 +1200,15 @@ function bindStaticEvents() {
   });
 
   document.getElementById("import-confirm-dialog-ok")?.addEventListener("click", confirmImport);
+
+  resetConfirmDialog = initDialog({
+    dialogEl: document.getElementById("reset-confirm-dialog"),
+  });
+
+  document.getElementById("reset-confirm-dialog-ok")?.addEventListener("click", () => {
+    resetForm();
+    resetConfirmDialog?.closeDialog();
+  });
 
   syncImportActions();
 }
