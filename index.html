@@ -31,7 +31,7 @@
         <h1>Power Query M Function Creator</h1>
       </div>
       <p class="tagline">
-        <em>Let</em>'s get formal! Turn a <code>let … in</code> block into a typed, documented function easily.
+        <em>Let</em>'s get <em>in</em>formal! Turn a <code>M</code> expression into a typed, documented function without fuss.
         <button type="button" id="about-open-btn" class="btn-link tagline-link">What?</button>
       </p>
     </header>
@@ -312,23 +312,22 @@
         </div>
         <div class="modal-body" id="about-dialog-body">
           <p>
-            A <code>let … in</code> query is fine for a one-off transformation. A documented M
-            function is better when you need to <b>reuse the same logic</b> with different <b>inputs</b>: callers
-            get named parameters, type checks, and descriptions in Power Query invoke dialog.
+            Functions are a way to <b>reuse logic</b>, which is generally good practice. <br>
+            But creating a documented <code>M</code> function can be finicky, 
+            and the structure isn't easy to remember. 
           </p>
           <p>
-            Building that wrapper by hand is <em>hard</em>.
-            This tool does the scaffolding for you: fill in the form (or import an existing function),
-            then copy the generated M into Excel or Power BI.
+            This tool does the scaffolding for you, allowing you to enter your existing expression 
+            and use forms to generate the function declaration and documentation.
           </p>
           <div class="about-extra-content" data-about-extra>
             <div class="about-extra-block hidden" data-about-stage data-about-next-label="Uhh..." hidden>
               <p>
                 <em>Okay</em>, so Power Query is the data-cleaning bit of Excel and Power BI. You write a
-                <code>let … in</code> block that does something useful. To share it as a proper function, you need
-                parameter names, types, docs the UI can show, and usually <code>Value.ReplaceType</code>. This page
-                builds that wrapper for you. Fill the form on the left (ish). Copy the M on the bottom. Paste it into
-                Power Query. That's the whole trick.
+                <code>let … in</code> block that does something useful, and may want to make it reusable.
+              </p>
+              <p>
+                By inserting your block into the form, you can easily generate a documented function.
               </p>
             </div>
             <div class="about-extra-block hidden" data-about-stage data-about-next-label="I don't get it" hidden>
