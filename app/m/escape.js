@@ -74,6 +74,15 @@ export function parseListValue(line) {
     return "null";
   }
 
+  // Pass through M literals so date samples stay typed (not quoted text).
+  if (
+    /^#(date|datetime|datetimezone|time|duration)\s*\(/i.test(trimmed) ||
+    /^\{[\s\S]*\}$/.test(trimmed) ||
+    /^\[[\s\S]*\]$/.test(trimmed)
+  ) {
+    return trimmed;
+  }
+
   return escapeMString(trimmed);
 }
 

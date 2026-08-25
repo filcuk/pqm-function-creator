@@ -85,6 +85,7 @@ function parseListValues(listText) {
     if (value === "true" || value === "false") return value;
     if (value === "null") return "null";
     if (/^-?\d+(\.\d+)?$/.test(value)) return value;
+    if (/^#(date|datetime|datetimezone|time|duration)\s*\(/i.test(value)) return value;
     return parseMString(value);
   });
 }

@@ -14,15 +14,16 @@ export function createExampleState() {
     outputStyle: OUTPUT_STYLES.LET,
     expression: `let
     Rows = {
-        [Date = #date(2024, 1, 15), Region = "North", Amount = 120, Active = true],
-        [Date = #date(2024, 3, 2), Region = "South", Amount = 80, Active = false],
-        [Date = #date(2024, 6, 8), Region = "North", Amount = 45, Active = true]
+        [SaleDate = #date(2024, 1, 15), Region = "North", Amount = 120, Active = true],
+        [SaleDate = #date(2024, 3, 2), Region = "South", Amount = 80, Active = false],
+        [SaleDate = #date(2024, 6, 8), Region = "North", Amount = 45, Active = true]
     },
     Source = Table.FromRecords(Rows),
-    ByDate = Table.SelectRows(Source, each [Date] >= StartDate),
+    Opts = if Options = null then [IncludeInactive = false, MaxRows = null] else Options,
+    ByDate = Table.SelectRows(Source, each [SaleDate] >= StartDate),
     ByRegion = Table.SelectRows(ByDate, each [Region] = Region),
-    WithInactive = if Options[IncludeInactive] = true then ByRegion else Table.SelectRows(ByRegion, each [Active] = true),
-    Limited = if Options[MaxRows] = null then WithInactive else Table.FirstN(WithInactive, Options[MaxRows])
+    WithInactive = if Opts[IncludeInactive] = true then ByRegion else Table.SelectRows(ByRegion, each [Active] = true),
+    Limited = if Opts[MaxRows] = null then WithInactive else Table.FirstN(WithInactive, Opts[MaxRows])
 in
     Limited`,
     functionMeta: {
@@ -33,12 +34,12 @@ in
         {
           description: "North region from 2024, active rows only",
           code: `FilterSalesByPeriod(#date(2024, 1, 1), "North", [IncludeInactive = false, MaxRows = 10])`,
-          result: `#table({"Date", "Region", "Amount", "Active"}, {{#date(2024, 1, 15), "North", 120, true}})`,
+          result: `#table({"SaleDate", "Region", "Amount", "Active"}, {{#date(2024, 1, 15), "North", 120, true}})`,
         },
         {
           description: "South region including inactive rows",
           code: `FilterSalesByPeriod(#date(2024, 1, 1), "South", [IncludeInactive = true, MaxRows = null, Note = "QA check"])`,
-          result: `#table({"Date", "Region", "Amount", "Active"}, {{#date(2024, 3, 2), "South", 80, false}})`,
+          result: `#table({"SaleDate", "Region", "Amount", "Active"}, {{#date(2024, 3, 2), "South", 80, false}})`,
         },
       ],
     },
@@ -51,8 +52,8 @@ in
         mType: "date",
         meta: {
           fieldCaption: "Start date",
-          fieldDescription: "Keep rows whose Date is on or after this value.",
-          sampleValues: ["2024-01-01", "2023-07-01"],
+          fieldDescription: "Keep rows whose SaleDate is on or after this value.",
+          sampleValues: ["#date(2024, 1, 1)", "#date(2023, 7, 1)"],
         },
         fields: [],
       },
