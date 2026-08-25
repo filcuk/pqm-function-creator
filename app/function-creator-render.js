@@ -89,11 +89,11 @@ export function createRenderer({ nextId }) {
     return `
     <label class="field ${captionClass}${hiddenClass}" for="${idPrefix}-caption"${hiddenAttr}>
       <span class="field-label">Caption</span>
-      <input type="text" id="${idPrefix}-caption" class="input meta-caption" value="${escapeAttr(meta.fieldCaption || "")}" />
+      <input type="text" id="${idPrefix}-caption" class="input meta-caption" value="${escapeAttr(meta.fieldCaption || "")}" placeholder="Label in the invoke dialog" />
     </label>
     <label class="field ${descriptionClass}${hiddenClass}" for="${idPrefix}-description"${hiddenAttr}>
       <span class="field-label">Description</span>
-      <input type="text" id="${idPrefix}-description" class="input meta-description" value="${escapeAttr(meta.fieldDescription || "")}" />
+      <input type="text" id="${idPrefix}-description" class="input meta-description" value="${escapeAttr(meta.fieldDescription || "")}" placeholder="Help text for this field" />
     </label>
   `;
   }
@@ -180,7 +180,7 @@ export function createRenderer({ nextId }) {
         <div class="field-grid record-field-grid">
           <label class="field record-field-name" for="${idPrefix}-name">
             <span class="field-label">Field name</span>
-            <input type="text" id="${idPrefix}-name" class="input field-name" value="${escapeAttr(field.name)}" autocomplete="off" />
+            <input type="text" id="${idPrefix}-name" class="input field-name" value="${escapeAttr(field.name)}" placeholder="e.g. ColumnName" autocomplete="off" />
           </label>
           <div class="field record-field-type">
             <span class="field-label" id="${idPrefix}-type-label">Type</span>
@@ -250,7 +250,7 @@ export function createRenderer({ nextId }) {
           <div class="field-grid param-field-grid">
             <label class="field param-field-name" for="param-${id}-name">
               <span class="field-label">Parameter name</span>
-              <input type="text" id="param-${id}-name" class="input param-name" value="${escapeAttr(param.name)}" autocomplete="off" />
+              <input type="text" id="param-${id}-name" class="input param-name" value="${escapeAttr(param.name)}" placeholder="e.g. StartDate" autocomplete="off" />
             </label>
             <div class="field param-field-kind">
               <span class="field-label" id="param-${id}-kind-label">Kind</span>
@@ -363,15 +363,15 @@ export function createRenderer({ nextId }) {
         <div class="param-card-body example-field-grid">
           <label class="field example-field-description" for="example-${id}-description">
             <span class="field-label">Description</span>
-            <input type="text" id="example-${id}-description" class="input example-description" value="${escapeAttr(example.description)}" />
+            <input type="text" id="example-${id}-description" class="input example-description" value="${escapeAttr(example.description)}" placeholder="e.g. Filter last 30 days" />
           </label>
           <label class="field example-field-code" for="example-${id}-code">
             <span class="field-label">Code</span>
-            <textarea id="example-${id}-code" class="textarea code-input example-code" rows="2" spellcheck="false">${escapeText(example.code)}</textarea>
+            <textarea id="example-${id}-code" class="textarea code-input example-code" rows="2" spellcheck="false" placeholder="MyFunc(…)">${escapeText(example.code)}</textarea>
           </label>
           <label class="field example-field-result" for="example-${id}-result">
             <span class="field-label">Result</span>
-            <textarea id="example-${id}-result" class="textarea code-input code-input-plain example-result" data-code-language="plain" rows="2" spellcheck="false">${escapeText(example.result)}</textarea>
+            <textarea id="example-${id}-result" class="textarea code-input code-input-plain example-result" data-code-language="plain" rows="2" spellcheck="false" placeholder="#table(…)">${escapeText(example.result)}</textarea>
           </label>
         </div>
       </div>
