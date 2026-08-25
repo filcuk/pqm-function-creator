@@ -6,9 +6,9 @@
 @import url("../prism-theme.css");
 @import url("../function-creator.css");
 
-/* Brand accents from app/res/app.svg (#ff6600 / #ff9955). */
+/* Brand accents from app/res/app.svg (#ff6600 / #ff9955); light slightly toned down. */
 :root {
-  --accent: #ff6600;
+  --accent: #f86a00;
   --accent-fg: #0d1117;
 }
 
