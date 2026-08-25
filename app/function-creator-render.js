@@ -202,6 +202,7 @@ export function createRenderer({ nextId }) {
               id: `${idPrefix}-type`,
               selected: field.mType,
               valueClass: "field-type",
+              grid: true,
             })}
           </div>
           ${scalarCaptionDescriptionHtml(field.meta, idPrefix, {
@@ -306,6 +307,7 @@ export function createRenderer({ nextId }) {
                 id: `param-${id}-type`,
                 selected: param.mType,
                 valueClass: "param-type",
+                grid: true,
               })}
             </div>
             ${scalarCaptionDescriptionHtml(param.meta, `param-${id}`, {
