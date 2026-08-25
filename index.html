@@ -50,7 +50,7 @@
       <div class="expand" id="import-section">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="import-panel">
           <span class="expand-icon" data-icon="chevron-right" data-icon-class="expand-icon-svg" aria-hidden="true"></span>
-          <span class="expand-label" id="import-heading">Import existing function</span>
+          <span class="expand-label" id="import">Import existing function</span>
         </button>
         <div id="import-panel" class="expand-panel hidden" hidden>
           <p class="field-hint">
@@ -89,9 +89,9 @@
         </div>
       </div>
 
-      <section class="creator-section" aria-labelledby="expression-heading">
+      <section id="expression-section" class="creator-section" aria-labelledby="expression">
         <div class="toolbar expression-toolbar">
-          <h2 id="expression-heading" class="section-title">Expression</h2>
+          <h2 id="expression" class="section-title">Expression</h2>
           <div class="expression-toolbar-actions">
             <button type="button" id="load-example" class="btn">Load example</button>
             <button type="button" id="reset-form" class="btn btn-danger">Reset all</button>
@@ -115,8 +115,8 @@
         </div>
       </section>
 
-      <section id="function-section" class="creator-section" aria-labelledby="function-heading">
-        <h2 id="function-heading" class="section-title">Function</h2>
+      <section id="function-section" class="creator-section" aria-labelledby="function">
+        <h2 id="function" class="section-title">Function</h2>
         <p class="panel-hint">
           Define your function name, structure and type.
         </p>
@@ -178,8 +178,8 @@
         </div>
       </section>
 
-      <section id="documentation-section" class="creator-section" aria-labelledby="documentation-heading">
-        <h2 id="documentation-heading" class="section-title">Documentation</h2>
+      <section id="documentation-section" class="creator-section" aria-labelledby="documentation">
+        <h2 id="documentation" class="section-title">Documentation</h2>
         <p class="panel-hint">
           Optional name, description, and examples shown in Power Query’s function invocation dialog and function info.
         </p>
@@ -217,10 +217,10 @@
         </div>
       </section>
 
-      <section id="parameters-section" class="creator-section" aria-labelledby="parameters-heading">
+      <section id="parameters-section" class="creator-section" aria-labelledby="parameters">
         <div class="toolbar parameters-toolbar">
           <span class="badge-host" id="parameters-count-badge" data-badge-label="Parameters">
-            <h2 id="parameters-heading" class="section-title" data-badge-control>Parameters</h2>
+            <h2 id="parameters" class="section-title" data-badge-control>Parameters</h2>
             <span class="badge" aria-hidden="true"></span>
           </span>
           <div class="parameters-toolbar-actions">
@@ -238,8 +238,8 @@
         </div>
       </section>
 
-      <section class="output-section" aria-labelledby="output-heading">
-        <h2 id="output-heading" class="section-title">Output</h2>
+      <section id="output-section" class="output-section" aria-labelledby="output">
+        <h2 id="output" class="section-title">Output</h2>
         <div
           id="output-preview"
           class="code-block code-block--full"

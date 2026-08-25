@@ -61,7 +61,7 @@ const tour = initTutorial({
       position: "bottom",
     },
     {
-      target: "#expression-editor",
+      target: "#expression-section",
       title: "Expression",
       body: "This is the main logic of our function-to-be, executed when the function is called.",
       position: "bottom",
@@ -85,7 +85,7 @@ const tour = initTutorial({
       position: "top",
     },
     {
-      target: "#output-preview",
+      target: "#output-section",
       title: "Output",
       body: "The generated M appears here. Copy it, or maximise for a closer look, then paste into Excel or Power BI.",
       position: "top",
