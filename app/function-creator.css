@@ -259,6 +259,13 @@
 
 .output-style-popover.popover {
   max-width: min(40rem, calc(100vw - 1.5rem));
+  /* Preview only — do not steal hover/clicks from the segmented control. */
+  pointer-events: none;
+}
+
+.output-style-popover.popover:focus,
+.output-style-popover.popover:focus-visible {
+  outline: none;
 }
 
 .output-style-preview {

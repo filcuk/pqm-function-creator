@@ -923,6 +923,7 @@ function initOutputStylePreviews(controlEl) {
    */
   function showPreview(item) {
     cancelClose();
+    const restoreFocus = document.activeElement;
     const value = item.getAttribute("data-segmented-control-value");
     const style = value === OUTPUT_STYLES.SHARED ? OUTPUT_STYLES.SHARED : OUTPUT_STYLES.LET;
     outputStylePopover?.setAnchor(item);
@@ -931,8 +932,20 @@ function initOutputStylePreviews(controlEl) {
       body: outputStylePreviewBody(style),
     });
     outputStylePopover?.open();
-    // Catalogue popover focuses itself on open; keep the segment focused for keyboard use.
-    item.focus({ preventScroll: true });
+    // Popover open() focuses the card (focus ring). This preview is hover-only —
+    // blur it and put focus back without moving onto a different segment.
+    const popoverEl = outputStylePopover?.getElement();
+    if (popoverEl instanceof HTMLElement) {
+      popoverEl.blur();
+    }
+    if (
+      restoreFocus instanceof HTMLElement &&
+      restoreFocus.isConnected &&
+      restoreFocus !== popoverEl &&
+      !popoverEl?.contains(restoreFocus)
+    ) {
+      restoreFocus.focus({ preventScroll: true });
+    }
     cancelClose();
   }
 
