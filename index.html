@@ -42,10 +42,6 @@
         <span class="banner-icon" data-icon="error" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
         <span class="banner-body">Something went wrong. Check the console for details.</span>
       </div>
-      <div id="validation-banner" class="banner banner-warning hidden" role="alert" hidden>
-        <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
-        <span class="banner-body"></span>
-      </div>
 
       <div class="expand" id="import-section">
         <button type="button" class="expand-trigger" aria-expanded="false" aria-controls="import-panel">
@@ -110,7 +106,15 @@
         <div class="field-grid function-field-grid">
           <label class="field function-field-name" for="function-name">
             <span class="field-label">Function name</span>
-            <input type="text" id="function-name" class="input" value="MyFunction" placeholder="MyFunction" autocomplete="off" />
+            <input
+              type="text"
+              id="function-name"
+              class="input"
+              value="MyFunction"
+              placeholder="MyFunction"
+              autocomplete="off"
+              aria-describedby="function-validation-banner"
+            />
           </label>
           <div class="field function-field-style">
             <span class="field-label">Output style</span>
@@ -150,6 +154,10 @@
             <span class="field-label">Custom return type</span>
             <input type="text" id="return-type-custom" class="input" placeholder="e.g. nullable text" autocomplete="off" />
           </label>
+        </div>
+        <div id="function-validation-banner" class="banner banner-warning hidden" role="alert" hidden>
+          <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+          <span class="banner-body"></span>
         </div>
       </section>
 
@@ -217,6 +225,10 @@
           </div>
         </div>
         <div id="parameters-list" class="param-list"></div>
+        <div id="parameters-validation-banner" class="banner banner-warning hidden" role="alert" hidden>
+          <span class="banner-icon" data-icon="warning" data-icon-class="banner-icon-svg" aria-hidden="true"></span>
+          <span class="banner-body"></span>
+        </div>
       </section>
 
       <section class="output-section" aria-labelledby="output-heading">

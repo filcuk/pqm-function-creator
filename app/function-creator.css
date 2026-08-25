@@ -547,8 +547,22 @@
   display: inline-flex;
 }
 
-#validation-banner {
+#function-validation-banner,
+#parameters-validation-banner {
+  margin-top: 0.75rem;
   margin-bottom: 0;
+}
+
+/* Framework invalid-field pattern (`aria-invalid`) for plain inputs. */
+#function-creator .input[aria-invalid="true"],
+#function-creator .textarea[aria-invalid="true"] {
+  border-color: var(--banner-error-border);
+}
+
+#function-creator .input[aria-invalid="true"]:focus,
+#function-creator .textarea[aria-invalid="true"]:focus {
+  border-color: var(--banner-error-border);
+  outline-color: var(--banner-error-border);
 }
 
 /* Type pickers: framework dropdown, full field width */

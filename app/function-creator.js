@@ -19,8 +19,9 @@ import {
 import { saveDraft, loadDraftState } from "./function-creator-draft.js";
 import { createExpandListController } from "./function-creator-expand.js";
 import { createRenderer, typeDropdownHtml } from "./function-creator-render.js";
-import { generateOutput, validateState } from "./m/generate.js";
+import { generateOutput, getValidationIssues, validateState } from "./m/generate.js";
 import { tryParseFunction } from "./m/parse.js";
+import { isValidIdentifier } from "./m/escape.js";
 import {
   createDefaultExample,
   createDefaultParameter,
@@ -57,7 +58,8 @@ const docLongDescriptionInput = /** @type {HTMLTextAreaElement} */ (document.get
 const examplesList = document.getElementById("examples-list");
 const parametersList = document.getElementById("parameters-list");
 const outputPreview = document.getElementById("output-preview");
-const validationBanner = document.getElementById("validation-banner");
+const functionValidationBanner = document.getElementById("function-validation-banner");
+const parametersValidationBanner = document.getElementById("parameters-validation-banner");
 const outputStyleEl = document.getElementById("output-style");
 const importInput = /** @type {HTMLTextAreaElement | null} */ (document.getElementById("import-input"));
 const importFunctionBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("import-function"));
@@ -567,14 +569,76 @@ function setBannerMessage(banner, message) {
   banner.textContent = message;
 }
 
-function updateBanners() {
-  const errors = validateState(state);
-  if (errors.length > 0) {
-    setBannerMessage(validationBanner, errors.join(" "));
-    setHidden(validationBanner, false);
-  } else {
-    setHidden(validationBanner, true);
+/**
+ * @param {HTMLElement | null} el
+ * @param {boolean} invalid
+ */
+function setAriaInvalid(el, invalid) {
+  if (!el) return;
+  if (invalid) el.setAttribute("aria-invalid", "true");
+  else el.removeAttribute("aria-invalid");
+}
+
+/**
+ * Highlight invalid identifier fields using the framework `aria-invalid` style.
+ */
+function syncFieldValidity() {
+  const functionName = state.functionName.trim();
+  setAriaInvalid(functionNameInput, !functionName || !isValidIdentifier(functionName));
+  setAriaInvalid(returnTypeCustomInput, !state.returnType.trim());
+
+  const seenParams = new Set();
+  for (const param of state.parameters) {
+    if (!param.id) continue;
+    const name = param.name.trim();
+    const paramInput = /** @type {HTMLInputElement | null} */ (
+      parametersList?.querySelector(`[data-param-id="${CSS.escape(param.id)}"] .param-name`)
+    );
+    let paramInvalid = false;
+    if (name) {
+      paramInvalid = !isValidIdentifier(name) || seenParams.has(name);
+      seenParams.add(name);
+    }
+    setAriaInvalid(paramInput, paramInvalid);
+
+    if (param.kind !== PARAM_KINDS.RECORD) continue;
+
+    const seenFields = new Set();
+    for (const field of param.fields || []) {
+      if (!field.id) continue;
+      const fieldName = field.name.trim();
+      const fieldInput = /** @type {HTMLInputElement | null} */ (
+        parametersList?.querySelector(`[data-field-id="${CSS.escape(field.id)}"] .field-name`)
+      );
+      let fieldInvalid = false;
+      if (fieldName) {
+        fieldInvalid = !isValidIdentifier(fieldName) || seenFields.has(fieldName);
+        seenFields.add(fieldName);
+      }
+      setAriaInvalid(fieldInput, fieldInvalid);
+    }
   }
+}
+
+/**
+ * @param {HTMLElement | null} banner
+ * @param {string[]} messages
+ */
+function updateSectionBanner(banner, messages) {
+  if (!banner) return;
+  if (messages.length > 0) {
+    setBannerMessage(banner, messages.join(" "));
+    setHidden(banner, false);
+  } else {
+    setHidden(banner, true);
+  }
+}
+
+function updateBanners() {
+  const issues = getValidationIssues(state);
+  updateSectionBanner(functionValidationBanner, issues.function);
+  updateSectionBanner(parametersValidationBanner, issues.parameters);
+  syncFieldValidity();
 }
 
 function updateOutputFromState() {
