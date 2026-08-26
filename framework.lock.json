@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "frameworkVersion": "0.13.0",
+  "frameworkVersion": "0.13.2",
   "source": "filcuk/sma1-framework",
   "components": [
     "dialog",
