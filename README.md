@@ -1,16 +1,10 @@
-# pqm-function-creator
+# <img src="app/res/app.svg" alt="" width="40" height="40" style="vertical-align: middle"> Power Query M Function Creator
 
-Wrap a Power Query `let … in` block in a typed, documented M function — or import an existing function to edit. Syntax highlighting via [Prism.js](https://prismjs.com/) (Power Query M).
+Wrap a Power Query `let … in` block in a typed, documented M function with ease. Alternatively, import an existing function to edit.
 
-Live: [filcuk.github.io/pqm-function-creator](https://filcuk.github.io/pqm-function-creator/)
+![Screenshot](res/readme/screenshot1.png)
 
-## Local preview
-
-ES modules require a local server:
-
-```bash
-npx serve .
-```
+Site: [filcuk.github.io/pqm-function-creator](https://filcuk.github.io/pqm-function-creator/)
 
 ## License
 
